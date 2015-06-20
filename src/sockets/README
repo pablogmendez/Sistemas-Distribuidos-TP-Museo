@@ -1,0 +1,34 @@
+Trabajo practico de Sistemas Distribuidos I
+Implementacion de un cliente y un servidor concurrente
+utilizando sockets.
+
+Alumno: Ricardo Guido Marelli
+Padron: 79134
+
+1) Compilacion
+
+Para compilar ejecute:
+
+# Make
+
+lo anterior generara los dos programas del servidor y el programa cliente.
+
+2) Descripcion y Ejecucion
+
+i) server
+
+Es el programa que se encarga de aceptar las conexiones entrantes.
+Implementa un servidor concurrente. Ejecute: 
+
+# ./server [puerto]
+
+ii) serverproto
+
+El el programa lanzado por el anterior para atender a cada cliente.
+
+iii) cliente
+
+El el programa cliente. Toma las operaciones a realizar de stdin.
+Ejemplo de invocacion:
+
+# ./cliente [servidor] [puerto] < ops.txt
