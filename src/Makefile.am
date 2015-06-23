@@ -5,6 +5,7 @@ AM_CPPFLAGS = -I$(srcdir)/include -I$(srdir)
 
 noinst_LTLIBRARIES = \
 	libIPC.la \
+	libsockets.la \
 	libutils.la \
 	libipuerta.la
 
@@ -25,6 +26,23 @@ libIPC_la_SOURCES = \
 	IPC/Semaforo.h \
 	IPC/SignalHandler.cpp \
 	IPC/SignalHandler.h
+
+libsockets_la_SOURCES = \
+	sockets/cClientSocket.cpp \
+	sockets/cClientSocket.h \
+	sockets/cDispatcher.cpp \
+	sockets/cDispatcher.h \
+	sockets/cServerSocket.cpp \
+	sockets/cServerSocket.h \
+	sockets/cSocket.cpp \
+	sockets/cSocket.h \
+	\
+	sockets/common.cpp \
+	sockets/common.h \
+	sockets/cClientProto.cpp \
+	sockets/cClientProto.h \
+	sockets/cServerProto.cpp \
+	sockets/cServerProto.h
 
 libutils_la_SOURCES = \
 	utils/System.cpp \

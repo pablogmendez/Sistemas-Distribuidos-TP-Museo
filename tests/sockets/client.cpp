@@ -4,10 +4,10 @@ Padron: 79134
 
 */
 
-#include "cClientProto.h"
-#include "cClientSocket.h"
-#include "cDispatcher.h"
-#include "common.h"
+#include <sockets/cClientProto.h>
+#include <sockets/cClientSocket.h>
+#include <sockets/cDispatcher.h>
+#include <sockets/common.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>

@@ -5,8 +5,8 @@ Padron: 79134
 */
 
 
-#include "cServerSocket.h"
-#include "common.h"
+#include <sockets/cServerSocket.h>
+#include <sockets/common.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>

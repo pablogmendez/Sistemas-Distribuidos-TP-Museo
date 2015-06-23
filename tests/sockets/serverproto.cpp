@@ -5,10 +5,10 @@ Padron: 79134
 */
 
 
-#include "cSocket.h"
-#include "cDispatcher.h"
-#include "cServerProto.h"
-#include "common.h"
+#include <sockets/cSocket.h>
+#include <sockets/cDispatcher.h>
+#include <sockets/cServerProto.h>
+#include <sockets/common.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
