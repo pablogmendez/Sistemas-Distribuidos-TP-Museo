@@ -4,12 +4,12 @@ AM_CXXFLAGS = -Wall -Wextra -Wconversion
 AM_CPPFLAGS = -I$(srcdir)/include -I$(srdir)
 
 noinst_LTLIBRARIES = \
-	libIPC.la \
-	libsockets.la \
-	libutils.la \
-	libipuerta.la
+	IPC/libIPC.la \
+	sockets/libsockets.la \
+	utils/libutils.la \
+	ipuerta/libipuerta.la
 
-libIPC_la_SOURCES = \
+IPC_libIPC_la_SOURCES = \
 	IPC/Cola.h \
 	IPC/EventHandler.h \
 	IPC/Fifo.cpp \
@@ -27,7 +27,7 @@ libIPC_la_SOURCES = \
 	IPC/SignalHandler.cpp \
 	IPC/SignalHandler.h
 
-libsockets_la_SOURCES = \
+sockets_libsockets_la_SOURCES = \
 	sockets/cClientSocket.cpp \
 	sockets/cClientSocket.h \
 	sockets/cDispatcher.cpp \
@@ -44,15 +44,15 @@ libsockets_la_SOURCES = \
 	sockets/cServerProto.cpp \
 	sockets/cServerProto.h
 
-libutils_la_SOURCES = \
+utils_libutils_la_SOURCES = \
 	utils/System.cpp \
 	utils/System.h
 
-libipuerta_la_SOURCES = \
+ipuerta_libipuerta_la_SOURCES = \
 	include/ipuerta/IPuertaCli.h \
 	include/ipuerta/IPuertaServ.h \
 	include/ipuerta/Operacion.h \
 	ipuerta/IPuertaCli.cpp \
 	ipuerta/IPuertaMsg.h \
 	ipuerta/IPuertaServ.cpp
-libipuerta_la_LIBADD = libIPC.la libutils.la
+ipuerta_libipuerta_la_LIBADD = IPC/libIPC.la utils/libutils.la

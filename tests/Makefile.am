@@ -16,24 +16,24 @@ check_PROGRAMS = \
 ipuerta_mock_comp_SOURCES = \
 	ipuerta/mock_comp.cpp
 ipuerta_mock_comp_LDADD = \
-	../src/libipuerta.la
+	../src/ipuerta/libipuerta.la
 
 ipuerta_test_ipuerta_SOURCES = \
 	ipuerta/main.cpp
 ipuerta_test_ipuerta_LDADD = \
-	../src/libipuerta.la
+	../src/ipuerta/libipuerta.la
 
 sockets_client_SOURCES = \
 	sockets/client.cpp
 sockets_client_LDADD = \
-	../src/libsockets.la
+	../src/sockets/libsockets.la
 
 sockets_server_SOURCES = \
 	sockets/server.cpp
 sockets_server_LDADD = \
-	../src/libsockets.la
+	../src/sockets/libsockets.la
 
 sockets_serverproto_SOURCES = \
 	sockets/serverproto.cpp
 sockets_serverproto_LDADD = \
-	../src/libsockets.la
+	../src/sockets/libsockets.la
