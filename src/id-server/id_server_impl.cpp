@@ -1,4 +1,5 @@
 #include "id_server.h"
+#include <algorithm>
 #include <limits>
 #include <vector>
 
@@ -35,7 +36,9 @@ devolver_id_1_svc(long *argp, struct svc_req *rqstp)
 	long id = *argp;
 
 	// No hay que poner basura en la lista de libres
-	if (id >= first) {
+	if (id >= first
+			&& std::find (libres.begin (), libres.end (), id)
+	              == libres.end ()) {
 		libres.push_back(id);
 	}
 

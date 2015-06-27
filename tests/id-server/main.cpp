@@ -45,6 +45,19 @@ int main (int argc, char** argv)
 			goto out;
 		}
 		ids.devolverId (myId);
+
+		// Verificar duplicados
+		ids.devolverId (myId);
+		long idA = ids.obtenerId ();
+		long idB = ids.obtenerId ();
+		if (idA == idB) {
+			std::cerr << "Se duplicó el id "
+					<< idA << std::endl;
+			err = 1;
+			goto out;
+		}
+		ids.devolverId (idA);
+		ids.devolverId (idB);
 	} catch (std::exception& e) {
 		std::cerr << "Error al invocar servicio: "
 				<< e.what ()
