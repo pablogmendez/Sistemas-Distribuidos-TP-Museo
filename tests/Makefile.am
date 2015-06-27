@@ -6,6 +6,9 @@ AM_CPPFLAGS = -I$(srcdir)/../src/include -I$(srcdir)/../src
 EXTRA_DIST = \
 	ipuerta/ipuerta.mq
 
+TESTS = \
+	id-server/test-id-server
+
 check_PROGRAMS = \
 	ipuerta/mock_comp \
 	ipuerta/test_ipuerta \
