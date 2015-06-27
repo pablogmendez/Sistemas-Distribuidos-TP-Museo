@@ -11,7 +11,8 @@ check_PROGRAMS = \
 	ipuerta/test_ipuerta \
 	sockets/client \
 	sockets/server \
-	sockets/serverproto
+	sockets/serverproto \
+	id-server/test-id-server
 
 ipuerta_mock_comp_SOURCES = \
 	ipuerta/mock_comp.cpp
@@ -37,3 +38,9 @@ sockets_serverproto_SOURCES = \
 	sockets/serverproto.cpp
 sockets_serverproto_LDADD = \
 	../src/sockets/libsockets.la
+
+id_server_test_id_server_SOURCES = \
+	id-server/main.cpp
+id_server_test_id_server_LDADD = \
+	../src/id-server/libidclient.la \
+	../src/utils/libutils.la

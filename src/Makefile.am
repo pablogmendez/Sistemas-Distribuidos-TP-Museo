@@ -1,7 +1,11 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
+AM_CFLAGS = -Wall -Wextra -Wconversion
 AM_CXXFLAGS = -Wall -Wextra -Wconversion
 AM_CPPFLAGS = -I$(srcdir)/include -I$(srdir)
+
+EXTRA_DIST =
+bin_PROGRAMS =
 
 noinst_LTLIBRARIES = \
 	IPC/libIPC.la \
@@ -56,3 +60,39 @@ ipuerta_libipuerta_la_SOURCES = \
 	ipuerta/IPuertaMsg.h \
 	ipuerta/IPuertaServ.cpp
 ipuerta_libipuerta_la_LIBADD = IPC/libIPC.la utils/libutils.la
+
+############ Generacion de fuentes con rpcgen #############
+# A MANO !!!! con script gen_rpc.sh
+#
+#id-server/id_server.h: id-server/id_server.x
+#	rpcgen -h -o $@ $<
+#
+#id-server/id_server_xdr.c: id-server/id_server.x
+#	rpcgen -c -o $@ $<
+#
+#id-server/id_server_clnt.c: id-server/id_server.x
+#	rpcgen -l -o $@ $<
+#
+#id-server/id_server_svc.c: id-server/id_server.x
+#	rpcgen -s udp -s tcp -o $@ $<
+#
+###########################################################
+EXTRA_DIST += id-server/id_server.x id-server/gen_rpc.sh
+bin_PROGRAMS += id-server/id-server
+id_server_id_server_SOURCES = \
+	id-server/id_server_svc.c \
+	id-server/id_server_xdr.c \
+	id-server/id_server.h \
+	id-server/id_server_impl.cpp \
+	id-server/id_server_main.cpp
+# La siguiente linea evita error:
+#   Objects ‘created with both libtool and without’
+id_server_id_server_CFLAGS = $(AM_CFLAGS)
+
+noinst_LTLIBRARIES += id-server/libidclient.la
+id_server_libidclient_la_SOURCES = \
+	id-server/id_server_clnt.c \
+	id-server/id_server_xdr.c \
+	id-server/id_server.h \
+	id-server/IIdClient.cpp \
+	include/id-server/IIdClient.h
