@@ -11,7 +11,7 @@ int main (int argc, char** argv)
 	pid_t srv_pid;
 	std::vector<const char*> srv_args;
 	const char* srv_bin = "../../src/id-server/id-server";
-	//srv_args.push_back (srv_bin);
+	srv_args.push_back (srv_bin);
 	srv_args.push_back ("1001");
 	srv_args.push_back (NULL);
 	srv_pid = System::spawn (srv_bin, srv_args);
