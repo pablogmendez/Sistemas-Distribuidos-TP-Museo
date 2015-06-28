@@ -11,7 +11,8 @@ noinst_LTLIBRARIES = \
 	IPC/libIPC.la \
 	sockets/libsockets.la \
 	utils/libutils.la \
-	ipuerta/libipuerta.la
+	ipuerta/libipuerta.la \
+	ipersona/libipersona.la
 
 IPC_libIPC_la_SOURCES = \
 	IPC/Cola.h \
@@ -49,17 +50,23 @@ sockets_libsockets_la_SOURCES = \
 	sockets/cServerProto.h
 
 utils_libutils_la_SOURCES = \
+	utils/EnvParams.cpp \
+	utils/EnvParams.h \
 	utils/System.cpp \
 	utils/System.h
 
 ipuerta_libipuerta_la_SOURCES = \
-	include/ipuerta/IPuertaCli.h \
-	include/ipuerta/IPuertaServ.h \
-	include/ipuerta/Operacion.h \
-	ipuerta/IPuertaCli.cpp \
-	ipuerta/IPuertaMsg.h \
-	ipuerta/IPuertaServ.cpp
+	include/ipuerta/IPuerta.h \
+	ipuerta/IPuerta.cpp \
+	ipuerta/IPuertaMsg.h
 ipuerta_libipuerta_la_LIBADD = IPC/libIPC.la utils/libutils.la
+
+ipersona_libipersona_la_SOURCES = \
+	include/ipersona/IPersona.h \
+	include/ipersona/Operacion.h \
+	ipersona/IPersona.cpp \
+	ipersona/IPersonaMsg.h
+ipersona_libipersona_la_LIBADD = IPC/libIPC.la utils/libutils.la
 
 ############ Generacion de fuentes con rpcgen #############
 # A MANO !!!! con script gen_rpc.sh

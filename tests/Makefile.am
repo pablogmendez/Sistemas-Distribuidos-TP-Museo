@@ -7,9 +7,13 @@ EXTRA_DIST = \
 	ipuerta/ipuerta.mq
 
 TESTS = \
-	id-server/test-id-server
+	id-server/test-id-server \
+	ipuerta/test_ipuerta \
+	ipersona/test_ipersona
 
 check_PROGRAMS = \
+	ipersona/mock_comp \
+	ipersona/test_ipersona \
 	ipuerta/mock_comp \
 	ipuerta/test_ipuerta \
 	sockets/client \
@@ -17,10 +21,22 @@ check_PROGRAMS = \
 	sockets/serverproto \
 	id-server/test-id-server
 
+ipersona_mock_comp_SOURCES = \
+	ipersona/mock_comp.cpp
+ipersona_mock_comp_LDADD = \
+	../src/IPC/libIPC.la \
+	../src/utils/libutils.la
+
+ipersona_test_ipersona_SOURCES = \
+	ipersona/main.cpp
+ipersona_test_ipersona_LDADD = \
+	../src/ipersona/libipersona.la
+
 ipuerta_mock_comp_SOURCES = \
 	ipuerta/mock_comp.cpp
 ipuerta_mock_comp_LDADD = \
-	../src/ipuerta/libipuerta.la
+	../src/IPC/libIPC.la \
+	../src/utils/libutils.la
 
 ipuerta_test_ipuerta_SOURCES = \
 	ipuerta/main.cpp
