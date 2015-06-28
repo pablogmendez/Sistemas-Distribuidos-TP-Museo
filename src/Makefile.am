@@ -56,12 +56,14 @@ utils_libutils_la_SOURCES = \
 	utils/System.h
 
 ipuerta_libipuerta_la_SOURCES = \
+	include/icommon/resultado.h \
 	include/ipuerta/IPuerta.h \
 	ipuerta/IPuerta.cpp \
 	ipuerta/IPuertaMsg.h
 ipuerta_libipuerta_la_LIBADD = IPC/libIPC.la utils/libutils.la
 
 ipersona_libipersona_la_SOURCES = \
+	include/icommon/resultado.h \
 	include/ipersona/IPersona.h \
 	include/ipersona/Operacion.h \
 	ipersona/IPersona.cpp \
