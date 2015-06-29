@@ -32,5 +32,5 @@ int main(int argc, char* argv[]){
 	strncpy(mensaje.mensaje, "hola",4);
 	
 	enviar->escribir(mensaje);
-
+	std::cout << "ENVIE AL DESTINO 2";
 }

@@ -1,8 +1,8 @@
 #include "../IPC/Cola.h"
 #include "MensajeGenerico.h"
 
-#define COLA_MAESTRA "./colamaestra.mq"
-#define COLA_CONEXIONES "./colaconexiones.mq"
+#define COLA_MAESTRA ".colamaestra.mq"
+#define COLA_CONEXIONES ".colaconexiones.mq"
 
 #include <iostream>
 #include <stdlib.h>

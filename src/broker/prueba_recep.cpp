@@ -28,7 +28,7 @@ int main(int argc, char* argv[]){
         MensajeGenerico mensaje;
         recibir->leer(2,&mensaje);
 	
-	std::cout << mensaje.mensaje;
+	std::cout <<"RECIBI: "<< mensaje.mensaje << std::endl;
 
 }
 
