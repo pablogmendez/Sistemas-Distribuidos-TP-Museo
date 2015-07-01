@@ -105,3 +105,23 @@ id_server_libidclient_la_SOURCES = \
 	id-server/id_server.h \
 	id-server/IIdClient.cpp \
 	include/id-server/IIdClient.h
+
+########## Broker ##############
+# Acá se listan los archivos que no son fuentes o encabezados
+# y que necesita el programa
+EXTRA_DIST += \
+	broker/.colamaestra.mq \
+	broker/.colaconexiones.mq
+
+# Se agrega el binario
+bin_PROGRAMS += broker/broker-entrada
+
+# Acá se listan los fuentes y encabezados con los que
+# se compila el programa
+broker_broker_entrada_SOURCES = \
+	broker/broker_entrada.cpp \
+	broker/MensajeGenerico.h
+
+# Linkea con la biblioteca de IPCs
+broker_broker_entrada_LDADD = \
+	../IPC/libIPC.la

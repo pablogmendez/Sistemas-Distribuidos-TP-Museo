@@ -49,6 +49,8 @@ AC_CONFIG_FILES([Makefile
 AC_CONFIG_LINKS([
 		tests/ipuerta/ipuerta.mq:tests/ipuerta/ipuerta.mq
 		tests/sockets/ops.txt:tests/sockets/ops.txt
-		tests/sockets/README:tests/sockets/README])
+		tests/sockets/README:tests/sockets/README
+		src/broker/.colamaestra.mq:src/broker/.colamaestra.mq
+		src/broker/.colaconexiones.mq:src/broker/.colaconexiones.mq])
 
 AC_OUTPUT
