@@ -124,4 +124,4 @@ broker_broker_entrada_SOURCES = \
 
 # Linkea con la biblioteca de IPCs
 broker_broker_entrada_LDADD = \
-	../IPC/libIPC.la
+	IPC/libIPC.la
