@@ -52,6 +52,8 @@ sockets_libsockets_la_SOURCES = \
 utils_libutils_la_SOURCES = \
 	utils/EnvParams.cpp \
 	utils/EnvParams.h \
+	utils/ParserConfiguracion.cpp \
+	utils/ParserConfiguracion.h \
 	utils/System.cpp \
 	utils/System.h
 
