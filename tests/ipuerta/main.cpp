@@ -34,7 +34,7 @@ int main (int argc, char** argv)
 	/* Establece la variable de entrono para que se pueda encontrar
 	 * el recurso para crear la cola que comunica interfaz y
 	 * componente. */
-	setenv(IPuerta::ENV_IPUERTA_PARAMS,
+	setenv(IPuerta::ENV_IPUERTA_MQ,
 			calcularRutaMQ (argv[0]).c_str (), 1);
 
 	std::cout << "Iniciando recorrido simple." << std::endl;

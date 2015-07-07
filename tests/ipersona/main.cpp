@@ -33,7 +33,7 @@ int main (int argc, char** argv)
 	/* Establece la variable de entrono para que se pueda encontrar
 	 * el recurso para crear la cola que comunica interfaz y
 	 * componente. */
-	setenv(IPersona::ENV_IPERSONA_PARAMS,
+	setenv(IPersona::ENV_IPERSONA_MQ,
 			calcularRutaMQ (argv[0]).c_str (), 1);
 
 	std::cout << "Iniciando prueba de IPersona." << std::endl;

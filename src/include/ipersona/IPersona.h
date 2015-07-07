@@ -11,7 +11,7 @@ private:
 	Impl* pImpl;
 public:
 	static const char* const ENV_IPERSONA_COMP;
-	static const char* const ENV_IPERSONA_PARAMS;
+	static const char* const ENV_IPERSONA_MQ;
 
 	IPersona ();
 	~IPersona ();

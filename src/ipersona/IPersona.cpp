@@ -9,21 +9,27 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <utils/EnvParams.h>
+#include <utils/EnvParam.h>
 #include <utils/System.h>
 #include <vector>
 
-class IPersona::Impl : private EnvParams
+// TODO: mover a .h de constantes
+static const char* DFLT_IPERSONA_COMP = "ipersona_comp";
+static const char* DFLT_IPERSONA_MQ   = "./persona.mq";
+/////////////////////////////////
+
+class IPersona::Impl
 {
 public:
+	EnvParam mqConf;
+	EnvParam compBin;
 	Cola<IPersonaMsg> mqComp;
 	pid_t pidComp;
 
 	Impl ()
-		: EnvParams (
-				ParamDefaults ("MQ", "./persona.mq", NULL),
-				IPersona::ENV_IPERSONA_PARAMS)
-		, mqComp (get_param ("MQ"), 'A')
+		: mqConf (IPersona::ENV_IPERSONA_MQ, DFLT_IPERSONA_MQ)
+		, compBin (IPersona::ENV_IPERSONA_COMP, DFLT_IPERSONA_COMP)
+		, mqComp (mqConf.get (), 'A')
 		, pidComp (-1)
 		{}
 
@@ -46,20 +52,15 @@ public:
 };
 
 const char* const IPersona::ENV_IPERSONA_COMP = "ipersona_comp";
-const char* const IPersona::ENV_IPERSONA_PARAMS = "ipersona_params";
-static const char* DFLT_IPERSONA_COMP = "ipersona_comp";
+const char* const IPersona::ENV_IPERSONA_MQ   = "ipersona_mq";
 
 void IPersona::Impl::lanzarComponente ()
 {
-	const char* comp_path = getenv (IPersona::ENV_IPERSONA_COMP);
-	if (comp_path == NULL) {
-		comp_path = DFLT_IPERSONA_COMP;
-	}
-
+	const std::string& comp_path = compBin.get ();
 	std::vector<const char*> args;
-	args.push_back (comp_path);
+	args.push_back (comp_path.c_str ());
 	args.push_back (NULL);
-	pidComp = System::spawn(comp_path, args);
+	pidComp = System::spawn(comp_path.c_str (), args);
 	System::check (pidComp);
 }
 

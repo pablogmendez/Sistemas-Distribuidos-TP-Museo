@@ -8,7 +8,7 @@ private:
 	Impl* pImpl;
 public:
 	static const char* const ENV_IPUERTA_COMP;
-	static const char* const ENV_IPUERTA_PARAMS;
+	static const char* const ENV_IPUERTA_MQ;
 
 	IPuerta ();
 	~IPuerta ();

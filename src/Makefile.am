@@ -50,8 +50,8 @@ sockets_libsockets_la_SOURCES = \
 	sockets/cServerProto.h
 
 utils_libutils_la_SOURCES = \
-	utils/EnvParams.cpp \
-	utils/EnvParams.h \
+	utils/EnvParam.cpp \
+	utils/EnvParam.h \
 	utils/ParserConfiguracion.cpp \
 	utils/ParserConfiguracion.h \
 	utils/System.cpp \

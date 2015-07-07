@@ -10,21 +10,27 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <utils/EnvParams.h>
+#include <utils/EnvParam.h>
 #include <utils/System.h>
 #include <vector>
 
-class IPuerta::Impl : public EnvParams
+// TODO: mover a .h de constantes
+static const char* DFLT_IPUERTA_COMP = "ipuerta_comp";
+static const char* DFLT_IPUERTA_MQ   = "./ipuerta.mq";
+/////////////////////////////////
+
+class IPuerta::Impl
 {
 public:
+	EnvParam mqConf;
+	EnvParam compBin;
 	Cola<IPuertaMsg> mqComp;
 	pid_t pidComp;
 
 	Impl ()
-		: EnvParams (
-				ParamDefaults ("MQ", "./ipuerta.mq", NULL),
-				IPuerta::ENV_IPUERTA_PARAMS)
-		, mqComp (get_param ("MQ"), 'A')
+		: mqConf (IPuerta::ENV_IPUERTA_MQ, DFLT_IPUERTA_MQ)
+		, compBin (IPuerta::ENV_IPUERTA_COMP, DFLT_IPUERTA_COMP)
+		, mqComp (mqConf.get (), 'A')
 		, pidComp (-1)
 		{}
 
@@ -38,20 +44,15 @@ public:
 };
 
 const char* const IPuerta::ENV_IPUERTA_COMP = "ipuerta_comp";
-const char* const IPuerta::ENV_IPUERTA_PARAMS = "ipuerta_params";
-static const char* DFLT_IPUERTA_COMP = "ipuerta_comp";
+const char* const IPuerta::ENV_IPUERTA_MQ   = "ipuerta_mq";
 
 void IPuerta::Impl::lanzarComponente ()
 {
-	const char* comp_path = getenv (IPuerta::ENV_IPUERTA_COMP);
-	if (comp_path == NULL) {
-		comp_path = DFLT_IPUERTA_COMP;
-	}
-
+	const std::string& comp_path = compBin.get ();
 	std::vector<const char*> args;
-	args.push_back (comp_path);
+	args.push_back (comp_path.c_str ());
 	args.push_back (NULL);
-	pidComp = System::spawn(comp_path, args);
+	pidComp = System::spawn(comp_path.c_str (), args);
 	System::check (pidComp);
 }
 
