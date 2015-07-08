@@ -11,6 +11,7 @@ noinst_LTLIBRARIES = \
 	IPC/libIPC.la \
 	sockets/libsockets.la \
 	utils/libutils.la \
+	Logger/libLogger.la \
 	ipuerta/libipuerta.la \
 	ipersona/libipersona.la
 
@@ -56,6 +57,14 @@ utils_libutils_la_SOURCES = \
 	utils/ParserConfiguracion.h \
 	utils/System.cpp \
 	utils/System.h
+
+Logger_libLogger_la_SOURCES = \
+	Logger/MensajeLog.cpp \
+	Logger/Lock.h \
+	Logger/Lock.cpp \
+	Logger/MensajeLog.h \
+	Logger/Logger.cpp \
+	Logger/Logger.h
 
 ipuerta_libipuerta_la_SOURCES = \
 	include/icommon/resultado.h \
@@ -127,3 +136,16 @@ broker_broker_entrada_SOURCES = \
 # Linkea con la biblioteca de IPCs
 broker_broker_entrada_LDADD = \
 	IPC/libIPC.la
+
+########## Puerta #############
+bin_PROGRAMS += puerta/puerta
+
+puerta_puerta_SOURCES = \
+	puerta/Locker.h \
+	puerta/LockerRack.cpp \
+	puerta/LockerRack.h \
+	puerta/main.cpp
+
+puerta_puerta_LDADD = \
+	ipersona/libipersona.la
+###############################

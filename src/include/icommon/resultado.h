@@ -3,7 +3,8 @@
 
 enum ResultadoOperacionEntrada
 {
-	ENTRO   = 1,
+	ENTRO         = 1,
+	NO_HAY_LOCKER    ,
 	CERRADO
 };
 

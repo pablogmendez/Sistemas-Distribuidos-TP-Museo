@@ -51,6 +51,7 @@ AC_CONFIG_LINKS([
 		tests/sockets/ops.txt:tests/sockets/ops.txt
 		tests/sockets/README:tests/sockets/README
 		src/broker/.colamaestra.mq:src/broker/.colamaestra.mq
-		src/broker/.colaconexiones.mq:src/broker/.colaconexiones.mq])
+		src/broker/.colaconexiones.mq:src/broker/.colaconexiones.mq
+		resources/ipersona.mq:resources/ipersona.mq])
 
 AC_OUTPUT
