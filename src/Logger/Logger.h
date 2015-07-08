@@ -16,12 +16,13 @@
 #include "Lock.h"
 
 #define LOG(...) { \
+	ssize_t err; \
 	char evento[100]; \
 	char salto[10]; \
 	sprintf(evento, __VA_ARGS__); \
-	write(fileno(stdout), evento, strlen(evento)); \
+	err = write(fileno(stdout), evento, strlen(evento)); \
 	sprintf(salto, "\n"); \
-	write(fileno(stdout), salto, strlen(salto)); \
+	err = write(fileno(stdout), salto, strlen(salto)); \
 }
 
 class Logger {
