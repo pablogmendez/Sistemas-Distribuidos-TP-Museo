@@ -31,8 +31,8 @@ AC_TYPE_SSIZE_T
 AC_FUNC_FORK
 AC_CHECK_FUNCS([strerror error])
 
-#AC_CHECK_FUNC([argp_parse], ,
-#	AC_MSG_ERROR([argp library not found.]))
+AC_CHECK_FUNC([argp_parse], ,
+	AC_MSG_ERROR([argp library not found.]))
 
 AC_CHECK_FUNC([semget], ,
 	AC_MSG_ERROR([semget is required]))
@@ -52,6 +52,7 @@ AC_CONFIG_LINKS([
 		tests/sockets/README:tests/sockets/README
 		src/broker/.colamaestra.mq:src/broker/.colamaestra.mq
 		src/broker/.colaconexiones.mq:src/broker/.colaconexiones.mq
-		resources/ipersona.mq:resources/ipersona.mq])
+		resources/ipersona.mq:resources/ipersona.mq
+		resources/ipersona_comp.ipc:resources/ipersona_comp.ipc])
 
 AC_OUTPUT

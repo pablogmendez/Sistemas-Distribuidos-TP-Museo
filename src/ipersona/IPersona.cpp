@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <error.h>
 #include <IPC/Cola.h>
+#include <libgen.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,8 +15,10 @@
 #include <vector>
 
 // TODO: mover a .h de constantes
-static const char* DFLT_IPERSONA_COMP = "ipersona_comp";
-static const char* DFLT_IPERSONA_MQ   = "./persona.mq";
+static const char* DFLT_IPERSONA_COMP     = "ipersona_comp";
+static const char* DFLT_IPERSONA_MQ       = "./persona.mq";
+static const char* DFLT_IPERSONA_BROKER   = "broker";
+static const char* DFLT_IPERSONA_IDSERVER = "id-server";
 /////////////////////////////////
 
 class IPersona::Impl
@@ -23,12 +26,17 @@ class IPersona::Impl
 public:
 	EnvParam mqConf;
 	EnvParam compBin;
+	EnvParam brokerHost;
+	EnvParam idServerHost;
 	Cola<IPersonaMsg> mqComp;
 	pid_t pidComp;
 
 	Impl ()
 		: mqConf (IPersona::ENV_IPERSONA_MQ, DFLT_IPERSONA_MQ)
 		, compBin (IPersona::ENV_IPERSONA_COMP, DFLT_IPERSONA_COMP)
+		, brokerHost (IPersona::ENV_IPERSONA_BROKER, DFLT_IPERSONA_BROKER)
+		, idServerHost (IPersona::ENV_IPERSONA_IDSERVER,
+				DFLT_IPERSONA_IDSERVER)
 		, mqComp (mqConf.get (), 'A')
 		, pidComp (-1)
 		{}
@@ -51,14 +59,29 @@ public:
 		}
 };
 
-const char* const IPersona::ENV_IPERSONA_COMP = "ipersona_comp";
-const char* const IPersona::ENV_IPERSONA_MQ   = "ipersona_mq";
+const char* const IPersona::ENV_IPERSONA_COMP     = "ipersona_comp";
+const char* const IPersona::ENV_IPERSONA_MQ       = "ipersona_mq";
+const char* const IPersona::ENV_IPERSONA_BROKER   = "ipersona_broker";
+const char* const IPersona::ENV_IPERSONA_IDSERVER = "ipersona_idserver";
+
+static std::string dir_recursos (const char* mq)
+{
+	char* tmp = strdup (mq);
+	std::string res = dirname (tmp);
+	free (tmp);
+	return res;
+}
 
 void IPersona::Impl::lanzarComponente ()
 {
 	const std::string& comp_path = compBin.get ();
+	std::string res_dir = dir_recursos (mqConf.get ().c_str ());
+
 	std::vector<const char*> args;
 	args.push_back (comp_path.c_str ());
+	args.push_back (idServerHost.get ().c_str ());
+	args.push_back (brokerHost.get ().c_str ());
+	args.push_back (res_dir.c_str ());
 	args.push_back (NULL);
 	pidComp = System::spawn(comp_path.c_str (), args);
 	System::check (pidComp);

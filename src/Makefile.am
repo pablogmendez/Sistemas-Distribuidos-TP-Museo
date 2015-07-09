@@ -53,6 +53,7 @@ sockets_libsockets_la_SOURCES = \
 utils_libutils_la_SOURCES = \
 	utils/EnvParam.cpp \
 	utils/EnvParam.h \
+	utils/NonCopyable.h \
 	utils/ParserConfiguracion.cpp \
 	utils/ParserConfiguracion.h \
 	utils/System.cpp \
@@ -147,5 +148,22 @@ puerta_puerta_SOURCES = \
 	puerta/main.cpp
 
 puerta_puerta_LDADD = \
+	ipersona/libipersona.la
+###############################
+
+##### Componente IPersona #####
+bin_PROGRAMS += ipersona_comp/ipersona_comp
+
+ipersona_comp_ipersona_comp_SOURCES = \
+	ipersona_comp/ArgParser.cpp \
+	ipersona_comp/ArgParser.h \
+	ipersona_comp/contador-msg.h \
+	ipersona_comp/ipc-keys.h \
+	ipersona_comp/IPCManager.cpp \
+	ipersona_comp/IPCManager.h \
+	ipersona_comp/ipersona_comp.cpp
+
+ipersona_comp_ipersona_comp_LDADD = \
+	IPC/libIPC.la \
 	ipersona/libipersona.la
 ###############################

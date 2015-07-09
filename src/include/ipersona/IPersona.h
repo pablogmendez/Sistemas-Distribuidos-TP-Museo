@@ -12,6 +12,8 @@ private:
 public:
 	static const char* const ENV_IPERSONA_COMP;
 	static const char* const ENV_IPERSONA_MQ;
+	static const char* const ENV_IPERSONA_BROKER;
+	static const char* const ENV_IPERSONA_IDSERVER;
 
 	IPersona ();
 	~IPersona ();
