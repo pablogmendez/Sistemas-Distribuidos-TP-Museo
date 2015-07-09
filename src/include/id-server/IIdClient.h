@@ -9,9 +9,15 @@ class IIdClient
 		class Impl;
 		Impl* pImpl;
 	public:
+		enum Rangos
+		{
+			R_PUERTA  ,
+			R_PERSONA
+		};
+
 		IIdClient (const char* server_name) throw (std::runtime_error);
 		~IIdClient ();
-		long obtenerId () throw (std::runtime_error);
+		long obtenerId (Rangos rango) throw (std::runtime_error);
 		void devolverId (long id) throw (std::runtime_error);
 };
 
