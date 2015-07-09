@@ -106,6 +106,9 @@ int main (int argc, char** argv)
 		args_lector.push_back (NULL);
 		lector = System::spawn (path_lector.c_str (), args_lector);
 		if (lector == -1) {
+			SystemErrorException e;
+			std::cerr << "Error (" << e.number ()
+					<< "): " << e.what () << std::endl;
 			err = 1;
 			goto out; // FIXME: lanzar excepción ?
 		}
