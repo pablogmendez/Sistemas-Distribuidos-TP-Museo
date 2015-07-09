@@ -23,9 +23,9 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 			break;
 		case ARGP_KEY_END:
 			if (state->arg_num < NUM_ARGS) {
-				argp_failure (state, 1, 0, "ipersona_comp: no hay suficientes argumentos");
+				argp_failure (state, 1, 0, "no hay suficientes argumentos");
 			} else if (state->arg_num > NUM_ARGS) {
-				argp_failure (state, 1, 0, "ipersona_comp: demasiados argumentos");
+				argp_failure (state, 1, 0, "demasiados argumentos");
 			}
 			break;
 	}
