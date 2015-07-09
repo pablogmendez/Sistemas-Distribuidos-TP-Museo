@@ -24,3 +24,9 @@ stamp-h1
 nbproject/private
 
 tp-museo*.tar.gz
+
+src/broker/broker-entrada
+src/id-server/id-server
+src/ipersona_comp/ipersona_comp
+src/ipersona_comp/ipersona_comp_lector
+src/puerta/puerta
