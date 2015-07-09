@@ -87,8 +87,12 @@ IPersonaMsg IPCManager::leerOperacionConPrioridad ()
 		cont.entradas--;
 		err = ingresos->leer (MTYPE, &msg);
 	}
+
+	// Se guarda errno para evitar que el uso del semáforo lo pise.
+	int number = errno;
 	pendientes->escribir (cont);
 	lock->v ();
+	errno = number;
 	System::check (err);
 	return msg;
 }
