@@ -1,11 +1,14 @@
 #ifndef COLA_H_
 #define COLA_H_
 
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/msg.h>
 #include <sys/ipc.h>
+#include <stdexcept>
 #include <stdio.h>
 #include <string>
+#include <string.h>
 
 template <class T> class Cola {
 	private:
@@ -22,12 +25,18 @@ template <class T> class Cola {
 
 template <class T> Cola<T> :: Cola ( const std::string& archivo,const char letra ) {
 	this->clave = ftok ( archivo.c_str(),letra );
-	if ( this->clave == -1 )
+	if ( this->clave == -1 ) {
+		int err = errno;
 		perror ( "Error en ftok" );
+		throw std::runtime_error (strerror (err));
+	}
 
 	this->id = msgget ( this->clave,0777|IPC_CREAT );
-	if ( this->id == -1 )
+	if ( this->id == -1 ) {
+		int err = errno;
 		perror ( "Error en msgget" );
+		throw std::runtime_error (strerror (err));
+	}
 }
 
 template <class T> Cola<T> :: ~Cola () {
