@@ -122,12 +122,12 @@ int main (int argc, char** argv)
 					LOG_PUERTA ("El investigador no entró por esta puerta."
 							    " Dueño actual: %ld.", duenio);
 					ipersona.notificarSalida (op, PUERTA_INCORRECTA, 0);
+				} else {
+					// TODO: Usar interfaz IMuseo para contabilizar la
+					// salida de la persona.
+					Locker locker = rack.retirar (lockerId);
+					ipersona.notificarSalida (op, SALIO, locker.pertenencias);
 				}
-
-				// TODO: Usar interfaz IMuseo para contabilizar la
-				// salida de la persona.
-				Locker locker = rack.retirar (lockerId);
-				ipersona.notificarSalida (op, SALIO, locker.pertenencias);
 				break;
 			}
 			default:
