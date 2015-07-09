@@ -11,6 +11,7 @@ IPCManager::IPCManager (
 	egresoSimple = new Cola<IPersonaMsg> (pathColas, MQ_SEST);
 	egresoPreferencial = new Cola<IPersonaMsg> (pathColas, MQ_SESP);
 	pendientes = new MemoriaCompartida<ContadorMsg> ();
+	pendientes->crear (pathColas, SHM_MQS);
 	lock = new Semaforo (pathColas, MTX_MQS);
 	hay = new Semaforo (pathColas, SEM_HAY);
 }
