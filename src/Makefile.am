@@ -164,6 +164,7 @@ ipersona_comp_ipersona_comp_SOURCES = \
 	ipersona_comp/ipersona_comp.cpp
 
 ipersona_comp_ipersona_comp_LDADD = \
+	id-server/libidclient.la \
 	IPC/libIPC.la \
 	ipersona/libipersona.la
 ###############################

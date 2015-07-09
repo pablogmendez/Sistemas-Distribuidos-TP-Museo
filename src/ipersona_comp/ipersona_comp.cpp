@@ -1,6 +1,7 @@
 #include "ArgParser.h"
 
 #include <cassert>
+#include <id-server/IIdClient.h>
 #include <iostream>
 #include "ipc-keys.h"
 #include <IPC/SIGINT_Handler.h>
@@ -44,6 +45,9 @@ int main (int argc, char** argv)
 	IPCManager ipcman (pathInterfaz, pathColas);
 	ipcman.inicializar ();
 
+	IIdClient idClient (args.idServer ().c_str ());
+	long idPuerta = idClient.obtenerId (IIdClient::R_PUERTA);
+
 	// TODO: lanzar lector de mensajes desde el broker
 	pid_t lector = -1;
 
@@ -59,7 +63,7 @@ int main (int argc, char** argv)
 		std::cerr << "Error: " << e.what () << std::endl;
 		err = 1;
 	}
-
+	idClient.devolverId (idPuerta);
 	ipcman.destruir ();
 	return err;
 }
