@@ -152,7 +152,9 @@ puerta_puerta_LDADD = \
 ###############################
 
 ##### Componente IPersona #####
-bin_PROGRAMS += ipersona_comp/ipersona_comp
+bin_PROGRAMS += \
+	ipersona_comp/ipersona_comp \
+	ipersona_comp/ipersona_comp_lector
 
 ipersona_comp_ipersona_comp_SOURCES = \
 	ipersona_comp/ArgParser.cpp \
@@ -167,4 +169,17 @@ ipersona_comp_ipersona_comp_LDADD = \
 	id-server/libidclient.la \
 	IPC/libIPC.la \
 	ipersona/libipersona.la
+
+ipersona_comp_ipersona_comp_lector_SOURCES = \
+	ipersona_comp/ArgParserLector.cpp \
+	ipersona_comp/ArgParserLector.h \
+	ipersona_comp/contador-msg.h \
+	ipersona_comp/ipc-keys.h \
+	ipersona_comp/IPCManager.cpp \
+	ipersona_comp/IPCManager.h \
+	ipersona_comp/ipersona_comp_lector.cpp
+
+ipersona_comp_ipersona_comp_lector_LDADD = \
+	IPC/libIPC.la \
+	utils/libutils.la
 ###############################
