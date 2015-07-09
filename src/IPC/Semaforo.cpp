@@ -1,17 +1,22 @@
 #include "Semaforo.h"
 
-Semaforo :: Semaforo ( const std::string& nombre,const int valorInicial ):valorInicial(valorInicial) {
-	key_t clave = ftok ( nombre.c_str(),'a' );
-	this->id = semget ( clave,1,0666 | IPC_CREAT );
-	if(valorInicial >= 0) {
-		this->inicializar ();
-	}
+Semaforo::Semaforo (const std::string& nombre, char key, const int valorInicial)
+{
+	key_t clave = ftok (nombre.c_str(), key);
+	this->id = semget (clave, 1, 0666 | IPC_CREAT );
+	this->inicializar (valorInicial);
+}
+
+Semaforo::Semaforo (const std::string& nombre, char key)
+{
+	key_t clave = ftok (nombre.c_str(), key);
+	this->id = semget (clave, 1, 0666 | IPC_CREAT );
 }
 
 Semaforo::~Semaforo() {
 }
 
-int Semaforo :: inicializar () const {
+int Semaforo::inicializar (int valorInicial) const {
 
 	union semnum {
 		int val;
@@ -20,7 +25,7 @@ int Semaforo :: inicializar () const {
 	};
 
 	semnum init;
-	init.val = this->valorInicial;
+	init.val = valorInicial;
 	int resultado = semctl ( this->id,0,SETVAL,init );
 	return resultado;
 }
