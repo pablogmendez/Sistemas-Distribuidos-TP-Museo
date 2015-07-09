@@ -9,7 +9,7 @@
 class SIGINT_Handler : public EventHandler {
 
 	private:
-		sig_atomic_t gracefulQuit;
+		volatile sig_atomic_t gracefulQuit;
 
 	public:
 
