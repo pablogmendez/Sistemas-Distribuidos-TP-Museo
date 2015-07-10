@@ -13,16 +13,18 @@ class SystemErrorException : public std::exception
 {
 	private:
 		int _number;
+		std::string _what;
 
 	public:
-		SystemErrorException () throw ();
-		SystemErrorException (int err) throw ();
+		SystemErrorException ();
+		SystemErrorException (int err);
+		SystemErrorException (const std::string& msg);
 
 		virtual ~SystemErrorException () throw () { }
 
 		virtual const char *what() const throw()
 		{
-			return strerror (this->_number);
+			return _what.c_str ();
 		}
 
 		int number () const { return _number; }
@@ -42,6 +44,12 @@ class System
 		static void check (T err)
 		{
 			if (err == (T)-1) throw SystemErrorException ();
+		}
+
+		template <typename T>
+		static void check (T err, const std::string& msg)
+		{
+			if (err == (T)-1) throw SystemErrorException (msg);
 		}
 
 		static void millisleep (unsigned long millis)

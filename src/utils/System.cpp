@@ -8,14 +8,24 @@
 #include <unistd.h>
 #include <utils/System.h>
 
-SystemErrorException::SystemErrorException () throw ()
+SystemErrorException::SystemErrorException ()
 	: _number (errno)
+	, _what (strerror (_number))
 {
 }
 
-SystemErrorException::SystemErrorException (int err) throw ()
+SystemErrorException::SystemErrorException (int err)
 	: _number (err)
+	, _what (strerror (_number))
 {
+}
+
+SystemErrorException::SystemErrorException (const std::string& msg)
+	: _number (errno)
+	, _what (msg)
+{
+	_what.append (": ");
+	_what.append (strerror (_number));
 }
 
 pid_t System::spawn (const char *file, char* const argv[])

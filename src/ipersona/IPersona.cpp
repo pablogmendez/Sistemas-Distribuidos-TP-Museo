@@ -57,10 +57,7 @@ public:
 		void enviar (const IPersonaMsg& msg, const char* prg)
 		{
 			int err = mqComp.escribir (msg);
-			if (err == -1) {
-				error (1, errno, "%s", prg);
-				throw "not reached";
-			}
+			System::check (err, prg);
 		}
 };
 
@@ -126,16 +123,10 @@ Operacion IPersona::leerProximaOperacion ()
 	msg.mtype = pImpl->pidComp;
 
 	err = pImpl->mqComp.escribir (msg);
-	if (err == -1) {
-		error (1, errno, "IPersona::leerProximaOperacion");
-		throw "not reached";
-	}
+	System::check (err, "IPersona::leerProximaOperacion");
 
 	err = pImpl->mqComp.leer(rtype, &msg);
-	if (err == -1) {
-		error (1, errno, "IPersona::leerProximaOperacion");
-		throw "not reached";
-	}
+	System::check (err, "IPersona::leerProximaOperacion");
 
 	struct Operacion op = {};
 	switch (msg.op) {
