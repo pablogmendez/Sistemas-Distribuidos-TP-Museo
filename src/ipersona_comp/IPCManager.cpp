@@ -18,8 +18,7 @@ IPCManager::IPCManager (
 				"El sistema no soporta puertas con este id.");
 	}
 
-	interfaz = new Cola<IPersonaMsg> (pathInterfaz,
-			int_calc_proj_id (baseId, MQ_INT));
+	interfaz = new Cola<IPersonaMsg> (pathInterfaz, MQ_INT);
 	ingresos = new Cola<IPersonaMsg> (pathColas, MQ_ENTR);
 	egresoSimple = new Cola<IPersonaMsg> (pathColas, MQ_SEST);
 	egresoPreferencial = new Cola<IPersonaMsg> (pathColas, MQ_SESP);

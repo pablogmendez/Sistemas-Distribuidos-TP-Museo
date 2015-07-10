@@ -7,12 +7,9 @@ const int PROJ_ID_MAX = (1 << 8) - 1;
 // FIXME: unificar con constantes de IPersona
 // Parámetros de ftok para cola de comunicación con interfaz
 const char* const PATH_INT = "/ipersona.mq";
+// Recursos compartidos por todos los pares Interfaz/Componente
 const char        MQ_INT   = 1;
-
-static inline int int_calc_proj_id (int id_local, char recurso)
-{
-	return (id_local - 1) + recurso;
-}
+// IPersona no tiene recursos por instancia.
 ////////////////////////////////////
 
 // Parámetros de ftok para colas de entradas y salidas

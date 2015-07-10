@@ -42,7 +42,7 @@ public:
 		, idServerHost (IPersona::ENV_IPERSONA_IDSERVER,
 				DFLT_IPERSONA_IDSERVER)
 		, id_local (id_local)
-		, mqComp (mqConf.get (), int_calc_proj_id (id_local, MQ_INT))
+		, mqComp (mqConf.get (), MQ_INT)
 		, pidComp (-1)
 		{}
 
