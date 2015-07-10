@@ -48,6 +48,7 @@ AC_CONFIG_FILES([Makefile
 		 tests/Makefile])
 AC_CONFIG_LINKS([
 		tests/ipuerta/ipuerta.mq:tests/ipuerta/ipuerta.mq
+		tests/ipersona/ipersona.mq:tests/ipersona/ipersona.mq
 		tests/sockets/ops.txt:tests/sockets/ops.txt
 		tests/sockets/README:tests/sockets/README
 		src/broker/.colamaestra.mq:src/broker/.colamaestra.mq
