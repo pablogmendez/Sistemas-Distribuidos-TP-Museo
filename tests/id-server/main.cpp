@@ -36,7 +36,7 @@ int main (int argc, char** argv)
 	int err = 0;
 	try {
 		IIdClient ids ("localhost");
-		long myId = ids.obtenerId ();
+		long myId = ids.obtenerId (IIdClient::R_PERSONA);
 		if (myId != 1001) {
 			std::cerr << "Se obtuvo el id "
 					<< myId << ". Se esperaba 1001"
@@ -48,8 +48,8 @@ int main (int argc, char** argv)
 
 		// Verificar duplicados
 		ids.devolverId (myId);
-		long idA = ids.obtenerId ();
-		long idB = ids.obtenerId ();
+		long idA = ids.obtenerId (IIdClient::R_PERSONA);
+		long idB = ids.obtenerId (IIdClient::R_PERSONA);
 		if (idA == idB) {
 			std::cerr << "Se duplicó el id "
 					<< idA << std::endl;
