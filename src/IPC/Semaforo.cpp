@@ -1,16 +1,21 @@
 #include "Semaforo.h"
+#include <utils/System.h>
 
 Semaforo::Semaforo (const std::string& nombre, char key, const int valorInicial)
 {
 	key_t clave = ftok (nombre.c_str(), key);
+	System::check (clave);
 	this->id = semget (clave, 1, 0666 | IPC_CREAT );
+	System::check (id);
 	this->inicializar (valorInicial);
 }
 
 Semaforo::Semaforo (const std::string& nombre, char key)
 {
 	key_t clave = ftok (nombre.c_str(), key);
+	System::check (clave);
 	this->id = semget (clave, 1, 0666 | IPC_CREAT );
+	System::check (id);
 }
 
 Semaforo::~Semaforo() {
