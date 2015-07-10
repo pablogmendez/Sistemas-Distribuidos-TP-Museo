@@ -82,7 +82,7 @@ int main (int argc, char** argv)
 				pathColas.c_str ());
 	}
 
-	IPCManager ipcman (pathInterfaz, pathColas);
+	IPCManager ipcman (args.idLocal (), pathInterfaz, pathColas);
 	ipcman.inicializar ();
 
 	IIdClient idClient (args.idServer ().c_str ());
@@ -96,9 +96,15 @@ int main (int argc, char** argv)
 		std::ostringstream oss;
 		oss << idPuerta;
 		std::string strIdPuerta = oss.str ();
+
+		oss.str ("");
+		oss << "--id-local=" << args.idLocal ();
+		std::string strIdLocal = oss.str ();
+
 		std::string path_lector = calcularPathLector (argv[0]);
 		std::vector<const char*> args_lector;
 		args_lector.push_back (path_lector.c_str ());
+		args_lector.push_back (strIdLocal.c_str ());
 		args_lector.push_back (pathInterfaz.c_str ());
 		args_lector.push_back (args.broker ().c_str ());
 		args_lector.push_back (args.recursos ().c_str ());

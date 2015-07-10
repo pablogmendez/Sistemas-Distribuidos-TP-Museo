@@ -6,7 +6,7 @@
 
 #include "ArgParser.h"
 
-static const unsigned NUM_ARGS = 3;
+static const unsigned NUM_ARGS = 0;
 int parserFunc (int key, char *arg, struct argp_state *state)
 {
 	(void) arg;
@@ -29,15 +29,6 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 			argParser->_idLocal = static_cast<int> (idLocal);
 			break;
 		}
-		case ARGP_KEY_ARG:
-			if (state->arg_num == 0) {
-				argParser->_idServer = arg;
-			} else if (state->arg_num == 1) {
-				argParser->_broker = arg;
-			} else if (state->arg_num == 2) {
-				argParser->_recursos = arg;
-			}
-			break;
 		case ARGP_KEY_END:
 			if (state->arg_num < NUM_ARGS) {
 				argp_failure (state, 1, 0, "no hay suficientes argumentos");
@@ -55,17 +46,8 @@ static struct argp_option options[] = {
 	{0, 0, 0, 0, 0, 0}
 };
 
-static const char* const argNames = "ID_SERVER BROKER DIR_RECURSOS";
-static const char* const doc =
-		" "
-		"\v"
-		"Argumentos:\n"
-		"\tID_SERVER   : nombre del equipo que aloja al servidor de\n"
-		"\t              identificadores.\n"
-		"\tBROKER      : nombre del equipo que aloja al broker.\n"
-		"\tDIR_RECURSOS: directorios donde se encuentran los recursos para\n"
-		"\t              crear los IPCs.\n"
-		"\n";
+static const char* const argNames = NULL;
+static const char* const doc = NULL;
 
 static struct argp optionParser = {options, parserFunc, argNames, doc, 0, 0, 0};
 

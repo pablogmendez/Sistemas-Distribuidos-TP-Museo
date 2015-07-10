@@ -1,12 +1,15 @@
 #include <ipersona/IPersona.h>
 #include <ipersona/Operacion.h>
+#include <ipersona_comp/ipc-keys.h>
 #include "IPersonaMsg.h"
 #include <errno.h>
 #include <error.h>
 #include <IPC/Cola.h>
 #include <libgen.h>
 #include <signal.h>
+#include <sstream>
 #include <stdlib.h>
+#include <string>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -16,7 +19,7 @@
 
 // TODO: mover a .h de constantes
 static const char* DFLT_IPERSONA_COMP     = "ipersona_comp";
-static const char* DFLT_IPERSONA_MQ       = "./persona.mq";
+static const char* DFLT_IPERSONA_MQ       = "./ipersona.mq";
 static const char* DFLT_IPERSONA_BROKER   = "broker";
 static const char* DFLT_IPERSONA_IDSERVER = "id-server";
 /////////////////////////////////
@@ -28,16 +31,18 @@ public:
 	EnvParam compBin;
 	EnvParam brokerHost;
 	EnvParam idServerHost;
+	int id_local;
 	Cola<IPersonaMsg> mqComp;
 	pid_t pidComp;
 
-	Impl ()
+	Impl (int id_local)
 		: mqConf (IPersona::ENV_IPERSONA_MQ, DFLT_IPERSONA_MQ)
 		, compBin (IPersona::ENV_IPERSONA_COMP, DFLT_IPERSONA_COMP)
 		, brokerHost (IPersona::ENV_IPERSONA_BROKER, DFLT_IPERSONA_BROKER)
 		, idServerHost (IPersona::ENV_IPERSONA_IDSERVER,
 				DFLT_IPERSONA_IDSERVER)
-		, mqComp (mqConf.get (), 'A')
+		, id_local (id_local)
+		, mqComp (mqConf.get (), int_calc_proj_id (id_local, MQ_INT))
 		, pidComp (-1)
 		{}
 
@@ -76,9 +81,13 @@ void IPersona::Impl::lanzarComponente ()
 {
 	const std::string& comp_path = compBin.get ();
 	std::string res_dir = dir_recursos (mqConf.get ().c_str ());
+	std::ostringstream oss;
+	oss << "--id-local=" << id_local;
+	std::string param_id_local = oss.str ();
 
 	std::vector<const char*> args;
 	args.push_back (comp_path.c_str ());
+	args.push_back (param_id_local.c_str ());
 	args.push_back (idServerHost.get ().c_str ());
 	args.push_back (brokerHost.get ().c_str ());
 	args.push_back (res_dir.c_str ());
@@ -94,9 +103,9 @@ void IPersona::Impl::terminarComponente ()
 	}
 }
 
-IPersona::IPersona ()
+IPersona::IPersona (int id_local)
 {
-	pImpl = new Impl;
+	pImpl = new Impl (id_local);
 	pImpl->lanzarComponente ();
 }
 

@@ -22,7 +22,7 @@ int main (int argc, char** argv) try
 	std::cout << "Iniciando componente..." << std::endl;
 
 	int err;
-	Cola<IPersonaMsg> mqComp (calcularRutaMQ (argv[0]), 'A');
+	Cola<IPersonaMsg> mqComp (calcularRutaMQ (argv[0]), 1);
 	long mtype = getpid ();
 
 	IPersonaMsg msg;

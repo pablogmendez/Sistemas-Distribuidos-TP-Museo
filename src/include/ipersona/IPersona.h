@@ -15,7 +15,7 @@ public:
 	static const char* const ENV_IPERSONA_BROKER;
 	static const char* const ENV_IPERSONA_IDSERVER;
 
-	IPersona ();
+	IPersona (int id_local = 1);
 	~IPersona ();
 
 	Operacion leerProximaOperacion ();

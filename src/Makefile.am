@@ -142,6 +142,8 @@ broker_broker_entrada_LDADD = \
 bin_PROGRAMS += puerta/puerta
 
 puerta_puerta_SOURCES = \
+	puerta/ArgParser.cpp \
+	puerta/ArgParser.h \
 	puerta/Locker.h \
 	puerta/LockerRack.cpp \
 	puerta/LockerRack.h \

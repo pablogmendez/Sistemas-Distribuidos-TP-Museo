@@ -1,3 +1,6 @@
+#include "ArgParser.h"
+#include <IPC/SIGINT_Handler.h>
+#include <IPC/SignalHandler.h>
 #include <ipersona/IPersona.h>
 #include <iostream>
 #include <libgen.h>
@@ -5,13 +8,14 @@
 #include <Logger/Logger.h>
 #include <stdlib.h>
 #include <string.h>
+#include <utils/System.h>
 
 std::string calcularRutaComp (const char* arg0)
 {
 	char* tmp = strdup (arg0);
 	char* dir = dirname (tmp);
 	std::string ruta = dir;
-	ruta.append("/../ipersona/ipersona_comp");
+	ruta.append("/../ipersona_comp/ipersona_comp");
 	free (tmp);
 	return ruta;
 }
@@ -43,9 +47,16 @@ void configurar_para_correr_en_arbol_fuentes (const char* arg0)
 #define LOG_PUERTA(fmt, ...) \
 	LOG("PUERTA [%d] - " fmt, getpid (),##__VA_ARGS__)
 
-int main (int argc, char** argv)
+int main (int argc, char** argv) try
 {
-	LOG_PUERTA("Iniciando puerta...");
+	ArgParser& args = ArgParser::getInstance ();
+	args.parse (argc, argv);
+
+	SIGINT_Handler intHandler;
+	SignalHandler* sigs = SignalHandler::getInstance ();
+	sigs->registrarHandler (SIGINT, &intHandler);
+
+	LOG_PUERTA("Iniciando puerta con id local %d.", args.idLocal ());
 
 	// TODO: agregar parámetro para usar interfaz con defaults
 	// o con esta configuración especial.
@@ -58,7 +69,7 @@ int main (int argc, char** argv)
 	LockerRack rack (NUM_LOCKERS);
 
 	LOG_PUERTA ("Creando interfaz...");
-	IPersona ipersona;
+	IPersona ipersona (args.idLocal ());
 
 	LOG_PUERTA ("Iniciando ciclo principal...");
 
@@ -141,4 +152,15 @@ int main (int argc, char** argv)
 	LOG_PUERTA ("El administrador inició el cierre del museo...");
 	// FIXME: echar a la gente y esperar que salgan...
 	return 0;
+} catch (SystemErrorException& e) {
+	LOG_PUERTA ("Error (%d): %s", e.number (), e.what ());
+	SignalHandler::getInstance ()->destruir ();
+	if (e.number () == EINTR) {
+		return 0;
+	}
+	return 1;
+} catch (std::exception& e) {
+	LOG_PUERTA ("Error: %s", e.what ());
+	SignalHandler::getInstance ()->destruir ();
+	return 1;
 }

@@ -1,5 +1,6 @@
 #include <argp.h>
 #include <cstdlib>
+#include <limits>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -12,6 +13,22 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 
 	ArgParserLector* argParser = static_cast<ArgParserLector*> (state->input);
 	switch (key) {
+		case 'i':
+		{
+			char* endptr;
+			long idLocal = strtol (arg, &endptr, 10);
+			if (!(*arg != 0 && *endptr == 0) || idLocal <= 0) {
+				argp_failure (state, 1, 0,
+						"el id local debe ser mayor a 0.");
+			}
+			if (idLocal > std::numeric_limits<int>::max ()) {
+				argp_failure (state, 1, 0,
+						"el id local debe ser menor a %ld.",
+						std::numeric_limits<int>::max ());
+			}
+			argParser->_idLocal = static_cast<int> (idLocal);
+			break;
+		}
 		case ARGP_KEY_ARG:
 			if (state->arg_num == 0) {
 				argParser->_mqInterfaz = arg;
@@ -43,6 +60,8 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 }
 
 static struct argp_option options[] = {
+	{"id-local", 'i', "ID_LOCAL", 0,
+		"Id local de la puerta que utiliza este componente.", 0},
 	{0, 0, 0, 0, 0, 0}
 };
 
@@ -64,6 +83,7 @@ static struct argp optionParser = {options, parserFunc, argNames, doc, 0, 0, 0};
 
 ArgParserLector::ArgParserLector ()
 	: _idPuerta (0)
+	, _idLocal (1)
 {
 }
 

@@ -16,7 +16,7 @@ int main (int argc, char** argv)
 	args.parse (argc, argv);
 
 	std::string pathColas = calcularPathColas (args);
-	IPCManager ipcman (args.mqInterfaz (), pathColas);
+	IPCManager ipcman (args.idLocal (), args.mqInterfaz (), pathColas);
 
 	// TODO: crear socket hacia el broker...
 	// TODO: enviar id de puerta al broker

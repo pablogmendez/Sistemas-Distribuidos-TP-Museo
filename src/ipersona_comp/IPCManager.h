@@ -12,9 +12,7 @@
 class IPCManager : private NonCopyable
 {
 public:
-	// TODO: ver que pasa si hay varias puertas corriendo en
-	// la misma maquina.
-	static const long MTYPE = 1;
+	const long MTYPE;
 
 	Cola<IPersonaMsg>*              interfaz;
 	Cola<IPersonaMsg>*              ingresos;
@@ -25,6 +23,10 @@ public:
 	Semaforo*                       hay;
 
 	IPCManager (
+			/* id local de la puerta; para soportar varias puertas
+			 * en una misma máquina.
+			 */
+			int baseId,
 			const std::string& pathInterfaz,
 			const std::string& pathColas);
 	~IPCManager ();
