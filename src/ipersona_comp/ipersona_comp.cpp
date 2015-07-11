@@ -84,6 +84,7 @@ public:
 int main (int argc, char** argv)
 {
 	int err = 0;
+	pid_t lector = -1;
 	ArgParser& args = ArgParser::getInstance ();
 	args.parse (argc, argv);
 
@@ -128,7 +129,6 @@ int main (int argc, char** argv)
 
 		LOG_IPCMP("Se obtuvo el identificador %ld", idPuerta);
 
-		pid_t lector = -1;
 		{
 			std::ostringstream oss;
 			oss << idPuerta;
@@ -157,12 +157,13 @@ int main (int argc, char** argv)
 		// TODO: socket para responder al broker...
 
 		run_loop (ipcman, intHandler);
-		if (lector != -1) {
-			kill (lector, SIGINT);
-		}
 	} catch (std::exception& e) {
 		std::cerr << "Error: " << e.what () << std::endl;
 		err = 1;
+	}
+
+	if (lector != -1) {
+		kill (lector, SIGINT);
 	}
 
 	return err;
