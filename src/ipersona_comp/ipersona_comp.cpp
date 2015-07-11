@@ -147,6 +147,13 @@ int main (int argc, char** argv)
 			args_lector.push_back (args.recursos ().c_str ());
 			args_lector.push_back (strIdPuerta.c_str ());
 			args_lector.push_back (NULL);
+
+			oss.str ("");
+			oss << "Lanzando lector:\n\t" << path_lector;
+			for (size_t i = 0; i < args_lector.size () - 1; i++)
+				oss << " " << args_lector[i];
+			LOG_IPCMP("%s", oss.str ().c_str ());
+
 			lector = System::spawn (path_lector.c_str (), args_lector);
 			if (lector == -1) {
 				SystemErrorException e;
