@@ -35,7 +35,7 @@ public:
 	void destruir ();
 
 	IPersonaMsg leerOperacionConPrioridad ();
-	void ponerOperacion (const IPersonaMsg& msg);
+	void ponerOperacion (IPersonaMsg msg);
 };
 
 #endif /* IPCMANAGER_H_ */
