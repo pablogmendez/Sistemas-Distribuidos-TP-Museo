@@ -55,7 +55,7 @@ int main (int argc, char** argv)
 	LOG_IPCMP("Argumentos:\n"
 			  "\tID_SERVER   : %s\n"
 			  "\tBROKER      : %s\n"
-			  "\tDIR_RECURSOS: %s\n",
+			  "\tDIR_RECURSOS: %s",
 			  args.idServer ().c_str (),
 			  args.broker ().c_str (),
 			  args.recursos ().c_str ());
@@ -76,7 +76,7 @@ int main (int argc, char** argv)
 		LOG_IPCMP("Conectando a recursos IPC:\n"
 				"\tCWD          : %s\n"
 				"\tPATH_INTERFAZ: %s\n"
-				"\tPATH_COLAS   : %s\n",
+				"\tPATH_COLAS   : %s",
 				wd,
 				pathInterfaz.c_str (),
 				pathColas.c_str ());
