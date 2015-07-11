@@ -47,8 +47,43 @@ std::string calcularPathLector (const char* arg0)
 
 void run_loop (IPCManager& ipcman, SIGINT_Handler& intHandler);
 
+class IPCManagerCleaner
+{
+		IPCManager ipcman;
+public:
+		IPCManagerCleaner (
+				int baseId,
+				const std::string& pathInt,
+				const std::string& pathColas)
+			: ipcman (baseId, pathInt, pathColas) {}
+		~IPCManagerCleaner ()
+		{
+			ipcman.destruir ();
+		}
+
+		IPCManager& get () { return ipcman; }
+};
+
+class IdGrabber
+{
+		IIdClient& idc;
+		long id;
+public:
+		IdGrabber (IIdClient& idc, IIdClient::Rangos tipo)
+			: idc (idc)
+			, id (idc.obtenerId (tipo)) {}
+
+		~IdGrabber ()
+		{
+			idc.devolverId (id);
+		}
+
+		long get () { return id; }
+};
+
 int main (int argc, char** argv)
 {
+	int err = 0;
 	ArgParser& args = ArgParser::getInstance ();
 	args.parse (argc, argv);
 
@@ -64,65 +99,63 @@ int main (int argc, char** argv)
 	SignalHandler* sigs = SignalHandler::getInstance ();
 	sigs->registrarHandler (SIGINT, &intHandler);
 
-	std::string pathColas = calcularPathColas (args);
-	std::string pathInterfaz = calcularPathInterfaz (args);
-
-	{
-		char wd[1024];
-		char *wd_err = getcwd (wd, sizeof wd);
-		if (wd_err == NULL) {
-			strcpy (wd, "[error al obtener directorio de trabajo]");
-		}
-		LOG_IPCMP("Conectando a recursos IPC:\n"
-				"\tCWD          : %s\n"
-				"\tPATH_INTERFAZ: %s\n"
-				"\tPATH_COLAS   : %s",
-				wd,
-				pathInterfaz.c_str (),
-				pathColas.c_str ());
-	}
-
-	IPCManager ipcman (args.idLocal (), pathInterfaz, pathColas);
-	ipcman.inicializar ();
-
-	IIdClient idClient (args.idServer ().c_str ());
-	long idPuerta = idClient.obtenerId (IIdClient::R_PUERTA);
-
-	LOG_IPCMP("Se obtuvo el identificador %ld", idPuerta);
-
-	int err = 0;
-	pid_t lector = -1;
-	{
-		std::ostringstream oss;
-		oss << idPuerta;
-		std::string strIdPuerta = oss.str ();
-
-		oss.str ("");
-		oss << "--id-local=" << args.idLocal ();
-		std::string strIdLocal = oss.str ();
-
-		std::string path_lector = calcularPathLector (argv[0]);
-		std::vector<const char*> args_lector;
-		args_lector.push_back (path_lector.c_str ());
-		args_lector.push_back (strIdLocal.c_str ());
-		args_lector.push_back (pathInterfaz.c_str ());
-		args_lector.push_back (args.broker ().c_str ());
-		args_lector.push_back (args.recursos ().c_str ());
-		args_lector.push_back (strIdPuerta.c_str ());
-		args_lector.push_back (NULL);
-		lector = System::spawn (path_lector.c_str (), args_lector);
-		if (lector == -1) {
-			SystemErrorException e;
-			std::cerr << "Error (" << e.number ()
-					<< "): " << e.what () << std::endl;
-			err = 1;
-			goto out; // FIXME: lanzar excepción ?
-		}
-	}
-
-	// TODO: socket para responder al broker...
-
 	try {
+		std::string pathColas = calcularPathColas (args);
+		std::string pathInterfaz = calcularPathInterfaz (args);
+
+		{
+			char wd[1024];
+			char *wd_err = getcwd (wd, sizeof wd);
+			if (wd_err == NULL) {
+				strcpy (wd, "[error al obtener directorio de trabajo]");
+			}
+			LOG_IPCMP("Conectando a recursos IPC:\n"
+					"\tCWD          : %s\n"
+					"\tPATH_INTERFAZ: %s\n"
+					"\tPATH_COLAS   : %s",
+					wd,
+					pathInterfaz.c_str (),
+					pathColas.c_str ());
+		}
+
+		IPCManagerCleaner ipcmc (args.idLocal (), pathInterfaz, pathColas);
+		IPCManager& ipcman = ipcmc.get ();
+		ipcman.inicializar ();
+
+		IIdClient idClient (args.idServer ().c_str ());
+		IdGrabber idg (idClient, IIdClient::R_PUERTA);
+		long idPuerta = idg.get ();
+
+		LOG_IPCMP("Se obtuvo el identificador %ld", idPuerta);
+
+		pid_t lector = -1;
+		{
+			std::ostringstream oss;
+			oss << idPuerta;
+			std::string strIdPuerta = oss.str ();
+
+			oss.str ("");
+			oss << "--id-local=" << args.idLocal ();
+			std::string strIdLocal = oss.str ();
+
+			std::string path_lector = calcularPathLector (argv[0]);
+			std::vector<const char*> args_lector;
+			args_lector.push_back (path_lector.c_str ());
+			args_lector.push_back (strIdLocal.c_str ());
+			args_lector.push_back (pathInterfaz.c_str ());
+			args_lector.push_back (args.broker ().c_str ());
+			args_lector.push_back (args.recursos ().c_str ());
+			args_lector.push_back (strIdPuerta.c_str ());
+			args_lector.push_back (NULL);
+			lector = System::spawn (path_lector.c_str (), args_lector);
+			if (lector == -1) {
+				SystemErrorException e;
+				throw e;
+			}
+		}
+
+		// TODO: socket para responder al broker...
+
 		run_loop (ipcman, intHandler);
 		if (lector != -1) {
 			kill (lector, SIGINT);
@@ -131,9 +164,7 @@ int main (int argc, char** argv)
 		std::cerr << "Error: " << e.what () << std::endl;
 		err = 1;
 	}
-out:
-	idClient.devolverId (idPuerta);
-	ipcman.destruir ();
+
 	return err;
 }
 
