@@ -194,7 +194,7 @@ void run_loop (IPCManager& ipcman, SIGINT_Handler& intHandler)
 				// volver al inicio a chequear la bandera
 				continue;
 			}
-			// TODO: qué hago acá? interrumpido u otro error?
+			// TODO: qué hago acá?
 			throw e;
 		}
 	}
