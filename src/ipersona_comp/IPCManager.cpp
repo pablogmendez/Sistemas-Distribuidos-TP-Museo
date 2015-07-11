@@ -110,7 +110,7 @@ IPersonaMsg IPCManager::leerOperacionConPrioridad ()
 	return msg;
 }
 
-void IPCManager::ponerOperacion (const IPersonaMsg& msg)
+void IPCManager::ponerOperacion (IPersonaMsg msg)
 {
 	int err;
 	ContadorMsg cont;
