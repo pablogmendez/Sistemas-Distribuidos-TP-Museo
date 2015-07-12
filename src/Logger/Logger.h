@@ -15,14 +15,31 @@
 #include <stdlib.h>
 #include "Lock.h"
 
+inline ssize_t locked_write (int fd, char* buf, size_t size)
+{
+	ssize_t err;
+	struct flock fl;
+	fl.l_type = F_WRLCK;
+	fl.l_whence = SEEK_SET;
+	fl.l_start = 0;
+	fl.l_len = 0;
+	err = fcntl (fd, F_SETLKW, &fl);
+	if (err == 0) {
+		err = write (fd, buf, size);
+		fl.l_type = F_UNLCK;
+		fcntl (fd, F_SETLK, &fl);
+	}
+	return err;
+}
+
 #define LOG(...) { \
-	int evento_len; \
+	size_t evento_len; \
 	ssize_t err; \
 	char evento[1024]; \
 	sprintf(evento, __VA_ARGS__); \
 	evento_len = strlen(evento); \
 	evento[evento_len] = '\n'; \
-	err = write(fileno(stdout), evento, evento_len + 1); \
+	err = locked_write(fileno(stdout), evento, evento_len + 1); \
 }
 
 class Logger {
