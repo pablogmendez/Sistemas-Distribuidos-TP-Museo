@@ -6,11 +6,12 @@
 #define ERROR_SHMGET	-2
 #define	ERROR_SHMAT		-3
 
+#include <Logger/Logger.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <string>
-
+#include <unistd.h>
 
 template <class T> class MemoriaCompartida {
 
@@ -56,6 +57,7 @@ template <class T> int MemoriaCompartida<T> :: crear ( const std::string& archiv
 				return ERROR_SHMAT;
 			} else {
 				this->ptrDatos = static_cast<T*> (ptrTemporal);
+				LOG ("SHM [proc %d] - Creada con id %d.", getpid (), shmId);
 				return SHM_OK;
 			}
 		}
@@ -72,6 +74,8 @@ template <class T> void MemoriaCompartida<T> :: liberar () {
 	if ( procAdosados == 0 ) {
 		shmctl ( this->shmId,IPC_RMID,NULL );
 	}
+	const char* op = (procAdosados == 0 ? "Removida" : "Liberada");
+	LOG ("SHM [proc %d] - %s. Adosados: %d.", getpid (), op, procAdosados);
 }
 
 template <class T> void MemoriaCompartida<T> :: escribir ( const T& dato ) {
