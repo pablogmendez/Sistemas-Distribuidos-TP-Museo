@@ -13,6 +13,7 @@ class ArgParserLector : private NonCopyable
 		std::string _recursos;
 		long        _idPuerta;
 		int         _idLocal;
+		int         _fdBroker;
 
 		ArgParserLector();
 		~ArgParserLector();
@@ -29,6 +30,7 @@ class ArgParserLector : private NonCopyable
 		const std::string& recursos () const { return _recursos; }
 		long idPuerta () const { return _idPuerta; }
 		int idLocal () const { return _idLocal; }
+		int fdBroker () const { return _fdBroker; }
 };
 
 #endif

@@ -20,6 +20,7 @@ class cClientSocket : public cSocket
       cClientSocket(int buffer_size);
       int tcp_open_activo(const char* server, int port);
       int tcp_adopt_connection (int fd);
+      int getFD () const { return sockfd; }
 };
 
 #endif

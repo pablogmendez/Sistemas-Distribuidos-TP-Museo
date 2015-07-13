@@ -1,5 +1,5 @@
 #include "ArgParser.h"
-
+#include "BrokerMsg.h"
 #include <cassert>
 #include <id-server/IIdClient.h>
 #include <iostream>
@@ -10,6 +10,7 @@
 #include <ipersona/IPersona.h>
 #include <libgen.h>
 #include <Logger/Logger.h>
+#include <sockets/cClientSocket.h>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -45,7 +46,11 @@ std::string calcularPathLector (const char* arg0)
 	return ruta;
 }
 
-void run_loop (IPCManager& ipcman, SIGINT_Handler& intHandler);
+void run_loop (
+		long idPuerta,
+		IPCManager& ipcman,
+		cClientSocket& sockBroker,
+		SIGINT_Handler& intHandler);
 
 class IPCManagerCleaner
 {
@@ -130,6 +135,17 @@ int main (int argc, char** argv)
 		LOG_IPCMP("Se obtuvo el identificador %ld", idPuerta);
 
 		{
+			LOG_IPCMP("Conectando con el puerto para lectores del broker.");
+
+			cClientSocket connDeLector (sizeof (BrokerMsg));
+			int fdLector = connDeLector.tcp_open_activo (
+					args.broker ().c_str (),
+					BROKER_READERS_PORT);
+			System::check (fdLector);
+			fdLector = connDeLector.getFD ();
+			// ... el proceso lector inicializa la conexión
+			// enviando el identificador.
+
 			std::ostringstream oss;
 			oss << idPuerta;
 			std::string strIdPuerta = oss.str ();
@@ -138,10 +154,15 @@ int main (int argc, char** argv)
 			oss << "--id-local=" << args.idLocal ();
 			std::string strIdLocal = oss.str ();
 
+			oss.str ("");
+			oss << "--fd-broker=" << fdLector;
+			std::string strFdLector = oss.str ();
+
 			std::string path_lector = calcularPathLector (argv[0]);
 			std::vector<const char*> args_lector;
 			args_lector.push_back (path_lector.c_str ());
 			args_lector.push_back (strIdLocal.c_str ());
+			args_lector.push_back (strFdLector.c_str ());
 			args_lector.push_back (pathInterfaz.c_str ());
 			args_lector.push_back (args.broker ().c_str ());
 			args_lector.push_back (args.recursos ().c_str ());
@@ -161,9 +182,16 @@ int main (int argc, char** argv)
 			}
 		}
 
-		// TODO: socket para responder al broker...
+		LOG_IPCMP("Conectando a puerto para escritores del broker.");
 
-		run_loop (ipcman, intHandler);
+		cClientSocket connDeEscritor (sizeof (BrokerMsg));
+		int err_sock = connDeEscritor.tcp_open_activo (
+				args.broker ().c_str (),
+				BROKER_WRITERS_PORT);
+		System::check (err_sock);
+
+		LOG_IPCMP("Conectado. Iniciando loop principal...");
+		run_loop (idPuerta, ipcman, connDeEscritor, intHandler);
 	} catch (std::exception& e) {
 		std::cerr << "Error: " << e.what () << std::endl;
 		err = 1;
@@ -176,7 +204,11 @@ int main (int argc, char** argv)
 	return err;
 }
 
-void run_loop (IPCManager& ipcman, SIGINT_Handler& intHandler)
+void run_loop (
+		long idPuerta,
+		IPCManager& ipcman,
+		cClientSocket& sockBroker,
+		SIGINT_Handler& intHandler)
 {
 	long myMTYPE = getpid ();
 	while (intHandler.getGracefulQuit () != 1) {
@@ -191,19 +223,36 @@ void run_loop (IPCManager& ipcman, SIGINT_Handler& intHandler)
 			// TODO: validar el mensaje recibido...
 			assert (msgInt.op == SOLIC_PROXIMA_OPERACION);
 
+			LOG_IPCMP("Se recibió solicitud desde la interfaz.\n"
+					  "Aguardando operación desde el broker...");
+
 			// Ahora se espera a que arribe una operación desde el broker
 			msgOp = ipcman.leerOperacionConPrioridad ();
 			// TODO: validar mensaje de operacion...
+			int32_t dstId;
 			switch (msgOp.op) {
 				case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
+					dstId = msgOp.msg.osemp.idOrigen;
+					break;
 				case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
+					dstId = msgOp.msg.osemi.idOrigen;
+					break;
 				case OP_SOLIC_SALIR_MUSEO_PERSONA:
+					dstId = msgOp.msg.ossmp.idOrigen;
+					break;
 				case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
+					dstId = msgOp.msg.ossmp.idOrigen;
+					break;
 				case OP_NOTIFICAR_CIERRE_MUSEO:
+					dstId = msgOp.msg.osemp.idOrigen;
 					break;
 				default:
 					assert (false);
 			}
+
+			LOG_IPCMP("Se recibió operación: %d.\n"
+					  "Enviando operación a interfaz...",
+					  msgOp.op);
 
 			// Se devuelve la operación a la interfaz
 			msgOp.mtype = msgInt.msg.spo.rtype;
@@ -213,19 +262,54 @@ void run_loop (IPCManager& ipcman, SIGINT_Handler& intHandler)
 			// Luego se aguarda su respuesta
 			err = ipcman.interfaz->leer (myMTYPE, &msgInt);
 			System::check (err);
+
+			LOG_IPCMP("Se obtuvo respuesta de interfaz: %d.",
+					msgInt.op);
+
 			// TODO: validar el mensaje recibido...
+			int32_t param_a;
+			int32_t param_b;
 			switch (msgInt.op) {
 				case NOTIF_ENTRADA_PERSONA:
+					param_a = msgInt.msg.nep.res;
+					param_b = 0;
+					break;
 				case NOTIF_ENTRADA_INVESTIGADOR:
+					param_a = msgInt.msg.nei.res;
+					param_b = msgInt.msg.nei.numeroLocker;
+					break;
 				case NOTIF_SALIDA_PERSONA:
+					param_a = msgInt.msg.nsp.res;
+					param_b = 0;
+					break;
 				case NOTIF_SALIDA_INVESTIGADOR:
+					param_a = msgInt.msg.nsi.res;
+					param_b = msgInt.msg.nsi.pertenencias;
 					break;
 				default:
 					assert (false);
 			}
 
-			// TODO: convertir mensaje y meterlo en el socket hacia el
-			// broker.
+			BrokerMsg msgBroker;
+			msgBroker.dstId = dstId;
+			msgBroker.srcId = idPuerta;
+			msgBroker.op = msgInt.op;
+			msgBroker.param_a = param_a;
+			msgBroker.param_b = param_b;
+
+			LOG_IPCMP("Enviando respuesta al broker:\n"
+					"\tdstId  : %d\n"
+					"\tsrcId  : %d\n"
+					"\top     : %d\n"
+					"\tparam_a: %d\n"
+					"\tparam_b: %d",
+					msgBroker.dstId,
+					msgBroker.srcId,
+					msgBroker.op,
+					msgBroker.param_a,
+					msgBroker.param_b);
+
+			sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
 		} catch (SystemErrorException& e) {
 			std::cerr << "Error (" << e.number ()
 					  << "): " << e.what () << std::endl;

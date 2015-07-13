@@ -29,6 +29,22 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 			argParser->_idLocal = static_cast<int> (idLocal);
 			break;
 		}
+		case 'b':
+		{
+			char* endptr;
+			long fdBroker = strtol (arg, &endptr, 10);
+			if (!(*arg != 0 && *endptr == 0) || fdBroker <= 0) {
+				argp_failure (state, 1, 0,
+					"el fd de la conexión al broker debe ser mayor a 0.");
+			}
+			if (fdBroker > std::numeric_limits<int>::max ()) {
+				argp_failure (state, 1, 0,
+					"el fd de la conexión al broker debe ser menor a %ld.",
+					std::numeric_limits<int>::max ());
+			}
+			argParser->_fdBroker = static_cast<int> (fdBroker);
+			break;
+		}
 		case ARGP_KEY_ARG:
 			if (state->arg_num == 0) {
 				argParser->_mqInterfaz = arg;
@@ -62,6 +78,8 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 static struct argp_option options[] = {
 	{"id-local", 'i', "ID_LOCAL", 0,
 		"Id local de la puerta que utiliza este componente.", 0},
+	{"fd-broker", 'b', "FD", 0,
+		"File-descriptor de la conexión al broker.", 0},
 	{0, 0, 0, 0, 0, 0}
 };
 
@@ -84,6 +102,7 @@ static struct argp optionParser = {options, parserFunc, argNames, doc, 0, 0, 0};
 ArgParserLector::ArgParserLector ()
 	: _idPuerta (0)
 	, _idLocal (1)
+	, _fdBroker (-1)
 {
 }
 

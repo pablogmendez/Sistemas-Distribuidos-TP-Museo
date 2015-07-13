@@ -170,7 +170,8 @@ ipersona_comp_ipersona_comp_SOURCES = \
 ipersona_comp_ipersona_comp_LDADD = \
 	id-server/libidclient.la \
 	IPC/libIPC.la \
-	ipersona/libipersona.la
+	ipersona/libipersona.la \
+	sockets/libsockets.la
 
 ipersona_comp_ipersona_comp_lector_SOURCES = \
 	ipersona_comp/ArgParserLector.cpp \
@@ -183,5 +184,6 @@ ipersona_comp_ipersona_comp_lector_SOURCES = \
 
 ipersona_comp_ipersona_comp_lector_LDADD = \
 	IPC/libIPC.la \
-	utils/libutils.la
+	utils/libutils.la \
+	sockets/libsockets.la
 ###############################
