@@ -175,19 +175,17 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 		case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 		case OP_NOTIFICAR_CIERRE_MUSEO:
 			err = ingresos->escribir (msg);
-			System::check (err);
 			break;
 		case OP_SOLIC_SALIR_MUSEO_PERSONA:
 			err = egresoSimple->escribir (msg);
-			System::check (err);
 			break;
 		case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 			err = egresoPreferencial->escribir (msg);
-			System::check (err);
 			break;
 		default:
 			#define STR(x) #x
 			throw std::logic_error (
 				"[" __FILE__ ":" STR(__LINE__) "] not reached");
 	}
+	System::check (err);
 }
