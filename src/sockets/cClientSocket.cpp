@@ -38,3 +38,11 @@ int cClientSocket::tcp_open_activo(const char* server, int port)
     return 0;
 }
 
+int cClientSocket::tcp_adopt_connection (int fd)
+{
+	if (fd == -1 || sockfd != -1) {
+		return -10;
+	}
+	sockfd = fd;
+	return 0;
+}
