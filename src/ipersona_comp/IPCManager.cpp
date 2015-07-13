@@ -143,10 +143,10 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 				cont.entradas++;
 				break;
 			case OP_SOLIC_SALIR_MUSEO_PERSONA:
-				cont.salidasEspeciales++;
+				cont.salidasEstandar++;
 				break;
 			case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
-				cont.salidasEstandar++;
+				cont.salidasEspeciales++;
 				break;
 			default:
 				lock->v ();
