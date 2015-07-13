@@ -91,7 +91,6 @@ IPersonaMsg IPCManager::leerOperacionConPrioridad ()
 
 	if (cont.salidasEspeciales > 0) {
 		cont.salidasEspeciales--;
-
 		err = egresoPreferencial->leer (MTYPE, &msg);
 	} else if (cont.salidasEstandar > 0) {
 		cont.salidasEstandar--;
