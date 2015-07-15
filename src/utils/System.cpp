@@ -6,7 +6,7 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 #include <unistd.h>
-#include <utils/System.h>
+#include "System.h"
 
 SystemErrorException::SystemErrorException ()
 	: _number (errno)

@@ -1,6 +1,7 @@
 typedef struct {
 	long mtype;
-	int id;
+	long id;
+	int shmem;
 	char mensaje[20];
 	
 } MensajeGenerico;

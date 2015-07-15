@@ -3,7 +3,6 @@
 #include "../sockets/cSocket.h"
 
 #define COLA_MAESTRA ".colamaestra.mq"
-#define COLA_CONEXIONES ".colaconexiones.mq"
 
 #include <iostream>
 #include <stdlib.h>

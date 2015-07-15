@@ -1,5 +1,5 @@
 #include "Semaforo.h"
-#include <utils/System.h>
+#include "../utils/System.h"
 
 Semaforo::Semaforo (const std::string& nombre, char key, const int valorInicial)
 {
