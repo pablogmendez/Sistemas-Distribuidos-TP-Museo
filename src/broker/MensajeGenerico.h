@@ -1,6 +1,6 @@
 typedef struct {
 	long mtype;
-	int destino;
+	int id;
 	char mensaje[20];
 	
 } MensajeGenerico;

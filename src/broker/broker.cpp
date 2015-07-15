@@ -25,25 +25,14 @@ int lanzarSalida(int);
 
 
 int main(int argc, char* argv[]){
-	// Cola para recibir conexiones, cambiar por sockets
-	Cola<ConexionMsg>* conexiones = new Cola<ConexionMsg>(COLA_CONEXIONES,0);
 	
 	// Cola maestra del broker
 	Cola<MensajeGenerico>* colaMaestra =  new Cola<MensajeGenerico>(COLA_MAESTRA,0);
 
-	while(1){
-		ConexionMsg dato;
-		std::cout << "Leo de la cola de conexiones";
-		std::cout.flush();
-		conexiones->leer(CONEXION_RQ,&dato);
-		
-		int cola = dato.cola;
-
-		//Lanzar proceso entrada
-		lanzarEntrada(cola);
-		//Lanzar proceso salida
-		lanzarSalida(cola);
-	}
+	//Lanzar server entrada
+	lanzarEntrada(cola);
+	//Lanzar proceso salida
+	lanzarSalida(cola);
 	
 	return 0;
 }

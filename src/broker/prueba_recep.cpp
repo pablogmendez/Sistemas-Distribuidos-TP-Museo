@@ -2,6 +2,7 @@
 #include "MensajeGenerico.h"
 
 #include "../IPC/Cola.h"
+#include "../sockets/cClientSocket.h"
 
 #include <error.h>
 #include <errno.h>
@@ -11,24 +12,14 @@
 
 #include <iostream>
 
-#define COLA_MAESTRA ".colamaestra.mq"
-#define COLA_CONEXIONES ".colaconexiones.mq"
-
-
 int main(int argc, char* argv[]){
-
-        Cola<ConexionMsg>* conexion = new Cola<ConexionMsg>(COLA_CONEXIONES,0);
-
-        ConexionMsg msg;
-        msg.mtype = 1;
-        msg.cola = 2;
-        conexion->escribir(msg);
-
-        Cola<MensajeGenerico>* recibir = new Cola<MensajeGenerico>(COLA_CONEXIONES,2);
+	cClientSocket socket(sizeof(MensajeGenerico));
         MensajeGenerico mensaje;
-        recibir->leer(2,&mensaje);
+        socket.tcp_open_activo("localhost",5001);
+	mensaje.id=1;
+	socket.tcp_send((char*)&mensaje);
+	socket.tcp_recv((char*)&mensaje);
 	
 	std::cout <<"RECIBI: "<< mensaje.mensaje << std::endl;
-
 }
 
