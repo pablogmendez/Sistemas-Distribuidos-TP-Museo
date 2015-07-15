@@ -16,7 +16,9 @@
 
 // TODO: mover a .h de constantes
 static const char* DFLT_IPUERTA_COMP = "ipuerta_comp";
-static const char* DFLT_IPUERTA_MQ   = "./ipuerta.mq";
+static const char* DFLT_IPUERTA_MQ   = "/etc/hosts";
+static const char* DFLT_IPERSONA_BROKER   = "broker";
+static const char* DFLT_IPERSONA_IDSERVER = "id-server";
 /////////////////////////////////
 
 class IPuerta::Impl
@@ -27,7 +29,7 @@ public:
 	Cola<IPuertaMsg> mqComp;
 	pid_t pidComp;
 
-	Impl ()
+	Impl ()ect
 		: mqConf (IPuerta::ENV_IPUERTA_MQ, DFLT_IPUERTA_MQ)
 		, compBin (IPuerta::ENV_IPUERTA_COMP, DFLT_IPUERTA_COMP)
 		, mqComp (mqConf.get (), 'A')
@@ -44,7 +46,7 @@ public:
 };
 
 const char* const IPuerta::ENV_IPUERTA_COMP = "ipuerta_comp";
-const char* const IPuerta::ENV_IPUERTA_MQ   = "ipuerta_mq";
+const char* const IPuerta::ENV_IPUERTA_MQ   = "/etc/hosts";
 
 void IPuerta::Impl::lanzarComponente ()
 {
