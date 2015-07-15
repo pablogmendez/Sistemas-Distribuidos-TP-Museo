@@ -33,11 +33,9 @@ IIdClient::~IIdClient ()
 
 long IIdClient::obtenerId (Rangos rango) throw (std::runtime_error)
 {
-	// TODO: implementar rangos...
-
 	ids_response* result_1;
-	char* obtener_id_1_arg;
-	result_1 = obtener_id_1((void*)&obtener_id_1_arg, pImpl->clnt);
+	ids_rango obtener_id_1_arg = static_cast<ids_rango> (rango);
+	result_1 = obtener_id_1(&obtener_id_1_arg, pImpl->clnt);
 	if (result_1 == (ids_response *) NULL) {
 		char* err = clnt_sperror (pImpl->clnt,
 				"IIdClient::obtenerId: falló RPC");

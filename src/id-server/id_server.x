@@ -10,9 +10,14 @@ union ids_response switch (ids_response_type type) {
     void;
 };
 
+enum ids_rango {
+	R_PUERTA  ,
+	R_PERSONA
+};
+
 program ID_SERVER {
      version ID_SERVER_VERSION {
-        ids_response OBTENER_ID()      = 1;
-        void         DEVOLVER_ID(long) = 2;
+        ids_response OBTENER_ID(ids_rango) = 1;
+        void         DEVOLVER_ID(long)     = 2;
       } = 1;
 } = 0x2E8A16D6;

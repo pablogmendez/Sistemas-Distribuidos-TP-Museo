@@ -32,3 +32,13 @@ xdr_ids_response (XDR *xdrs, ids_response *objp)
 	}
 	return TRUE;
 }
+
+bool_t
+xdr_ids_rango (XDR *xdrs, ids_rango *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_enum (xdrs, (enum_t *) objp))
+		 return FALSE;
+	return TRUE;
+}

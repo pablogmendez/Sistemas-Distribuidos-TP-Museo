@@ -101,6 +101,9 @@ ipersona_libipersona_la_LIBADD = IPC/libIPC.la utils/libutils.la
 EXTRA_DIST += id-server/id_server.x id-server/gen_rpc.sh
 bin_PROGRAMS += id-server/id-server
 id_server_id_server_SOURCES = \
+	id-server/ArgParser.cpp \
+	id-server/ArgParser.h \
+	id-server/id_rango.h \
 	id-server/id_server_svc.c \
 	id-server/id_server_xdr.c \
 	id-server/id_server.h \

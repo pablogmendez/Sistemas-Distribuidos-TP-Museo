@@ -25,6 +25,7 @@ int main (int argc, char** argv)
 	std::vector<const char*> srv_args;
 	std::string srv_bin = calcularRutaServidor (argv[0]);
 	srv_args.push_back (srv_bin.c_str ());
+	srv_args.push_back ("100");
 	srv_args.push_back ("1001");
 	srv_args.push_back (NULL);
 	srv_pid = System::spawn (srv_bin.c_str (), srv_args);
@@ -58,6 +59,41 @@ int main (int argc, char** argv)
 		}
 		ids.devolverId (idA);
 		ids.devolverId (idB);
+
+		// Verificar el rango puerta
+		myId = ids.obtenerId (IIdClient::R_PUERTA);
+		if (myId != 100) {
+			std::cerr << "Se obtuvo el id "
+					<< myId << ". Se esperaba 100"
+					<< std::endl;
+			err = 1;
+			goto out;
+		}
+		ids.devolverId (myId);
+
+		// Verificar duplicados
+		ids.devolverId (myId);
+		idA = ids.obtenerId (IIdClient::R_PUERTA);
+		idB = ids.obtenerId (IIdClient::R_PUERTA);
+		if (idA == idB) {
+			std::cerr << "Se duplicó el id "
+					<< idA << std::endl;
+			err = 1;
+			goto out;
+		}
+		ids.devolverId (idA);
+		ids.devolverId (idB);
+
+		// Rango Inválido
+		try {
+			myId = ids.obtenerId (static_cast<IIdClient::Rangos> (73737));
+			std::cerr << "Se obtuvo el id " << myId
+				<< " para el rango inválido 73737" << std::endl;
+			err = 1;
+			goto out;
+		} catch (std::runtime_error& e) {
+			// OK
+		}
 	} catch (std::exception& e) {
 		std::cerr << "Error al invocar servicio: "
 				<< e.what ()

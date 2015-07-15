@@ -20,6 +20,7 @@ void
 id_server_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
+		ids_rango obtener_id_1_arg;
 		long devolver_id_1_arg;
 	} argument;
 	char *result;
@@ -32,7 +33,7 @@ id_server_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		return;
 
 	case OBTENER_ID:
-		_xdr_argument = (xdrproc_t) xdr_void;
+		_xdr_argument = (xdrproc_t) xdr_ids_rango;
 		_xdr_result = (xdrproc_t) xdr_ids_response;
 		local = (char *(*)(char *, struct svc_req *)) obtener_id_1_svc;
 		break;

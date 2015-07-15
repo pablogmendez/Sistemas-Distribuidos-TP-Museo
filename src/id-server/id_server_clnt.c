@@ -10,13 +10,13 @@
 static struct timeval TIMEOUT = { 25, 0 };
 
 ids_response *
-obtener_id_1(void *argp, CLIENT *clnt)
+obtener_id_1(ids_rango *argp, CLIENT *clnt)
 {
 	static ids_response clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	if (clnt_call (clnt, OBTENER_ID,
-		(xdrproc_t) xdr_void, (caddr_t) argp,
+		(xdrproc_t) xdr_ids_rango, (caddr_t) argp,
 		(xdrproc_t) xdr_ids_response, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
