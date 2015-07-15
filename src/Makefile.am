@@ -33,6 +33,9 @@ IPC_libIPC_la_SOURCES = \
 	IPC/SignalHandler.cpp \
 	IPC/SignalHandler.h
 
+IPC_libIPC_la_LIBADD = \
+	utils/libutils.la
+
 sockets_libsockets_la_SOURCES = \
 	sockets/cClientSocket.cpp \
 	sockets/cClientSocket.h \
