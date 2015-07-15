@@ -171,7 +171,8 @@ ipersona_comp_ipersona_comp_SOURCES = \
 	ipersona_comp/ipc-keys.h \
 	ipersona_comp/IPCManager.cpp \
 	ipersona_comp/IPCManager.h \
-	ipersona_comp/ipersona_comp.cpp
+	ipersona_comp/ipersona_comp.cpp \
+	ipersona_comp/BrokerMsg.h
 
 ipersona_comp_ipersona_comp_LDADD = \
 	id-server/libidclient.la \
