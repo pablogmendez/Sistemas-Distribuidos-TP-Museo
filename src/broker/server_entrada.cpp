@@ -25,6 +25,7 @@ int main(int argc, char* argv[]){
 		close(cliSocket);
 	}
 	serverSocket.tcp_close();
+	return 0;
 }
 
 

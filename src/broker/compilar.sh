@@ -10,6 +10,7 @@ rm server_salida
 g++ -c ../sockets/*.cpp
 ar rvs sockets.a *.o
 rm *.o
+g++ broker.cpp -o broker
 g++ broker_entrada.cpp sockets.a -o broker_entrada
 g++ broker_salida.cpp sockets.a -o broker_salida
 g++ server_entrada.cpp sockets.a -o server_entrada
