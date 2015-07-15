@@ -53,6 +53,8 @@ AC_CONFIG_LINKS([
 		tests/sockets/README:tests/sockets/README
 		src/broker/.colamaestra.mq:src/broker/.colamaestra.mq
 		src/broker/.colaconexiones.mq:src/broker/.colaconexiones.mq
+		src/broker/.semaforo_shmem:src/broker/.semaforo_shmem
+		src/broker/.shmem:src/broker/.shmem
 		resources/ipersona.mq:resources/ipersona.mq
 		resources/ipersona_comp.ipc:resources/ipersona_comp.ipc])
 

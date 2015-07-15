@@ -129,20 +129,101 @@ id_server_libidclient_la_SOURCES = \
 # y que necesita el programa
 EXTRA_DIST += \
 	broker/.colamaestra.mq \
-	broker/.colaconexiones.mq
+	broker/.colaconexiones.mq \
+	broker/.semaforo_shmem \
+	broker/.shmem
 
 # Se agrega el binario
-bin_PROGRAMS += broker/broker-entrada
+bin_PROGRAMS += \
+	broker/broker \
+	broker/broker_entrada \
+	broker/broker_salida \
+	broker/server_entrada \
+	broker/server_salida \
+	broker/shmem_get \
+	broker/shmem_return \
+	broker/prueba_envio \
+	broker/prueba_recep \
+	broker/prueba_get_shmem
 
 # Acá se listan los fuentes y encabezados con los que
 # se compila el programa
+broker_broker_SOURCES = \
+	broker/broker.cpp
+
+broker_broker_LDADD = \
+	IPC/libIPC.la
+
 broker_broker_entrada_SOURCES = \
 	broker/broker_entrada.cpp \
 	broker/MensajeGenerico.h
 
 # Linkea con la biblioteca de IPCs
 broker_broker_entrada_LDADD = \
-	IPC/libIPC.la
+	IPC/libIPC.la \
+	sockets/libsockets.la
+
+broker_broker_salida_SOURCES = \
+	broker/broker_salida.cpp \
+	broker/MensajeGenerico.h
+
+broker_broker_salida_LDADD = \
+	IPC/libIPC.la \
+	sockets/libsockets.la
+
+broker_server_entrada_SOURCES = \
+	broker/server_entrada.cpp \
+	broker/MensajeGenerico.h
+
+broker_server_entrada_LDADD = \
+	IPC/libIPC.la \
+	sockets/libsockets.la
+
+broker_server_salida_SOURCES = \
+	broker/server_salida.cpp \
+	broker/MensajeGenerico.h
+
+broker_server_salida_LDADD = \
+	IPC/libIPC.la \
+	sockets/libsockets.la
+
+broker_shmem_get_SOURCES = \
+	broker/shmem_get.cpp \
+	broker/MensajeGenerico.h
+
+broker_shmem_get_LDADD = \
+	IPC/libIPC.la \
+	sockets/libsockets.la
+
+broker_shmem_return_SOURCES = \
+	broker/shmem_return.cpp \
+	broker/MensajeGenerico.h
+
+broker_shmem_return_LDADD = \
+	IPC/libIPC.la \
+	sockets/libsockets.la
+
+broker_prueba_envio_SOURCES = \
+	broker/prueba_envio.cpp \
+	broker/ConexionMsg.h \
+	broker/MensajeGenerico.h
+
+broker_prueba_envio_LDADD = \
+	sockets/libsockets.la
+
+broker_prueba_recep_SOURCES = \
+	broker/prueba_recep.cpp \
+	broker/MensajeGenerico.h
+
+broker_prueba_recep_LDADD = \
+	sockets/libsockets.la
+
+broker_prueba_get_shmem_SOURCES = \
+	broker/prueba_get_shmem.cpp \
+	broker/MensajeGenerico.h
+
+broker_prueba_get_shmem_LDADD = \
+	sockets/libsockets.la
 
 ########## Puerta #############
 bin_PROGRAMS += puerta/puerta
