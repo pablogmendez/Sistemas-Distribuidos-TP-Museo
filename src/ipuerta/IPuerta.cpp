@@ -29,7 +29,7 @@ public:
 	Cola<IPuertaMsg> mqComp;
 	pid_t pidComp;
 
-	Impl ()ect
+	Impl ()
 		: mqConf (IPuerta::ENV_IPUERTA_MQ, DFLT_IPUERTA_MQ)
 		, compBin (IPuerta::ENV_IPUERTA_COMP, DFLT_IPUERTA_COMP)
 		, mqComp (mqConf.get (), 'A')
@@ -80,13 +80,13 @@ IPuerta::~IPuerta ()
 void IPuerta::entrar (long puerta)
 {
 	int err;
-	struct IPuertaMsg msg = {};
+	struct IPuertaMsg msg;
 	long rtype = getpid ();
 
 	msg.msg.semp.rtype = rtype;
 	msg.msg.semp.idPuerta = puerta;
 	msg.mtype = pImpl->pidComp;
-	msg.op = SOLIC_ENTRAR_MUSEO_PERSONA;
+	msg.op = OP_SOLIC_ENTRAR_MUSEO_PERSONA;
 	err = pImpl->mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
@@ -99,7 +99,7 @@ void IPuerta::entrar (long puerta)
 		throw "not reached";
 	}
 
-	if (msg.op == NOTIFICACION_ENTRADA_PERSONA) {
+	if (msg.op == NOTIF_ENTRADA_PERSONA) {
 		// TODO: ver si no estaba cerrado el museo
 		return;
 	}
@@ -114,14 +114,14 @@ void IPuerta::entrar (long puerta)
 long IPuerta::entrar (long puerta, long pertenencias)
 {
 	int err;
-	struct IPuertaMsg msg = {};
+	struct IPuertaMsg msg;
 	long rtype = getpid ();
 
 	msg.msg.semi.rtype = rtype;
 	msg.msg.semi.idPuerta = puerta;
 	msg.msg.semi.pertenencias = pertenencias;
 	msg.mtype = pImpl->pidComp;
-	msg.op = SOLIC_ENTRAR_MUSEO_INVESTIGADOR;
+	msg.op = OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR;
 	err = pImpl->mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[investigador]");
@@ -134,7 +134,7 @@ long IPuerta::entrar (long puerta, long pertenencias)
 		throw "not reached";
 	}
 
-	if (msg.op == NOTIFICACION_ENTRADA_INVESTIGADOR) {
+	if (msg.op == NOTIF_ENTRADA_INVESTIGADOR) {
 		// TODO: ver si no estaba cerrado el museo
 		return msg.msg.nei.numeroLocker;
 	}
@@ -155,7 +155,7 @@ void IPuerta::salir (long puerta)
 	msg.msg.ssmp.rtype = rtype;
 	msg.msg.ssmp.idPuerta = puerta;
 	msg.mtype = pImpl->pidComp;
-	msg.op = SOLIC_SALIR_MUSEO_PERSONA;
+	msg.op = OP_SOLIC_SALIR_MUSEO_PERSONA;
 	err = pImpl->mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::salir[persona]");
@@ -168,7 +168,7 @@ void IPuerta::salir (long puerta)
 		throw "not reached";
 	}
 
-	if (msg.op == NOTIFICACION_SALIDA_PERSONA) {
+	if (msg.op == NOTIF_SALIDA_PERSONA) {
 		return;
 	}
 
@@ -189,7 +189,7 @@ long IPuerta::salir (long puerta, long numeroLocker)
 	msg.msg.ssmi.idPuerta = puerta;
 	msg.msg.ssmi.numeroLocker = numeroLocker;
 	msg.mtype = pImpl->pidComp;
-	msg.op = SOLIC_SALIR_MUSEO_INVESTIGADOR;
+	msg.op = OP_SOLIC_SALIR_MUSEO_INVESTIGADOR;
 	err = pImpl->mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::salir[investigador]");
@@ -202,7 +202,7 @@ long IPuerta::salir (long puerta, long numeroLocker)
 		throw "not reached";
 	}
 
-	if (msg.op == NOTIFICACION_SALIDA_INVESTIGADOR) {
+	if (msg.op == NOTIF_SALIDA_INVESTIGADOR) {
 		if (msg.msg.nsi.res == SALIO) {
 			return msg.msg.nsi.pertenencias;
 		}

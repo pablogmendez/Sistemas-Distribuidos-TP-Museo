@@ -6,8 +6,9 @@
 #include "ipc-keys.h"
 #include <IPC/SIGINT_Handler.h>
 #include <IPC/SignalHandler.h>
-#include "IPCManager.h"
-#include <ipersona/IPersona.h>
+#include <IPC/Cola.h>
+//#include "IPCManager.h"
+#include <ipuerta/IPuerta.h>
 #include <libgen.h>
 #include <Logger/Logger.h>
 #include <sockets/cClientSocket.h>
@@ -18,7 +19,7 @@
 #include <unistd.h>
 #include <utils/EnvParam.h>
 #include <utils/System.h>
-#include <ipuerta/IPersonaMsg.h>
+#include <ipuerta/IPuertaMsg.h>
 
 #define LOG_IPCMP(fmt, ...) \
 	LOG("IPERSONA_COMP [%d] - " fmt, getpid (),##__VA_ARGS__)
@@ -37,7 +38,7 @@ std::string calcularPathInterfaz (ArgParser& args)
 {
 	std::string dfltPath = args.recursos ();
 	dfltPath.append (PATH_INT);
-	EnvParam param (IPersona::ENV_IPERSONA_MQ, dfltPath);
+	EnvParam param (IPuerta::ENV_IPUERTA_MQ, dfltPath);
 	return param.get ();
 }
 
@@ -52,10 +53,10 @@ std::string calcularPathLector (const char* arg0)
 
 void run_loop (
 		long idPersona,
-		IPCManager& ipcman,
+		Cola<IPuertaMsg> &colaMsg,
 		cClientSocket& sockBroker,
 		SIGINT_Handler& intHandler);
-
+/*
 class IPCManagerCleaner
 {
 		IPCManager ipcman;
@@ -72,7 +73,7 @@ public:
 
 		IPCManager& get () { return ipcman; }
 };
-
+*/
 class IdGrabber
 {
 		IIdClient& idc;
@@ -220,8 +221,8 @@ void run_loop (
 	while (intHandler.getGracefulQuit () != 1) {
 		try {
 			int err;
-			IPersonaMsg msgInt;
-			IPersonaMsg msgOp;
+			IPuertaMsg msgInt;
+			IPuertaMsg msgOp;
 
 			// Se espera a que la aplicación solicite una operación.
 //			err = ipcman.interfaz->leer (myMTYPE, &msgInt);
@@ -231,7 +232,7 @@ void run_loop (
 
 			IPuertaMsg msg;
 
-			cola.leer(myMTYPE, &msg);
+			colaMsg.leer(myMTYPE, &msg);
 
 			LOG_IPCMP("Se recibió solicitud desde la interfaz.\n"
 					  "Convirtiendo la solicitud en un formato aceptado por el broker...");
@@ -242,31 +243,31 @@ void run_loop (
 			switch (msgOp.op) {
 				case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 					brokerMsg.dstId = msgOp.msg.semp.idPuerta;
-					brokerMsg.op = BrokerMsgOp.OP_SOLIC_ENTRAR_MUSEO_PERSONA;
+					brokerMsg.op = OP_SOLIC_ENTRAR_MUSEO_PERSONA;
 					brokerMsg.param_a = 0;
 					brokerMsg.param_b = 0;
 					break;
 				case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 					brokerMsg.dstId = msgOp.msg.semi.idPuerta;
-					brokerMsg.op = BrokerMsgOp.BMO_OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR;
+					brokerMsg.op = BMO_OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR;
 					brokerMsg.param_a = msgOp.msg.semi.pertenencias;
 					brokerMsg.param_b = 0;
 					break;
 				case OP_SOLIC_SALIR_MUSEO_PERSONA:
 					brokerMsg.dstId = msgOp.msg.ssmp.idPuerta;
-					brokerMsg.op = BrokerMsgOp.BMO_OP_SOLIC_SALIR_MUSEO_PERSONA;
+					brokerMsg.op = BMO_OP_SOLIC_SALIR_MUSEO_PERSONA;
 					brokerMsg.param_a = 0;
 					brokerMsg.param_b = 0;
 					break;
 				case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 					brokerMsg.dstId = msgOp.msg.ssmp.idPuerta;
-					brokerMsg.op = BrokerMsgOp.BMO_OP_SOLIC_SALIR_MUSEO_INVESTIGADOR;
+					brokerMsg.op = BMO_OP_SOLIC_SALIR_MUSEO_INVESTIGADOR;
 					brokerMsg.param_a = 0;
 					brokerMsg.param_b = 0;
 					break;
 				case OP_NOTIFICAR_CIERRE_MUSEO:
 					brokerMsg.dstId = msgOp.msg.semp.idPuerta;
-					brokerMsg.op = BrokerMsgOp.BMO_OP_NOTIFICAR_CIERRE_MUSEO;
+					brokerMsg.op = BMO_OP_NOTIFICAR_CIERRE_MUSEO;
 					brokerMsg.param_a = msgOp.msg.ssmi.numeroLocker;
 					brokerMsg.param_b = 0;
 					break;
@@ -281,13 +282,13 @@ void run_loop (
 					"\top     : %d\n"
 					"\tparam_a: %d\n"
 					"\tparam_b: %d\n",
-					msgBroker.dstId,
-					msgBroker.srcId,
-					msgBroker.op,
-					msgBroker.param_a,
-					msgBroker.param_b);
+					brokerMsg.dstId,
+					brokerMsg.srcId,
+					brokerMsg.op,
+					brokerMsg.param_a,
+					brokerMsg.param_b);
 
-			sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
+			sockBroker.tcp_send (reinterpret_cast<char*> (&brokerMsg));
 		} catch (SystemErrorException& e) {
 			std::cerr << "Error (" << e.number ()
 					  << "): " << e.what () << std::endl;
