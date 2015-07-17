@@ -5,9 +5,8 @@
 
 enum IPersonaOp
 {
-	SOLIC_PROXIMA_OPERACION            = 1,
-
-	OP_SOLIC_ENTRAR_MUSEO_PERSONA         ,
+	// Mantener los valores de acuerdo a MuseoMSG::OP
+	OP_SOLIC_ENTRAR_MUSEO_PERSONA      = 1,
 	OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR    ,
 	OP_SOLIC_SALIR_MUSEO_PERSONA          ,
 	OP_SOLIC_SALIR_MUSEO_INVESTIGADOR     ,
@@ -16,7 +15,10 @@ enum IPersonaOp
 	NOTIF_ENTRADA_PERSONA                 ,
 	NOTIF_ENTRADA_INVESTIGADOR            ,
 	NOTIF_SALIDA_PERSONA                  ,
-	NOTIF_SALIDA_INVESTIGADOR
+	NOTIF_SALIDA_INVESTIGADOR             ,
+	///////////////////////////////////////
+
+	SOLIC_PROXIMA_OPERACION            = 1000,
 };
 
 struct IPersonaMsg_SolicProximaOperacion

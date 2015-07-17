@@ -1,5 +1,6 @@
 #include "ArgParserLector.h"
-#include "BrokerMsg.h"
+#include <broker/Constantes.h>
+#include <broker/MensajeGenerico.h>
 #include "ipc-keys.h"
 #include <IPC/SIGINT_Handler.h>
 #include <IPC/SignalHandler.h>
@@ -46,7 +47,7 @@ int main (int argc, char** argv)
 	LOG_IPCL("Inicializando conexión con broker...");
 
 	long idPuerta = args.idPuerta ();
-	BrokerMsg brokerMsg;
+	MensajeGenerico brokerMsg;
 
 	LOG_IPCL("Creando socket con mensaje de tamaño %d.",
 			(sizeof brokerMsg));
@@ -54,23 +55,14 @@ int main (int argc, char** argv)
 	cClientSocket brokerConn (sizeof brokerMsg);
 	brokerConn.tcp_adopt_connection (args.fdBroker ());
 
-	brokerMsg.dstId = 0;
-	brokerMsg.srcId = idPuerta;
-	brokerMsg.op = BMO_BROKER_SET_ID;
-	brokerMsg.param_a = idPuerta;
-	brokerMsg.param_b = 0;
+	brokerMsg.mtype = 0;
+	brokerMsg.id = idPuerta;
 
 	LOG_IPCL("Paquete de inicialización:\n"
 			"\tdstId  : %d\n"
-			"\tsrcId  : %d\n"
-			"\top     : %d\n"
-			"\tparam_a: %d\n"
-			"\tparam_b: %d",
-			brokerMsg.dstId,
-			brokerMsg.srcId,
-			brokerMsg.op,
-			brokerMsg.param_a,
-			brokerMsg.param_b);
+			"\tsrcId  : %d",
+			brokerMsg.mtype,
+			brokerMsg.id);
 
 	brokerConn.tcp_send (reinterpret_cast<char*> (&brokerMsg));
 
@@ -82,27 +74,27 @@ int main (int argc, char** argv)
 			System::check (err);
 
 			IPersonaMsg msg;
-			msg.op = static_cast<IPersonaOp> (brokerMsg.op);
-			switch (brokerMsg.op) {
-				case BMO_OP_SOLIC_ENTRAR_MUSEO_PERSONA:
-					msg.msg.osemp.idOrigen = brokerMsg.srcId;
+			msg.op = static_cast<IPersonaOp> (brokerMsg.msg.op);
+			switch (brokerMsg.msg.op) {
+				case MuseoMSG::SOLIC_ENTRAR_MUSEO_PERSONA:
+					msg.msg.osemp.idOrigen = brokerMsg.id;
 					break;
-				case BMO_OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
-					msg.msg.osemi.idOrigen = brokerMsg.srcId;
-					msg.msg.osemi.pertenencias = brokerMsg.param_a;
+				case MuseoMSG::SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
+					msg.msg.osemi.idOrigen = brokerMsg.id;
+					msg.msg.osemi.pertenencias = brokerMsg.msg.param_a;
 					break;
-				case BMO_OP_SOLIC_SALIR_MUSEO_PERSONA:
-					msg.msg.ossmp.idOrigen = brokerMsg.srcId;
+				case MuseoMSG::SOLIC_SALIR_MUSEO_PERSONA:
+					msg.msg.ossmp.idOrigen = brokerMsg.id;
 					break;
-				case BMO_OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
-					msg.msg.ossmi.idOrigen = brokerMsg.srcId;
-					msg.msg.ossmi.numeroLocker = brokerMsg.param_a;
+				case MuseoMSG::SOLIC_SALIR_MUSEO_INVESTIGADOR:
+					msg.msg.ossmi.idOrigen = brokerMsg.id;
+					msg.msg.ossmi.numeroLocker = brokerMsg.msg.param_a;
 					break;
-				case BMO_OP_NOTIFICAR_CIERRE_MUSEO:
+				case MuseoMSG::NOTIFICAR_CIERRE_MUSEO:
 					break;
 				default:
 					LOG_IPCL("Se recibió operación inválida: %d.",
-							brokerMsg.op);
+							brokerMsg.msg.op);
 					continue;
 			}
 

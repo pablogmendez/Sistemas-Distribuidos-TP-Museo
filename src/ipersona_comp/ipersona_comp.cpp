@@ -1,5 +1,6 @@
 #include "ArgParser.h"
-#include "BrokerMsg.h"
+#include <broker/Constantes.h>
+#include <broker/MensajeGenerico.h>
 #include <cassert>
 #include <id-server/IIdClient.h>
 #include <iostream>
@@ -10,6 +11,7 @@
 #include <ipersona/IPersona.h>
 #include <libgen.h>
 #include <Logger/Logger.h>
+#include <museo/MuseoMSG.h>
 #include <sockets/cClientSocket.h>
 #include <sstream>
 #include <stdexcept>
@@ -137,7 +139,7 @@ int main (int argc, char** argv)
 		{
 			LOG_IPCMP("Conectando con el puerto para lectores del broker.");
 
-			cClientSocket connDeLector (sizeof (BrokerMsg));
+			cClientSocket connDeLector (sizeof (MensajeGenerico));
 			int fdLector = connDeLector.tcp_open_activo (
 					args.broker ().c_str (),
 					BROKER_READERS_PORT);
@@ -184,7 +186,7 @@ int main (int argc, char** argv)
 
 		LOG_IPCMP("Conectando a puerto para escritores del broker.");
 
-		cClientSocket connDeEscritor (sizeof (BrokerMsg));
+		cClientSocket connDeEscritor (sizeof (MensajeGenerico));
 		int err_sock = connDeEscritor.tcp_open_activo (
 				args.broker ().c_str (),
 				BROKER_WRITERS_PORT);
@@ -229,7 +231,7 @@ void run_loop (
 			// Ahora se espera a que arribe una operación desde el broker
 			msgOp = ipcman.leerOperacionConPrioridad ();
 			// TODO: validar mensaje de operacion...
-			int32_t dstId;
+			long dstId;
 			switch (msgOp.op) {
 				case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 					dstId = msgOp.msg.osemp.idOrigen;
@@ -267,8 +269,8 @@ void run_loop (
 					msgInt.op);
 
 			// TODO: validar el mensaje recibido...
-			int32_t param_a;
-			int32_t param_b;
+			long param_a;
+			long param_b;
 			switch (msgInt.op) {
 				case NOTIF_ENTRADA_PERSONA:
 					param_a = msgInt.msg.nep.res;
@@ -290,12 +292,12 @@ void run_loop (
 					assert (false);
 			}
 
-			BrokerMsg msgBroker;
-			msgBroker.dstId = dstId;
-			msgBroker.srcId = idPuerta;
-			msgBroker.op = msgInt.op;
-			msgBroker.param_a = param_a;
-			msgBroker.param_b = param_b;
+			MensajeGenerico msgBroker;
+			msgBroker.mtype = dstId;
+			msgBroker.id = idPuerta;
+			msgBroker.msg.op = static_cast<MuseoMSG::OP> (msgInt.op);
+			msgBroker.msg.param_a = param_a;
+			msgBroker.msg.param_b = param_b;
 
 			LOG_IPCMP("Enviando respuesta al broker:\n"
 					"\tdstId  : %d\n"
@@ -303,11 +305,11 @@ void run_loop (
 					"\top     : %d\n"
 					"\tparam_a: %d\n"
 					"\tparam_b: %d",
-					msgBroker.dstId,
-					msgBroker.srcId,
-					msgBroker.op,
-					msgBroker.param_a,
-					msgBroker.param_b);
+					msgBroker.mtype,
+					msgBroker.id,
+					msgBroker.msg.op,
+					msgBroker.msg.param_a,
+					msgBroker.msg.param_b);
 
 			sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
 		} catch (SystemErrorException& e) {
