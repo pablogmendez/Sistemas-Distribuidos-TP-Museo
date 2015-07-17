@@ -2,8 +2,9 @@
 #include "../IPC/Semaforo.h"
 #include "../IPC/Cola.h"
 #include "../IPC/MemoriaCompartida.h"
-
+#include <broker/Constantes.h>
 #include <iostream>
+#include <museo/MuseoSHM.h>
 
 #define COLA_MAESTRA ".colamaestra.mq"
 #define SEMAFORO_SH_MEM ".semaforo_shmem"
@@ -14,7 +15,7 @@
 int main(int argc, char* argv[]){
 	Cola<MensajeGenerico>* colaMaestra = new Cola<MensajeGenerico>(COLA_MAESTRA,0);
 	Semaforo* sem = new Semaforo(SEMAFORO_SH_MEM,0); 
-	MemoriaCompartida<int>* shMem = new MemoriaCompartida<int>();
+	MemoriaCompartida<MuseoSHM>* shMem = new MemoriaCompartida<MuseoSHM>();
 	if(shMem->crear(SH_MEM,0)){
 		std::cout << "ERROR EN LA SH MEM" << std::endl;
 	}
@@ -24,7 +25,7 @@ int main(int argc, char* argv[]){
 	MensajeGenerico msg2;
 	while(1){
 		// RECIBO SH MEM
-		colaMaestra->leer(2,&msg);
+		colaMaestra->leer(BROKER_SHMRET_ID, &msg);
 		std::cout << "DEVOLVIO LA SH MEM: " << msg.id << std::endl;
 		// ESCRIBO LA SH MEM
 		shMem->escribir(msg.shmem);

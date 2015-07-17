@@ -7,6 +7,10 @@ AM_CPPFLAGS = -I$(srcdir)/include -I$(srdir)
 EXTRA_DIST =
 bin_PROGRAMS =
 
+noinst_HEADERS = \
+	include/museo/MuseoMSG.h \
+	include/museo/MuseoSHM.h
+
 noinst_LTLIBRARIES = \
 	IPC/libIPC.la \
 	sockets/libsockets.la \
@@ -132,6 +136,9 @@ EXTRA_DIST += \
 	broker/.colaconexiones.mq \
 	broker/.semaforo_shmem \
 	broker/.shmem
+
+noinst_HEADERS += \
+	broker/Constantes.h
 
 # Se agrega el binario
 bin_PROGRAMS += \

@@ -1,5 +1,5 @@
 #include "../sockets/cServerSocket.h"
-
+#include <broker/Constantes.h>
 #include <error.h>
 #include <errno.h>
 #include <unistd.h>
@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
 	
 	cServerSocket serverSocket;
 	int cliSocket;
-	serverSocket.tcp_open_pasivo(5001,5);
+	serverSocket.tcp_open_pasivo(BROKER_READERS_PORT, 5);
 	while((cliSocket = serverSocket.tcp_accept()) != -1){
 		std::cout << "ACEPTE CONEXION" << std::endl;
 		lanzarSalida(cliSocket);

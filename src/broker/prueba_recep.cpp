@@ -3,7 +3,7 @@
 
 #include "../IPC/Cola.h"
 #include "../sockets/cClientSocket.h"
-
+#include <broker/Constantes.h>
 #include <error.h>
 #include <errno.h>
 #include <unistd.h>
@@ -15,11 +15,15 @@
 int main(int argc, char* argv[]){
 	cClientSocket socket(sizeof(MensajeGenerico));
         MensajeGenerico mensaje;
-        socket.tcp_open_activo("localhost",5001);
+        socket.tcp_open_activo("localhost", BROKER_READERS_PORT);
 	mensaje.id=1;
 	socket.tcp_send((char*)&mensaje);
 	socket.tcp_recv((char*)&mensaje);
 	
-	std::cout <<"RECIBI: "<< mensaje.mensaje << std::endl;
+	std::cout <<"RECIBI: \n"
+		<< "\tshmem.abierto  : " << mensaje.shmem.abierto << '\n'
+		<< "\tshmem.capacidad: " << mensaje.shmem.capacidad << '\n'
+		<< "\tshmem.personas : " << mensaje.shmem.personas
+		<< std::endl;
 }
 
