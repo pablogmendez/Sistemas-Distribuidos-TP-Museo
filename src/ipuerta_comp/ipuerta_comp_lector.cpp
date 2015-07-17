@@ -91,17 +91,17 @@ int main (int argc, char** argv)
 			msg.op = static_cast<IPuertaOp> (brokerMsg.op);
 			switch (brokerMsg.op) {
 				case BMO_NOTIF_ENTRADA_PERSONA:
-//					msg.msg.nep.res = brokerMsg.param_a;
+					msg.msg.nep.res = brokerMsg.param_a;
 					break;
 				case BMO_NOTIF_ENTRADA_INVESTIGADOR:
-//					msg.msg.nei.res = brokerMsg.param_a;
+					msg.msg.nei.res = brokerMsg.param_a;
 					msg.msg.nei.numeroLocker = brokerMsg.param_b;
 					break;
 				case BMO_NOTIF_SALIDA_PERSONA:
-//					msg.msg.nsp.res = brokerMsg.param_a;
+					msg.msg.nsp.res = brokerMsg.param_a;
 					break;
 				case BMO_NOTIF_SALIDA_INVESTIGADOR:
-//					msg.msg.nsi.res = brokerMsg.param_a;
+					msg.msg.nsi.res = brokerMsg.param_a;
 					msg.msg.nsi.pertenencias = brokerMsg.param_b;
 					break;
 				default:
