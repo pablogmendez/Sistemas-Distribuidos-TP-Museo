@@ -47,7 +47,7 @@ void configurar_para_correr_en_arbol_fuentes (const char* arg0)
 
 int write_id_local (const std::string& file, int id)
 {
-	ssize_t err;
+	int err;
 	int fd = -1;
 	try {
 		std::ostringstream oss;
@@ -57,8 +57,8 @@ int write_id_local (const std::string& file, int id)
 		System::check (err, "[open]");
 		oss << id << ':' << getpid () << '\n';
 		sid = oss.str ();
-		err = write (fd, sid.c_str (), sid.size ());
-		System::check (err, "[write]");
+		ssize_t errw = write (fd, sid.c_str (), sid.size ());
+		System::check (errw, "[write]");
 		err = 0;
 	} catch (SystemErrorException& e) {
 		std::cout << "error al escribir id local: " << e.what () << std::endl;

@@ -19,12 +19,12 @@ private:
 	int shmId;
 	T*	ptrDatos;
 
-	int cantidadProcesosAdosados () const;
+	shmatt_t cantidadProcesosAdosados () const;
 
 public:
 	MemoriaCompartida ();
 	~MemoriaCompartida ();
-	int crear ( const std::string& archivo,const char letra );
+	int crear (const std::string& archivo, const int letra);
 	void liberar ();
 	void escribir ( const T& dato );
 	T leer () const;
@@ -37,7 +37,9 @@ template <class T> MemoriaCompartida<T> :: MemoriaCompartida() : shmId(0), ptrDa
 template <class T> MemoriaCompartida<T> :: ~MemoriaCompartida() {
 }
 
-template <class T> int MemoriaCompartida<T> :: crear ( const std::string& archivo,const char letra ) {
+template <class T>
+int MemoriaCompartida<T>::crear (const std::string& archivo, const int letra)
+{
 
 	// generacion de la clave
 	key_t clave = ftok ( archivo.c_str(),letra );
@@ -69,13 +71,14 @@ template <class T> void MemoriaCompartida<T> :: liberar () {
 	// detach del bloque de memoria
 	shmdt ( static_cast<void*> (this->ptrDatos) );
 
-	int procAdosados = this->cantidadProcesosAdosados ();
+	shmatt_t procAdosados = this->cantidadProcesosAdosados ();
 
 	if ( procAdosados == 0 ) {
 		shmctl ( this->shmId,IPC_RMID,NULL );
 	}
 	const char* op = (procAdosados == 0 ? "Removida" : "Liberada");
-	LOG ("SHM [proc %d] - %s. Adosados: %d.", getpid (), op, procAdosados);
+	LOG ("SHM [proc %d] - %s. Adosados: %llu.", getpid (), op,
+		static_cast<unsigned long long> (procAdosados));
 }
 
 template <class T> void MemoriaCompartida<T> :: escribir ( const T& dato ) {
@@ -86,7 +89,7 @@ template <class T> T MemoriaCompartida<T> :: leer () const {
 	return ( *(this->ptrDatos) );
 }
 
-template <class T> int MemoriaCompartida<T> :: cantidadProcesosAdosados () const {
+template <class T> shmatt_t MemoriaCompartida<T> :: cantidadProcesosAdosados () const {
 	shmid_ds estado;
 	shmctl ( this->shmId,IPC_STAT,&estado );
 	return estado.shm_nattch;

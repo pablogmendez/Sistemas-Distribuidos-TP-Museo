@@ -23,7 +23,7 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 			}
 			if (idLocal > std::numeric_limits<int>::max ()) {
 				argp_failure (state, 1, 0,
-						"el id local debe ser menor a %ld.",
+						"el id local debe ser menor a %d.",
 						std::numeric_limits<int>::max ());
 			}
 			argParser->_idLocal = static_cast<int> (idLocal);

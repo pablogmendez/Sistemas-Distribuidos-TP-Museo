@@ -21,7 +21,7 @@ int main(int argc,char* argv[]){
 	MensajeGenerico msg;
 	socket.tcp_recv((char*) &msg);
 	// MY ID
-	int id = msg.id;
+	long id = msg.id;
         while(1){
                 // Recibir y ponerlo en la cola maestra
                 MensajeGenerico msg;

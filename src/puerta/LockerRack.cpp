@@ -45,7 +45,8 @@ long LockerRack::guardar (long duenio, long pertenencias)
 
 long LockerRack::duenio (long lockerIdx)
 {
-	if (lockerIdx < 0 || lockerIdx >= rack.capacity ()) {
+	if (lockerIdx < 0
+			|| static_cast<size_t> (lockerIdx) >= rack.capacity ()) {
 		std::ostringstream oss;
 		oss << "LockerRack::duenio: "
 			<< "locker " << lockerIdx
@@ -62,7 +63,8 @@ long LockerRack::duenio (long lockerIdx)
 
 Locker LockerRack::retirar (long lockerIdx)
 {
-	if (lockerIdx < 0 || lockerIdx >= rack.capacity ()) {
+	if (lockerIdx < 0
+			|| static_cast<size_t> (lockerIdx) >= rack.capacity ()) {
 		std::ostringstream oss;
 		oss << "LockerRack::retirar: "
 			<< "locker " << lockerIdx

@@ -16,14 +16,14 @@ template <class T> class Cola {
 		int		id;
 
 	public:
-		Cola ( const std::string& archivo,const char letra );
+		Cola ( const std::string& archivo,const int letra );
 		~Cola();
 		int escribir ( const T& dato ) const;
-		int leer ( const int tipo,T* buffer ) const;
+		int leer ( const long tipo,T* buffer ) const;
 		int destruir () const;
 };
 
-template <class T> Cola<T> :: Cola ( const std::string& archivo,const char letra ) {
+template <class T> Cola<T> :: Cola ( const std::string& archivo,const int letra ) {
 	this->clave = ftok ( archivo.c_str(),letra );
 	if ( this->clave == -1 ) {
 		int err = errno;
@@ -52,7 +52,7 @@ template <class T> int Cola<T> :: escribir ( const T& dato ) const {
 	return resultado;
 }
 
-template <class T> int Cola<T> :: leer ( const int tipo,T* buffer ) const {
+template <class T> int Cola<T> :: leer ( const long tipo,T* buffer ) const {
 	int resultado = msgrcv ( this->id,static_cast<void *>(buffer),sizeof(T)-sizeof(long),tipo,0 );
 	return resultado;
 }

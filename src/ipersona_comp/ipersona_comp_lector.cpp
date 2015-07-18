@@ -49,8 +49,8 @@ int main (int argc, char** argv)
 	long idPuerta = args.idPuerta ();
 	MensajeGenerico brokerMsg;
 
-	LOG_IPCL("Creando socket con mensaje de tamaño %d.",
-			(sizeof brokerMsg));
+	LOG_IPCL("Creando socket con mensaje de tamaño %llu.",
+			static_cast<unsigned long long> (sizeof brokerMsg));
 
 	cClientSocket brokerConn (sizeof brokerMsg);
 	brokerConn.tcp_adopt_connection (args.fdBroker ());
@@ -59,8 +59,8 @@ int main (int argc, char** argv)
 	brokerMsg.id = idPuerta;
 
 	LOG_IPCL("Paquete de inicialización:\n"
-			"\tdstId  : %d\n"
-			"\tsrcId  : %d",
+			"\tdstId  : %ld\n"
+			"\tsrcId  : %ld",
 			brokerMsg.mtype,
 			brokerMsg.id);
 

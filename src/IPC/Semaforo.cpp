@@ -1,7 +1,7 @@
 #include "Semaforo.h"
 #include "../utils/System.h"
 
-Semaforo::Semaforo (const std::string& nombre, char key, const int valorInicial)
+Semaforo::Semaforo (const std::string& nombre, int key, const int valorInicial)
 {
 	key_t clave = ftok (nombre.c_str(), key);
 	System::check (clave);
@@ -10,7 +10,7 @@ Semaforo::Semaforo (const std::string& nombre, char key, const int valorInicial)
 	this->inicializar (valorInicial);
 }
 
-Semaforo::Semaforo (const std::string& nombre, char key)
+Semaforo::Semaforo (const std::string& nombre, int key)
 {
 	key_t clave = ftok (nombre.c_str(), key);
 	System::check (clave);
