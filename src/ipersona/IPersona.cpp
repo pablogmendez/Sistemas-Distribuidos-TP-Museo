@@ -48,7 +48,6 @@ public:
 
 	~Impl ()
 		{
-			mqComp.destruir ();
 		}
 
 		void lanzarComponente ();
