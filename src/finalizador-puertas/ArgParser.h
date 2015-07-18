@@ -8,7 +8,6 @@
 class ArgParser : private NonCopyable
 {
 	private:
-		int _idLocal;
 		std::string _sesion;
 
 		ArgParser();
@@ -21,7 +20,6 @@ class ArgParser : private NonCopyable
 
 		void parse (int argc, char **argv);
 
-		int idLocal () const { return _idLocal; }
 		const std::string& sesion () const { return _sesion; }
 };
 

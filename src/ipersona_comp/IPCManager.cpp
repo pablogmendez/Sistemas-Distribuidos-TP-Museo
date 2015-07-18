@@ -58,9 +58,6 @@ void IPCManager::destruir ()
 {
 	lock->eliminar ();
 	hay->eliminar ();
-	ingresos->destruir ();
-	egresoPreferencial->destruir ();
-	egresoSimple->destruir ();
 }
 
 IPersonaMsg IPCManager::leerOperacionConPrioridad ()
