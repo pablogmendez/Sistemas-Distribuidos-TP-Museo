@@ -117,11 +117,11 @@ void System::shmrm (const std::string& archivo, char letra)
 void System::mqrm (const std::string& archivo, char letra)
 {
 	key_t token = ftok (archivo.c_str (), letra);
-	System::check (token);
+	System::check (token, "System::mqrm: ftok");
 
 	int id = msgget (token, 0);
-	System::check (id);
+	System::check (id, "System::mqrm: msgget");
 
 	int err = msgctl (id, IPC_RMID, NULL);
-	System::check (err);
+	System::check (err, "System::mqrm: msgctl");
 }
