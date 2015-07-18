@@ -6,6 +6,7 @@
 #include <libgen.h>
 #include "LockerRack.h"
 #include <Logger/Logger.h>
+#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include <utils/System.h>
@@ -44,6 +45,30 @@ void configurar_para_correr_en_arbol_fuentes (const char* arg0)
 	setenv(IPersona::ENV_IPERSONA_MQ, mq.c_str (), 1);
 }
 
+int write_id_local (const std::string& file, int id)
+{
+	ssize_t err;
+	int fd = -1;
+	try {
+		std::ostringstream oss;
+		std::string sid;
+
+		err = fd = open (file.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0664);
+		System::check (err, "[open]");
+		oss << id << ':' << getpid () << '\n';
+		sid = oss.str ();
+		err = write (fd, sid.c_str (), sid.size ());
+		System::check (err, "[write]");
+		err = 0;
+	} catch (SystemErrorException& e) {
+		std::cout << "error al escribir id local: " << e.what () << std::endl;
+	}
+	if (fd != -1) {
+		close (fd);
+	}
+	return err;
+}
+
 #define LOG_PUERTA(fmt, ...) \
 	LOG("PUERTA [%d] - " fmt, getpid (),##__VA_ARGS__)
 
@@ -70,6 +95,9 @@ int main (int argc, char** argv) try
 
 	LOG_PUERTA ("Creando interfaz...");
 	IPersona ipersona (args.idLocal ());
+
+	LOG_PUERTA ("Escribiendo id local en archivo de sesion.");
+	write_id_local (args.sesion (), args.idLocal ());
 
 	LOG_PUERTA ("Iniciando ciclo principal...");
 

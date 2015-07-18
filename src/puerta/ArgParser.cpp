@@ -29,6 +29,9 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 			argParser->_idLocal = static_cast<int> (idLocal);
 			break;
 		}
+		case 's':
+			argParser->_sesion = arg;
+			break;
 		case ARGP_KEY_END:
 			if (state->arg_num < NUM_ARGS) {
 				argp_failure (state, 1, 0, "no hay suficientes argumentos");
@@ -43,6 +46,8 @@ int parserFunc (int key, char *arg, struct argp_state *state)
 static struct argp_option options[] = {
 	{"id-local", 'i', "ID_LOCAL", 0,
 		"Id local de la puerta que utiliza este componente.", 0},
+	{"sesion", 's', "FILE", 0,
+		"Archivo donde se guardan las puertas en ejecución.", 0},
 	{0, 0, 0, 0, 0, 0}
 };
 
@@ -53,6 +58,7 @@ static struct argp optionParser = {options, parserFunc, argNames, doc, 0, 0, 0};
 
 ArgParser::ArgParser ()
 	: _idLocal (1)
+	, _sesion ("sesion-puertas.ids")
 {
 }
 
