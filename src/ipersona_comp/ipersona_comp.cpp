@@ -195,7 +195,7 @@ int main (int argc, char** argv)
 		LOG_IPCMP("Conectado. Iniciando loop principal...");
 		run_loop (idPuerta, ipcman, connDeEscritor, intHandler);
 	} catch (std::exception& e) {
-		std::cerr << "Error: " << e.what () << std::endl;
+		LOG_IPCMP ("Error: %s", e.what ());
 		err = 1;
 	}
 
@@ -300,11 +300,11 @@ void run_loop (
 			msgBroker.msg.param_b = param_b;
 
 			LOG_IPCMP("Enviando respuesta al broker:\n"
-					"\tdstId  : %d\n"
-					"\tsrcId  : %d\n"
+					"\tdstId  : %ld\n"
+					"\tsrcId  : %ld\n"
 					"\top     : %d\n"
-					"\tparam_a: %d\n"
-					"\tparam_b: %d",
+					"\tparam_a: %ld\n"
+					"\tparam_b: %ld",
 					msgBroker.mtype,
 					msgBroker.id,
 					msgBroker.msg.op,
@@ -313,8 +313,8 @@ void run_loop (
 
 			sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
 		} catch (SystemErrorException& e) {
-			std::cerr << "Error (" << e.number ()
-					  << "): " << e.what () << std::endl;
+			LOG_IPCMP ("Error (%d): %s", e.number (), e.what ());
+
 			if (e.number () == EINTR) {
 				// volver al inicio a chequear la bandera
 				continue;
