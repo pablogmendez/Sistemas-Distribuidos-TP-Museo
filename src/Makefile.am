@@ -245,6 +245,16 @@ puerta_puerta_SOURCES = \
 
 puerta_puerta_LDADD = \
 	ipersona/libipersona.la
+
+bin_PROGRAMS += finalizador-puertas/finalizador-puertas
+
+finalizador_puertas_finalizador_puertas_SOURCES = \
+	finalizador-puertas/ArgParser.cpp \
+	finalizador-puertas/ArgParser.h \
+	finalizador-puertas/main.cpp
+
+finalizador_puertas_finalizador_puertas_LDADD = \
+	utils/libutils.la
 ###############################
 
 ##### Componente IPersona #####
