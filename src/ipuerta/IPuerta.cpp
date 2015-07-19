@@ -1,6 +1,7 @@
-#include <ipuerta/IPuerta.h>
+//#include <ipuerta/IPuerta.h>
 #include "IPuertaMsg.h"
 
+#include <Logger/Logger.h>
 #include <errno.h>
 #include <error.h>
 #include <IPC/Cola.h>
@@ -15,66 +16,61 @@
 #include <vector>
 
 // TODO: mover a .h de constantes
-static const char* DFLT_IPUERTA_COMP = "ipuerta_comp";
+static const char* DFLT_IPUERTA_COMP = "../ipuerta_comp/ipuerta_comp";
 static const char* DFLT_IPUERTA_MQ   = "/etc/hosts";
-static const char* DFLT_IPERSONA_BROKER   = "broker";
-static const char* DFLT_IPERSONA_IDSERVER = "id-server";
+static const char* DFLT_IPUERTA_BROKER   = "broker";
+static const char* DFLT_IPUERTA_IDSERVER = "id-server";
 /////////////////////////////////
 
-class IPuerta::Impl
+class IPuerta
 {
-public:
-	EnvParam mqConf;
-	EnvParam compBin;
+private:
 	Cola<IPuertaMsg> mqComp;
-	pid_t pidComp;
-
-	Impl ()
-		: mqConf (IPuerta::ENV_IPUERTA_MQ, DFLT_IPUERTA_MQ)
-		, compBin (IPuerta::ENV_IPUERTA_COMP, DFLT_IPUERTA_COMP)
-		, mqComp (mqConf.get (), 'A')
-		, pidComp (-1)
-		{}
-
-	~Impl ()
-		{
-			mqComp.destruir ();
-		}
+	pid_t child_pid;
 
 	void lanzarComponente ();
 	void terminarComponente ();
+
+public:
+	IPuerta ();
+	~IPuerta ();
+	void entrar (long puerta);
+	long entrar (long puerta, long pertenencias);
+	void salir (long puerta);
+	long salir (long puerta, long numeroLocker);
 };
 
-const char* const IPuerta::ENV_IPUERTA_COMP = "ipuerta_comp";
-const char* const IPuerta::ENV_IPUERTA_MQ   = "/etc/hosts";
-
-void IPuerta::Impl::lanzarComponente ()
+void IPuerta::lanzarComponente ()
 {
-	const std::string& comp_path = compBin.get ();
-	std::vector<const char*> args;
-	args.push_back (comp_path.c_str ());
-	args.push_back (NULL);
-	pidComp = System::spawn(comp_path.c_str (), args);
-	System::check (pidComp);
+	LOG("Proceso %d: Lanzando componente", getpid());
+           child_pid = fork();
+           if(child_pid == 0) {
+	        execlp(DFLT_IPUERTA_COMP, "comp_puerta", NULL);
+		exit(2);              
+           }
+           else if(child_pid == -1) {
+               std::cout << "Error: Could not fork" << std::endl;
+           }
+	LOG("Proceso %d: Componente lanzado", getpid());
 }
 
-void IPuerta::Impl::terminarComponente ()
+void IPuerta::terminarComponente ()
 {
-	if (pidComp != -1) {
-		kill (pidComp, SIGINT);
+	LOG("Proceso %d: Terminando componente", getpid());
+	if (child_pid != -1) {
+		kill (child_pid, SIGINT);
 	}
 }
 
-IPuerta::IPuerta ()
+IPuerta::IPuerta (): mqComp(DFLT_IPUERTA_MQ, 'A')
 {
-	pImpl = new Impl;
-	pImpl->lanzarComponente ();
+	LOG("Proceso %d: Iniciando interfaz puerta ...", getpid());
+	lanzarComponente ();
 }
 
 IPuerta::~IPuerta ()
 {
-	pImpl->terminarComponente ();
-	delete pImpl;
+	terminarComponente ();
 }
 
 void IPuerta::entrar (long puerta)
@@ -83,17 +79,25 @@ void IPuerta::entrar (long puerta)
 	struct IPuertaMsg msg;
 	long rtype = getpid ();
 
+	LOG("Proceso %d: Intentando ingresar al museo por la puerta %d", getpid(), puerta);
 	msg.msg.semp.rtype = rtype;
 	msg.msg.semp.idPuerta = puerta;
-	msg.mtype = pImpl->pidComp;
+	msg.mtype = child_pid;
 	msg.op = OP_SOLIC_ENTRAR_MUSEO_PERSONA;
-	err = pImpl->mqComp.escribir (msg);
+
+	LOG("Se ingresan en la cola los siguientes parametros:");
+	LOG("msg.msg.semp.rtype ---> %d", rtype);
+	LOG("msg.msg.semp.idPuerta ---> %d", puerta);
+	LOG("msg.mtype ---> %d", child_pid);
+	LOG("msg.op ---> OP_SOLIC_ENTRAR_MUSEO_PERSONA = %d", OP_SOLIC_ENTRAR_MUSEO_PERSONA);
+
+	err = mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
 
-	err = pImpl->mqComp.leer (rtype, &msg);
+	err = mqComp.leer (rtype, &msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
@@ -114,21 +118,30 @@ void IPuerta::entrar (long puerta)
 long IPuerta::entrar (long puerta, long pertenencias)
 {
 	int err;
-	struct IPuertaMsg msg;
+	IPuertaMsg msg;
 	long rtype = getpid ();
 
+	LOG("Proceso %d: Intentando ingresar al museo por la puerta %d, con pertenencias %d", getpid(), puerta, pertenencias);
 	msg.msg.semi.rtype = rtype;
 	msg.msg.semi.idPuerta = puerta;
 	msg.msg.semi.pertenencias = pertenencias;
-	msg.mtype = pImpl->pidComp;
+	msg.mtype = child_pid;
 	msg.op = OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR;
-	err = pImpl->mqComp.escribir (msg);
+
+	LOG("Se ingresan en la cola los siguientes parametros:");
+	LOG("msg.msg.semi.rtype ---> %d", rtype);
+	LOG("msg.msg.semi.idPuerta ---> %d", puerta);
+	LOG("msg.msg.semi.pertenencias ---> %d", pertenencias);
+	LOG("msg.mtype ---> %d", child_pid);
+	LOG("msg.op ---> OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR = %d", OP_SOLIC_ENTRAR_MUSEO_PERSONA);
+
+	err = mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[investigador]");
 		throw "not reached";
 	}
 
-	err = pImpl->mqComp.leer (rtype, &msg);
+	err = mqComp.leer (rtype, &msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[investigador]");
 		throw "not reached";
@@ -152,17 +165,25 @@ void IPuerta::salir (long puerta)
 	struct IPuertaMsg msg = {};
 	long rtype = getpid ();
 
+	LOG("Proceso %d: Intentando salir del museo por la puerta %d", getpid(), puerta);
 	msg.msg.ssmp.rtype = rtype;
 	msg.msg.ssmp.idPuerta = puerta;
-	msg.mtype = pImpl->pidComp;
+	msg.mtype = child_pid;
 	msg.op = OP_SOLIC_SALIR_MUSEO_PERSONA;
-	err = pImpl->mqComp.escribir (msg);
+
+	LOG("Se ingresan en la cola los siguientes parametros:");
+	LOG("msg.msg.ssmp.rtype ---> %d", rtype);
+	LOG("msg.msg.ssmp.idPuerta ---> %d", puerta);
+	LOG("msg.mtype ---> %d", child_pid);
+	LOG("msg.op ---> OP_SOLIC_SALIR_MUSEO_PERSONA = %d", OP_SOLIC_SALIR_MUSEO_PERSONA);
+
+	err = mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::salir[persona]");
 		throw "not reached";
 	}
 
-	err = pImpl->mqComp.leer (rtype, &msg);
+	err = mqComp.leer (rtype, &msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::salir[persona]");
 		throw "not reached";
@@ -182,21 +203,30 @@ void IPuerta::salir (long puerta)
 long IPuerta::salir (long puerta, long numeroLocker)
 {
 	int err;
-	struct IPuertaMsg msg = {};
+	struct IPuertaMsg msg;
 	long rtype = getpid ();
 
+	LOG("Proceso %d: Intentando ingresar al museo por la puerta %d, con locker %d", getpid(), puerta, numeroLocker);
 	msg.msg.ssmi.rtype = rtype;
 	msg.msg.ssmi.idPuerta = puerta;
 	msg.msg.ssmi.numeroLocker = numeroLocker;
-	msg.mtype = pImpl->pidComp;
+	msg.mtype = child_pid;
 	msg.op = OP_SOLIC_SALIR_MUSEO_INVESTIGADOR;
-	err = pImpl->mqComp.escribir (msg);
+
+	LOG("Se ingresan en la cola los siguientes parametros:");
+	LOG("msg.msg.ssmi.rtype ---> %d", rtype);
+	LOG("msg.msg.ssmi.idPuerta ---> %d", puerta);
+	LOG("msg.msg.ssmi.numeroLocker ---> %d", numeroLocker);
+	LOG("msg.mtype ---> %d", child_pid);
+	LOG("msg.op ---> OP_SOLIC_SALIR_MUSEO_INVESTIGADOR = %d", OP_SOLIC_SALIR_MUSEO_INVESTIGADOR);
+
+	err = mqComp.escribir (msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::salir[investigador]");
 		throw "not reached";
 	}
 
-	err = pImpl->mqComp.leer (rtype, &msg);
+	err = mqComp.leer (rtype, &msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::salir[investigador]");
 		throw "not reached";

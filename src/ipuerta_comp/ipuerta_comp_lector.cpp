@@ -9,6 +9,9 @@
 #include <sockets/cClientSocket.h>
 #include <stdint.h>
 #include <utils/System.h>
+#include <broker/Constantes.h>
+#include <broker/MensajeGenerico.h>
+#include <Logger/Logger.h>
 
 static const std::string ARCHIVO_COLA="/etc/hosts";
 static const char LETRA_COLA='A';
@@ -20,43 +23,23 @@ std::string calcularPathColas (ArgParserLector& args)
 	return path;
 }
 
-#define LOG_IPCL(fmt, ...) \
-	LOG("IPERSONA_COMP_LECTOR [%d] - " fmt, getpid (),##__VA_ARGS__)
 
 int main (int argc, char** argv)
 {
-	ArgParserLector& args = ArgParserLector::getInstance ();
-	args.parse (argc, argv);
-
-	if (args.fdBroker () == -1) {
-/*		LOG_IPCL(
-			"TODO: verificar si el lector podría abrir"
-			" la conexión hacia el broker; ver ordenamiento"
-			" de connects..");*/
-		return 1;
-	}
-
-//	LOG_IPCL("Estableciendo manejador de señal SIGINT...");
-
 	SIGINT_Handler intHandler;
 	SignalHandler* sigs = SignalHandler::getInstance ();
 	sigs->registrarHandler (SIGINT, &intHandler);
 
-//	LOG_IPCL("Conectando a IPCs...");
+	LOG("COMPONENTE_LECTOR: Conectando a la cola con la interfaz");
+	Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
 
-	std::string pathColas = calcularPathColas (args);
-	//IPCManager ipcman (args.idLocal (), args.mqInterfaz (), pathColas);
-
-//	LOG_IPCL("Inicializando conexión con broker...");
-
-	long idPuerta = args.idPuerta ();
+	long idPuerta = atoi(argv[1]);
 	BrokerMsg brokerMsg;
 
-//	LOG_IPCL("Creando socket con mensaje de tamaño %d.",
-	//		(sizeof brokerMsg));
-
+	LOG("COMPONENTE_LECTOR: Inicializando conexión con broker...");
+// DESCOMENTAR
 	cClientSocket brokerConn (sizeof brokerMsg);
-	brokerConn.tcp_adopt_connection (args.fdBroker ());
+	brokerConn.tcp_adopt_connection (atoi(argv[2]));
 
 	brokerMsg.dstId = 0;
 	brokerMsg.srcId = idPuerta;
@@ -64,7 +47,7 @@ int main (int argc, char** argv)
 	brokerMsg.param_a = idPuerta;
 	brokerMsg.param_b = 0;
 
-/*	LOG_IPCL("Paquete de inicialización:\n"
+	LOG("COMPONENTE_LECTOR: Paquete de inicialización:\n"
 			"\tdstId  : %d\n"
 			"\tsrcId  : %d\n"
 			"\top     : %d\n"
@@ -75,15 +58,15 @@ int main (int argc, char** argv)
 			brokerMsg.op,
 			brokerMsg.param_a,
 			brokerMsg.param_b);
-*/
+//DESCOMENTAR
 	brokerConn.tcp_send (reinterpret_cast<char*> (&brokerMsg));
 
-//	LOG_IPCL("Enviado. Aguardando respuestas a las solicitudes...");
-
-	Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
+	LOG("COMPONENTE_LECTOR: Enviado. Aguardando respuestas a las solicitudes...");
 
 	while (intHandler.getGracefulQuit () == 0) {
 		try {
+			sleep(10);
+			LOG("COMPONENTE_LECTOR: Dormi 10 segundos");
 			int err = brokerConn.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
 			System::check (err);
 
@@ -105,14 +88,12 @@ int main (int argc, char** argv)
 					msg.msg.nsi.pertenencias = brokerMsg.param_b;
 					break;
 				default:
-//					LOG_IPCL("Se recibió operación inválida: %d.",
-//							brokerMsg.op);
 					continue;
 			}
 
 
 		} catch (std::exception& e) {
-//			LOG_IPCL("Error: %s.", e.what ());
+			LOG("Error: %s.", e.what ());
 			// TODO: log, eintr, etc
 		}
 	}

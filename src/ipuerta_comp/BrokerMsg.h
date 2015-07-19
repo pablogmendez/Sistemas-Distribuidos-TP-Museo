@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-const int BROKER_READERS_PORT = 10001;
-const int BROKER_WRITERS_PORT = 10002;
+//const int BROKER_READERS_PORT = 10001;
+//const int BROKER_WRITERS_PORT = 10002;
 
 enum BrokerMsgOp
 {

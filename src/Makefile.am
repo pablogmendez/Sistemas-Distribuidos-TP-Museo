@@ -291,3 +291,66 @@ ipersona_comp_ipersona_comp_lector_LDADD = \
 	utils/libutils.la \
 	sockets/libsockets.la
 ###############################
+
+##### Componente IPuerta #####
+bin_PROGRAMS += \
+	ipuerta_comp/ipuerta_comp \
+	ipuerta_comp/ipuerta_comp_lector
+
+ipuerta_comp_ipuerta_comp_SOURCES = \
+	ipuerta_comp/ArgParser.cpp \
+	ipuerta_comp/ArgParser.h \
+	ipuerta_comp/contador-msg.h \
+	ipuerta_comp/ipc-keys.h \
+	ipuerta_comp/IPCManager.cpp \
+	ipuerta_comp/IPCManager.h \
+	ipuerta_comp/ipuerta_comp.cpp
+
+ipuerta_comp_ipuerta_comp_LDADD = \
+	id-server/libidclient.la \
+	IPC/libIPC.la \
+	ipuerta/libipuerta.la \
+	sockets/libsockets.la
+
+ipuerta_comp_ipuerta_comp_lector_SOURCES = \
+	ipuerta_comp/ArgParserLector.cpp \
+	ipuerta_comp/ArgParserLector.h \
+	ipuerta_comp/contador-msg.h \
+	ipuerta_comp/ipc-keys.h \
+	ipuerta_comp/IPCManager.cpp \
+	ipuerta_comp/IPCManager.h \
+	ipuerta_comp/ipuerta_comp_lector.cpp
+
+ipuerta_comp_ipuerta_comp_lector_LDADD = \
+	IPC/libIPC.la \
+	utils/libutils.la \
+	sockets/libsockets.la \
+	Logger/libLogger.la
+###############################
+
+########## Persona #############
+bin_PROGRAMS += persona/persona
+persona_persona_SOURCES = \
+	persona/main.cpp
+
+persona_persona_LDADD = \
+	ipuerta/libipuerta.la
+###############################
+
+########## Lanzador Persona #############
+bin_PROGRAMS += persona/personaLanzador
+persona_personaLanzador_SOURCES = \
+	persona/persona_lanzador.cpp
+
+persona_personaLanzador_LDADD = \
+	ipuerta/libipuerta.la
+###############################
+
+########## Destructor Persona #############
+bin_PROGRAMS += persona/personaDestructor
+persona_personaDestructor_SOURCES = \
+	persona/persona_destructor.cpp
+
+persona_personaDestructor_LDADD = \
+	ipuerta/libipuerta.la
+###############################
