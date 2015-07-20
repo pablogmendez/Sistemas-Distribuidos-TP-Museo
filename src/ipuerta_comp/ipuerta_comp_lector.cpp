@@ -34,30 +34,18 @@ int main (int argc, char** argv)
 	Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
 
 	long idPuerta = atoi(argv[1]);
-	BrokerMsg brokerMsg;
+	MensajeGenerico brokerMsg;
+
+	long rtype = atoi(argv[3]);	
 
 	LOG("COMPONENTE_LECTOR: Inicializando conexión con broker...");
 // DESCOMENTAR
 	cClientSocket brokerConn (sizeof brokerMsg);
 	brokerConn.tcp_adopt_connection (atoi(argv[2]));
 
-	brokerMsg.dstId = 0;
-	brokerMsg.srcId = idPuerta;
-	brokerMsg.op = BMO_BROKER_SET_ID;
-	brokerMsg.param_a = idPuerta;
-	brokerMsg.param_b = 0;
+	brokerMsg.mtype = 0;
+	brokerMsg.id = idPuerta;
 
-	LOG("COMPONENTE_LECTOR: Paquete de inicialización:\n"
-			"\tdstId  : %d\n"
-			"\tsrcId  : %d\n"
-			"\top     : %d\n"
-			"\tparam_a: %d\n"
-			"\tparam_b: %d",
-			brokerMsg.dstId,
-			brokerMsg.srcId,
-			brokerMsg.op,
-			brokerMsg.param_a,
-			brokerMsg.param_b);
 //DESCOMENTAR
 	brokerConn.tcp_send (reinterpret_cast<char*> (&brokerMsg));
 
@@ -65,33 +53,32 @@ int main (int argc, char** argv)
 
 	while (intHandler.getGracefulQuit () == 0) {
 		try {
-			sleep(10);
-			LOG("COMPONENTE_LECTOR: Dormi 10 segundos");
 			int err = brokerConn.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
 			System::check (err);
 
 			IPuertaMsg msg;
-			msg.op = static_cast<IPuertaOp> (brokerMsg.op);
-			switch (brokerMsg.op) {
+			msg.mtype = rtype;
+			msg.op = static_cast<IPuertaOp> (brokerMsg.msg.op);
+			switch (msg.op) {
 				case BMO_NOTIF_ENTRADA_PERSONA:
-					msg.msg.nep.res = brokerMsg.param_a;
+//					msg.msg.nep.res = brokerMsg.msg.param_a;
 					break;
 				case BMO_NOTIF_ENTRADA_INVESTIGADOR:
-					msg.msg.nei.res = brokerMsg.param_a;
-					msg.msg.nei.numeroLocker = brokerMsg.param_b;
+//					msg.msg.nei.res = brokerMsg.msg.param_a;
+					msg.msg.nei.numeroLocker = brokerMsg.msg.param_b;
 					break;
 				case BMO_NOTIF_SALIDA_PERSONA:
-					msg.msg.nsp.res = brokerMsg.param_a;
+//					msg.msg.nsp.res = brokerMsg.msg.param_a;
 					break;
 				case BMO_NOTIF_SALIDA_INVESTIGADOR:
-					msg.msg.nsi.res = brokerMsg.param_a;
-					msg.msg.nsi.pertenencias = brokerMsg.param_b;
+//					msg.msg.nsi.res = brokerMsg.msg.param_a;
+					msg.msg.nsi.pertenencias = brokerMsg.msg.param_b;
 					break;
 				default:
 					continue;
 			}
 
-
+		colaMsg.escribir(msg);
 		} catch (std::exception& e) {
 			LOG("Error: %s.", e.what ());
 			// TODO: log, eintr, etc

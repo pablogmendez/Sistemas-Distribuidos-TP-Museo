@@ -23,6 +23,9 @@
 #include <utils/System.h>
 #include <ipuerta/IPuertaMsg.h>
 
+static const char* DFLT_IPUERTA_BROKER   = "broker";
+static const char* DFLT_IPUERTA_IDSERVER = "id-server";
+
 #define LOG_IPCMP(fmt, ...) \
 	LOG("IPERSONA_COMP [%d] - " fmt, getpid (),##__VA_ARGS__)
 
@@ -85,10 +88,10 @@ int main (int argc, char** argv)
 	SIGINT_Handler intHandler;
 	SignalHandler* sigs = SignalHandler::getInstance ();
 	sigs->registrarHandler (SIGINT, &intHandler);
-		LOG("COMPONENTE_ESCRITOR: Conectando a la cola de comunicaciones de la interfaz ...")
+		LOG("COMPONENTE_ESCRITOR: Conectando a la cola de comunicaciones de la interfaz ...");
 		Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
 // DESCOMENTAR
-		IIdClient idClient (args.idServer ().c_str ());
+		IIdClient idClient (DFLT_IPUERTA_IDSERVER);
 		IdGrabber idg (idClient, IIdClient::R_PUERTA);
 		long idPersona = idg.get ();
 
@@ -100,7 +103,7 @@ int main (int argc, char** argv)
 
 			cClientSocket connDeLector (sizeof (BrokerMsg));
 			int fdLector = connDeLector.tcp_open_activo (
-					args.broker ().c_str (),
+					DFLT_IPUERTA_IDSERVER,
 					BROKER_READERS_PORT);
 			System::check (fdLector);
 			fdLector = connDeLector.getFD ();
@@ -113,10 +116,14 @@ int main (int argc, char** argv)
 			oss << fdLector;
 			std::string strFdLector = oss.str ();
 
+			oss.str ("");
+			oss << getppid();
+			std::string strPpid = oss.str ();
+
 	LOG("Proceso %d: Lanzando componente lector", getpid());
           lector = fork();
            if(lector == 0) {
-	        execlp(DFLT_IPUERTA_COMP_LECTOR, "ipuerta_comp_lector", strIdPuerta.c_str(), strFdLector.c_str(), NULL);
+	        execlp(DFLT_IPUERTA_COMP_LECTOR, "ipuerta_comp_lector", strIdPuerta.c_str(), strFdLector.c_str(), strPpid.c_str(), NULL);
 		exit(2);              
            }
            else if(lector == -1) {
@@ -130,7 +137,7 @@ int main (int argc, char** argv)
 //DESCOMENTAR		
 
 		int err_sock = connDeEscritor.tcp_open_activo (
-				args.broker ().c_str (),
+				DFLT_IPUERTA_BROKER,
 				BROKER_WRITERS_PORT);
 		System::check (err_sock);
 
