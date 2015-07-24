@@ -5,8 +5,7 @@ enum ResultadoOperacionEntrada
 {
 	ENTRO         = 1,
 	NO_HAY_LOCKER    ,
-	CERRADO          ,
-	LLENO
+	CERRADO
 };
 
 enum ResultadoOperacionSalida
