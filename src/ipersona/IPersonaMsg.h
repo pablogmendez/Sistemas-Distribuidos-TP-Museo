@@ -21,6 +21,25 @@ enum IPersonaOp
 	SOLIC_PROXIMA_OPERACION            = 1000,
 };
 
+static inline const char* strIPersonaOp (IPersonaOp op)
+{
+	#define RET_OP_STR(o) case o : return "IPersonaOp::"#o
+	switch (op) {
+		RET_OP_STR (OP_SOLIC_ENTRAR_MUSEO_PERSONA);
+		RET_OP_STR (OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR);
+		RET_OP_STR (OP_SOLIC_SALIR_MUSEO_PERSONA);
+		RET_OP_STR (OP_SOLIC_SALIR_MUSEO_INVESTIGADOR);
+		RET_OP_STR (OP_NOTIFICAR_CIERRE_MUSEO);
+		RET_OP_STR (NOTIF_ENTRADA_PERSONA);
+		RET_OP_STR (NOTIF_ENTRADA_INVESTIGADOR);
+		RET_OP_STR (NOTIF_SALIDA_PERSONA);
+		RET_OP_STR (NOTIF_SALIDA_INVESTIGADOR);
+		RET_OP_STR (SOLIC_PROXIMA_OPERACION);
+		default: return "desconocida";
+	}
+	#undef RET_OP_STR
+}
+
 struct IPersonaMsg_SolicProximaOperacion
 {
 	long rtype;

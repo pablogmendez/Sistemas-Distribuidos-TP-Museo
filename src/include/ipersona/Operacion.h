@@ -10,6 +10,20 @@ enum Tipo
 	NOTIFICAR_CIERRE_MUSEO
 };
 
+static inline const char* strOperacionTipo (Tipo op)
+{
+	#define RET_OP_STR(o) case o : return "OperacionTipo::"#o
+	switch (op) {
+		RET_OP_STR (SOLIC_ENTRAR_MUSEO_PERSONA);
+		RET_OP_STR (SOLIC_ENTRAR_MUSEO_INVESTIGADOR);
+		RET_OP_STR (SOLIC_SALIR_MUSEO_PERSONA);
+		RET_OP_STR (SOLIC_SALIR_MUSEO_INVESTIGADOR);
+		RET_OP_STR (NOTIFICAR_CIERRE_MUSEO);
+		default: return "desconocida";
+	}
+	#undef RET_OP_STR
+}
+
 struct Operacion_SolicEntrarMuseoPersona
 {
 	long idOrigen;

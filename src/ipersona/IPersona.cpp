@@ -6,6 +6,7 @@
 #include <error.h>
 #include <IPC/Cola.h>
 #include <libgen.h>
+#include <Logger/Logger.h>
 #include <signal.h>
 #include <sstream>
 #include <stdlib.h>
@@ -16,6 +17,9 @@
 #include <utils/EnvParam.h>
 #include <utils/System.h>
 #include <vector>
+
+#define LOG_IP(fmt, ...) \
+	LOG("IPUERTA [%d]: " fmt, getpid (),##__VA_ARGS__)
 
 // TODO: mover a .h de constantes
 static const char* DFLT_IPERSONA_COMP     = "ipersona_comp";
@@ -55,6 +59,9 @@ public:
 
 		void enviar (const IPersonaMsg& msg, const char* prg)
 		{
+			LOG_IP ("Enviando mensaje a componente:\n"
+					"\tOP: %d (%s).", msg.op,
+					strIPersonaOp (msg.op));
 			int err = mqComp.escribir (msg);
 			System::check (err, prg);
 		}
@@ -126,6 +133,10 @@ Operacion IPersona::leerProximaOperacion ()
 
 	err = pImpl->mqComp.leer(rtype, &msg);
 	System::check (err, "IPersona::leerProximaOperacion");
+
+	LOG_IP ("Se recibió la operación desde el componente:\n"
+			"\tOP: %d (%s)", msg.op,
+			strIPersonaOp (msg.op));
 
 	struct Operacion op = {};
 	switch (msg.op) {

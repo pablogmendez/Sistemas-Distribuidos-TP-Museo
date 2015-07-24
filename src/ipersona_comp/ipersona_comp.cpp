@@ -252,9 +252,10 @@ void run_loop (
 					assert (false);
 			}
 
-			LOG_IPCMP("Se recibió operación: %d.\n"
+			LOG_IPCMP("Se recibió operación: %d (%s).\n"
 					  "Enviando operación a interfaz...",
-					  msgOp.op);
+					  msgOp.op,
+					  strIPersonaOp (msgOp.op));
 
 			// Se devuelve la operación a la interfaz
 			msgOp.mtype = msgInt.msg.spo.rtype;
@@ -265,8 +266,9 @@ void run_loop (
 			err = ipcman.interfaz->leer (myMTYPE, &msgInt);
 			System::check (err);
 
-			LOG_IPCMP("Se obtuvo respuesta de interfaz: %d.",
-					msgInt.op);
+			LOG_IPCMP("Se obtuvo respuesta de interfaz: %d (%s).",
+					msgInt.op,
+					strIPersonaOp (msgInt.op));
 
 			// TODO: validar el mensaje recibido...
 			long param_a;
@@ -302,12 +304,13 @@ void run_loop (
 			LOG_IPCMP("Enviando respuesta al broker:\n"
 					"\tdstId  : %ld\n"
 					"\tsrcId  : %ld\n"
-					"\top     : %d\n"
+					"\top     : %d (%s)\n"
 					"\tparam_a: %ld\n"
 					"\tparam_b: %ld",
 					msgBroker.mtype,
 					msgBroker.id,
 					msgBroker.msg.op,
+					strMuseoMSGOP (msgBroker.msg.op),
 					msgBroker.msg.param_a,
 					msgBroker.msg.param_b);
 
