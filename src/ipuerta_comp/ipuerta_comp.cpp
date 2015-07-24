@@ -22,6 +22,7 @@
 #include <utils/EnvParam.h>
 #include <utils/System.h>
 #include <ipuerta/IPuertaMsg.h>
+#include <museo/MuseoMSG.h>
 
 static const char* DFLT_IPUERTA_BROKER   = "broker";
 static const char* DFLT_IPUERTA_IDSERVER = "id-server";
@@ -91,9 +92,9 @@ int main (int argc, char** argv)
 		LOG("COMPONENTE_ESCRITOR: Conectando a la cola de comunicaciones de la interfaz ...");
 		Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
 // DESCOMENTAR
-		IIdClient idClient (DFLT_IPUERTA_IDSERVER);
-		IdGrabber idg (idClient, IIdClient::R_PUERTA);
-		long idPersona = idg.get ();
+////		IIdClient idClient (DFLT_IPUERTA_IDSERVER);
+//		IdGrabber idg (idClient, IIdClient::R_PUERTA);
+		long idPersona = 101;//idg.get ();
 
 		LOG("COMPONENTE_ESCRITOR: Se obtuvo el identificador %ld", idPersona);
 
@@ -101,9 +102,9 @@ int main (int argc, char** argv)
 			LOG("COMPONENTE_ESCRITOR: Conectando con el puerto para lectores del broker.");
 
 
-			cClientSocket connDeLector (sizeof (BrokerMsg));
+			cClientSocket connDeLector (sizeof (MensajeGenerico));
 			int fdLector = connDeLector.tcp_open_activo (
-					DFLT_IPUERTA_IDSERVER,
+					DFLT_IPUERTA_BROKER,
 					BROKER_READERS_PORT);
 			System::check (fdLector);
 			fdLector = connDeLector.getFD ();
@@ -133,7 +134,7 @@ int main (int argc, char** argv)
 
 		LOG("COMPONENTE_ESCRITOR: Conectando a puerto para escritores del broker.");
 
-		cClientSocket connDeEscritor (sizeof (BrokerMsg));
+		cClientSocket connDeEscritor (sizeof (MensajeGenerico));
 //DESCOMENTAR		
 
 		int err_sock = connDeEscritor.tcp_open_activo (
@@ -164,7 +165,9 @@ void run_loop (
 			int err;
 			IPuertaMsg msgOp;
 
-			colaMsg.leer(myMTYPE, &msgOp);
+			int error = colaMsg.leer(myMTYPE, &msgOp);
+
+			System::check (error);
 
 			LOG("COMPONENTE_ESCRITOR: Se recibió solicitud desde la interfaz.\n"
 					  "Convirtiendo la solicitud en un formato aceptado por el broker...");
@@ -177,31 +180,31 @@ void run_loop (
 			switch (msgOp.op) {
 				case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 					brokerMsg.mtype = msgOp.msg.semp.idPuerta;
-					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (OP_SOLIC_ENTRAR_MUSEO_PERSONA);
+					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (MuseoMSG::SOLIC_ENTRAR_MUSEO_PERSONA);
 					brokerMsg.msg.param_a = 0;
 					brokerMsg.msg.param_b = 0;
 					break;
 				case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 					brokerMsg.mtype = msgOp.msg.semi.idPuerta;
-					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (BMO_OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR);
+					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (MuseoMSG::SOLIC_ENTRAR_MUSEO_INVESTIGADOR);
 					brokerMsg.msg.param_a = msgOp.msg.semi.pertenencias;
 					brokerMsg.msg.param_b = 0;
 					break;
 				case OP_SOLIC_SALIR_MUSEO_PERSONA:
 					brokerMsg.mtype = msgOp.msg.ssmp.idPuerta;
-					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (BMO_OP_SOLIC_SALIR_MUSEO_PERSONA);
+					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (MuseoMSG::SOLIC_SALIR_MUSEO_PERSONA);
 					brokerMsg.msg.param_a = 0;
 					brokerMsg.msg.param_b = 0;
 					break;
 				case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 					brokerMsg.mtype = msgOp.msg.ssmp.idPuerta;
-					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (BMO_OP_SOLIC_SALIR_MUSEO_INVESTIGADOR);
+					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (MuseoMSG::SOLIC_SALIR_MUSEO_INVESTIGADOR);
 					brokerMsg.msg.param_a = 0;
 					brokerMsg.msg.param_b = 0;
 					break;
 				case OP_NOTIFICAR_CIERRE_MUSEO:
 					brokerMsg.mtype = msgOp.msg.semp.idPuerta;
-					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (BMO_OP_NOTIFICAR_CIERRE_MUSEO);
+					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (MuseoMSG::NOTIFICAR_CIERRE_MUSEO);
 					brokerMsg.msg.param_a = msgOp.msg.ssmi.numeroLocker;
 					brokerMsg.msg.param_b = 0;
 					break;

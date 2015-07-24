@@ -3,7 +3,7 @@
 #include "ipc-keys.h"
 #include <IPC/SIGINT_Handler.h>
 #include <IPC/SignalHandler.h>
-//#include "IPCManager.h"
+#include <museo/MuseoMSG.h>
 #include <IPC/Cola.h>
 #include <ipuerta/IPuertaMsg.h>
 #include <sockets/cClientSocket.h>
@@ -28,7 +28,7 @@ int main (int argc, char** argv)
 {
 	SIGINT_Handler intHandler;
 	SignalHandler* sigs = SignalHandler::getInstance ();
-	sigs->registrarHandler (SIGINT, &intHandler);
+//	sigs->registrarHandler (SIGINT, &intHandler);
 
 	LOG("COMPONENTE_LECTOR: Conectando a la cola con la interfaz");
 	Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
@@ -50,35 +50,36 @@ int main (int argc, char** argv)
 	brokerConn.tcp_send (reinterpret_cast<char*> (&brokerMsg));
 
 	LOG("COMPONENTE_LECTOR: Enviado. Aguardando respuestas a las solicitudes...");
-
-	while (intHandler.getGracefulQuit () == 0) {
+	LOG("COMPONENTE_LECTOR: RTYPE %d", rtype);
+	while (/*intHandler.getGracefulQuit () == 0*/true) {
 		try {
 			int err = brokerConn.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
 			System::check (err);
-
+	LOG("COMPONENTE_LECTOR: RECIBI MENSAJE");
 			IPuertaMsg msg;
 			msg.mtype = rtype;
 			msg.op = static_cast<IPuertaOp> (brokerMsg.msg.op);
 			switch (msg.op) {
-				case BMO_NOTIF_ENTRADA_PERSONA:
-//					msg.msg.nep.res = brokerMsg.msg.param_a;
+				case NOTIF_ENTRADA_PERSONA:
+					msg.msg.nep.res = (ResultadoOperacionEntrada)brokerMsg.msg.param_a;
+						LOG("COMPONENTE_LECTOR: ENTRADA PERSONA");
 					break;
-				case BMO_NOTIF_ENTRADA_INVESTIGADOR:
-//					msg.msg.nei.res = brokerMsg.msg.param_a;
+				case NOTIF_ENTRADA_INVESTIGADOR:
+					msg.msg.nei.res = (ResultadoOperacionEntrada)brokerMsg.msg.param_a;
 					msg.msg.nei.numeroLocker = brokerMsg.msg.param_b;
 					break;
-				case BMO_NOTIF_SALIDA_PERSONA:
-//					msg.msg.nsp.res = brokerMsg.msg.param_a;
+				case NOTIF_SALIDA_PERSONA:
+					msg.msg.nsp.res = (ResultadoOperacionSalida)brokerMsg.msg.param_a;
 					break;
-				case BMO_NOTIF_SALIDA_INVESTIGADOR:
-//					msg.msg.nsi.res = brokerMsg.msg.param_a;
+				case NOTIF_SALIDA_INVESTIGADOR:
+					msg.msg.nsi.res = (ResultadoOperacionSalida)brokerMsg.msg.param_a;
 					msg.msg.nsi.pertenencias = brokerMsg.msg.param_b;
 					break;
 				default:
 					continue;
 			}
-
 		colaMsg.escribir(msg);
+	LOG("COMPONENTE_LECTOR: MANDO A LA COLA");
 		} catch (std::exception& e) {
 			LOG("Error: %s.", e.what ());
 			// TODO: log, eintr, etc

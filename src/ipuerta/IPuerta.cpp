@@ -1,4 +1,4 @@
-//#include <ipuerta/IPuerta.h>
+#include <ipuerta/IPuerta.h>
 #include "IPuertaMsg.h"
 
 #include <Logger/Logger.h>
@@ -22,23 +22,6 @@ static const char* DFLT_IPUERTA_BROKER   = "broker";
 static const char* DFLT_IPUERTA_IDSERVER = "id-server";
 /////////////////////////////////
 
-class IPuerta
-{
-private:
-	Cola<IPuertaMsg> mqComp;
-	pid_t child_pid;
-
-	void lanzarComponente ();
-	void terminarComponente ();
-
-public:
-	IPuerta ();
-	~IPuerta ();
-	void entrar (long puerta);
-	long entrar (long puerta, long pertenencias);
-	void salir (long puerta);
-	long salir (long puerta, long numeroLocker);
-};
 
 void IPuerta::lanzarComponente ()
 {
@@ -96,7 +79,7 @@ void IPuerta::entrar (long puerta)
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
-
+	LOG("IPUERTA: RTYPE %d", rtype);
 	err = mqComp.leer (rtype, &msg);
 	if (err == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
@@ -190,6 +173,7 @@ void IPuerta::salir (long puerta)
 	}
 
 	if (msg.op == NOTIF_SALIDA_PERSONA) {
+	LOG("IPUERTA: SALIO LA PERSONA");
 		return;
 	}
 
