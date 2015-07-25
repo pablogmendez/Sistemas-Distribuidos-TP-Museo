@@ -34,17 +34,17 @@ int main (int argc, char** argv)
 		System::check (err);
 
 		switch (msg.op) {
-		case SOLIC_ENTRAR_MUSEO_PERSONA:
+		case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 			// Este componente siempre deja entrar las personas
 			std::cout << "Persona entrando por puerta "
 				<< msg.msg.semp.idPuerta << std::endl;
 			res.mtype = msg.msg.semp.rtype;
-			res.op = NOTIFICACION_ENTRADA_PERSONA;
+			res.op = NOTIF_ENTRADA_PERSONA;
 			res.msg.nep.res = ENTRO;
 			err = mqComp.escribir (res);
 			System::check (err);
 			break;
-		case SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
+		case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 			// Este componente guarda las pertenencias en el numero
 			// de locker.
 			std::cout << "Investigador entrando por puerta "
@@ -52,23 +52,23 @@ int main (int argc, char** argv)
 					<< " con pertenencias "
 					<< msg.msg.semi.pertenencias << std::endl;
 			res.mtype = msg.msg.semi.rtype;
-			res.op = NOTIFICACION_ENTRADA_INVESTIGADOR;
+			res.op = NOTIF_ENTRADA_INVESTIGADOR;
 			res.msg.nei.res = ENTRO;
 			res.msg.nei.numeroLocker = msg.msg.semi.pertenencias;
 			err = mqComp.escribir (res);
 			System::check (err);
 			break;
-		case SOLIC_SALIR_MUSEO_PERSONA:
+		case OP_SOLIC_SALIR_MUSEO_PERSONA:
 			// Responde que salió
 			std::cout << "Persona saliendo por puerta "
 					<< msg.msg.ssmp.idPuerta << std::endl;
 			res.mtype = msg.msg.ssmp.rtype;
-			res.op = NOTIFICACION_SALIDA_PERSONA;
+			res.op = NOTIF_SALIDA_PERSONA;
 			res.msg.nsp.res = SALIO;
 			err = mqComp.escribir (res);
 			System::check (err);
 			break;
-		case SOLIC_SALIR_MUSEO_INVESTIGADOR:
+		case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 			// Devuelve las pertenencias que guardo en el
 			// numero de locker.
 			// No checkea puerta correcta
@@ -77,7 +77,7 @@ int main (int argc, char** argv)
 					<< " con numero de locker "
 					<< msg.msg.ssmi.numeroLocker << std::endl;
 			res.mtype = msg.msg.ssmi.rtype;
-			res.op = NOTIFICACION_SALIDA_INVESTIGADOR;
+			res.op = NOTIF_SALIDA_INVESTIGADOR;
 			res.msg.nsi.res = SALIO;
 			res.msg.nsi.pertenencias = msg.msg.ssmi.numeroLocker;
 			err = mqComp.escribir (res);
