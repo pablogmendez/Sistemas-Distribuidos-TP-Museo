@@ -8,14 +8,11 @@ EXTRA_DIST = \
 
 TESTS = \
 	id-server/test-id-server \
-	ipuerta/test_ipuerta \
 	ipersona/test_ipersona
 
 check_PROGRAMS = \
 	ipersona/mock_comp \
 	ipersona/test_ipersona \
-	ipuerta/mock_comp \
-	ipuerta/test_ipuerta \
 	sockets/client \
 	sockets/server \
 	sockets/serverproto \
