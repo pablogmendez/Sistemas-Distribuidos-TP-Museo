@@ -173,6 +173,7 @@ void IPersona::notificarEntrada (Operacion op, ResultadoOperacionEntrada res)
 	struct IPersonaMsg msg = {};
 	msg.op = NOTIF_ENTRADA_PERSONA;
 	msg.msg.nep.res = res;
+	msg.msg.nep.lleno = op.op.semp.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarEntrada[persona]");
 }
@@ -184,6 +185,7 @@ void IPersona::notificarEntrada (Operacion op,
 	msg.op = NOTIF_ENTRADA_INVESTIGADOR;
 	msg.msg.nei.res = res;
 	msg.msg.nei.numeroLocker = numeroLocker;
+	msg.msg.nei.lleno = op.op.semi.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarEntrada[investigador]");
 }
@@ -193,6 +195,7 @@ void IPersona::notificarSalida (Operacion op, ResultadoOperacionSalida res)
 	struct IPersonaMsg msg = {};
 	msg.op = NOTIF_SALIDA_PERSONA;
 	msg.msg.nsp.res = res;
+	msg.msg.nsp.lleno = op.op.ssmp.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarSalida[persona]");
 }
@@ -204,6 +207,7 @@ void IPersona::notificarSalida (Operacion op,
 	msg.op = NOTIF_SALIDA_INVESTIGADOR;
 	msg.msg.nsi.res = res;
 	msg.msg.nsi.pertenencias = pertenencias;
+	msg.msg.nsi.lleno = op.op.ssmi.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarSalida[investigador]");
 }

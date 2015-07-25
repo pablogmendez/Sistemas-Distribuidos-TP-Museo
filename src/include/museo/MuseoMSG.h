@@ -17,6 +17,8 @@ struct MuseoMSG
 		NOTIF_ENTRADA_INVESTIGADOR         ,
 		NOTIF_SALIDA_PERSONA               ,
 		NOTIF_SALIDA_INVESTIGADOR          ,
+		// Mensajes hacia IPersona, desde otras puertas
+		INDICAR_MUSEO_NO_LLENO            = 500,
 	};
 
 	OP op;
@@ -37,6 +39,7 @@ static inline const char* strMuseoMSGOP (MuseoMSG::OP op)
 		RET_OP_STR (MuseoMSG::NOTIF_ENTRADA_INVESTIGADOR);
 		RET_OP_STR (MuseoMSG::NOTIF_SALIDA_PERSONA);
 		RET_OP_STR (MuseoMSG::NOTIF_SALIDA_INVESTIGADOR);
+		RET_OP_STR (MuseoMSG::INDICAR_MUSEO_NO_LLENO);
 		default: return "desconocida";
 	}
 	#undef RET_OP_STR

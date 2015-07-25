@@ -16,6 +16,8 @@ enum IPersonaOp
 	NOTIF_ENTRADA_INVESTIGADOR            ,
 	NOTIF_SALIDA_PERSONA                  ,
 	NOTIF_SALIDA_INVESTIGADOR             ,
+
+	OP_INDICAR_MUSEO_NO_LLENO          = 500,
 	///////////////////////////////////////
 
 	SOLIC_PROXIMA_OPERACION            = 1000,
@@ -34,6 +36,7 @@ static inline const char* strIPersonaOp (IPersonaOp op)
 		RET_OP_STR (NOTIF_ENTRADA_INVESTIGADOR);
 		RET_OP_STR (NOTIF_SALIDA_PERSONA);
 		RET_OP_STR (NOTIF_SALIDA_INVESTIGADOR);
+		RET_OP_STR (OP_INDICAR_MUSEO_NO_LLENO);
 		RET_OP_STR (SOLIC_PROXIMA_OPERACION);
 		default: return "desconocida";
 	}
@@ -75,23 +78,27 @@ struct IPersonaMsg_OpNotificarCierre
 struct IPersonaMsg_NotifEntradaPersona
 {
 	enum ResultadoOperacionEntrada res;
+	bool lleno;
 };
 
 struct IPersonaMsg_NotifEntradaInvestigador
 {
 	enum ResultadoOperacionEntrada res;
 	long numeroLocker;
+	bool lleno;
 };
 
 struct IPersonaMsg_NotifSalidaPersona
 {
 	enum ResultadoOperacionSalida res;
+	bool lleno;
 };
 
 struct IPersonaMsg_NotifSalidaInvestigador
 {
 	enum ResultadoOperacionSalida res;
 	long pertenencias;
+	bool lleno;
 };
 
 struct IPersonaMsg
