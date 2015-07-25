@@ -172,6 +172,7 @@ void run_loop (
                                         break;
                                 case 3: if(brokerMsg.shmem.abierto == 0) {
                                             brokerMsg.shmem.abierto = 1;
+					    brokerMsg.shmem.personas = 0;
 					    brokerMsg.shmem.capacidad = msg.param_1;
                                             msg.op = 5;
                                         }
@@ -181,6 +182,7 @@ void run_loop (
                                         break;
                                 case 4: if(brokerMsg.shmem.abierto == 1) {
                                             brokerMsg.shmem.abierto = 0;
+					    brokerMsg.shmem.personas = 0;
                                             brokerMsg.shmem.capacidad = 0;
                                             msg.op = 5;
                                         }
