@@ -77,6 +77,25 @@ int main (int argc, char** argv)
 			}
 			System::check (err);
 
+			LOG_IPCL ("Se recibió paquete desde el broker:\n"
+					  "\tdstId        : %ld\n"
+					  "\tsrcId        : %ld\n"
+					  "\tmsg.op       : %d (%s)\n"
+					  "\tmsg.param_a  : %ld\n"
+					  "\tmsg.param_b  : %ld\n"
+					  "\tshm.abierto  : %d\n"
+					  "\tshm.capacidad: %d\n"
+					  "\tshm.personas : %d",
+					  brokerMsg.mtype,
+					  brokerMsg.id,
+					  brokerMsg.msg.op,
+					  strMuseoMSGOP (brokerMsg.msg.op),
+					  brokerMsg.msg.param_a,
+					  brokerMsg.msg.param_b,
+					  brokerMsg.shmem.abierto,
+					  brokerMsg.shmem.capacidad,
+					  brokerMsg.shmem.personas);
+
 			IPersonaMsg msg;
 			msg.op = static_cast<IPersonaOp> (brokerMsg.msg.op);
 			switch (brokerMsg.msg.op) {
