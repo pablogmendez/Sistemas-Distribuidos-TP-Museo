@@ -1,54 +1,36 @@
 #ifndef IPUERTA_IPUERTA_H
 #define IPUERTA_IPUERTA_H
+#include <IPC/Cola.h>
+#include <Logger/Logger.h>
+#include <errno.h>
+#include <error.h>
+#include <IPC/Cola.h>
+#include <signal.h>
+#include <sstream>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <utils/EnvParam.h>
+#include <utils/System.h>
+#include <vector>
+#include <ipuerta/IPuertaMsg.h>
 
 class IPuerta
 {
 private:
-	class Impl;
-	Impl* pImpl;
-public:
-	static const char* const ENV_IPUERTA_COMP;
-	static const char* const ENV_IPUERTA_MQ;
+	Cola<IPuertaMsg> mqComp;
+	pid_t child_pid;
 
+	void lanzarComponente ();
+	void terminarComponente ();
+
+public:
 	IPuerta ();
 	~IPuerta ();
-
-	/**
-	 * Utilizado por las personas.
-	 *
-	 * Entra al museo por la puerta cuyo identificador
-	 * es 'puerta'
-	 */
 	void entrar (long puerta);
-
-	/**
-	 * Utilizado por los investigadores.
-	 *
-	 * Entra al museo por la puerta cuyo identificador
-	 * es 'puerta' entregando las pertenencias dadas.
-	 *
-	 * Devuelve el número de locker donde se almacenaron
-	 * las pertenencias.
-	 */
 	long entrar (long puerta, long pertenencias);
-
-	/**
-	 * Utilizado por las personas.
-	 *
-	 * Sale del museo por la puerta cuyo identificador
-	 * es 'puerta'
-	 */
 	void salir (long puerta);
-
-	/**
-	 * Utilizado por los investigadores.
-	 *
-	 * Sale del museo por la puerta cuyo identificador
-	 * es 'puerta'.
-	 *
-	 * Devuelve las pertenencias almacenadas en el locker
-	 * cuyo número es 'numeroLocker'.
-	 */
 	long salir (long puerta, long numeroLocker);
 };
 
