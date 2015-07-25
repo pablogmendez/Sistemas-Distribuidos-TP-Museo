@@ -3,7 +3,7 @@
 
 #include "../IPC/Cola.h"
 #include "../sockets/cClientSocket.h"
-#include <broker/Constantes.h>
+#include "Constantes.h"
 #include <error.h>
 #include <errno.h>
 #include <unistd.h>
@@ -22,8 +22,8 @@ int main(int argc, char* argv[]){
 		std::cout << "ERROR OPENING CONNECTION" << std::endl;
 	}
 
-	mensaje.mtype = 1;
-	mensaje.id = 2;
+	mensaje.mtype = atoi(argv[1]);
+	mensaje.id = 500;
 	mensaje.shmem.abierto = 1;
 	mensaje.shmem.capacidad = 2;
 	mensaje.shmem.personas = 3;

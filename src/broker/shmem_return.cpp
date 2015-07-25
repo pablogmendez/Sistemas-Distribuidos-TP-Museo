@@ -2,9 +2,9 @@
 #include "../IPC/Semaforo.h"
 #include "../IPC/Cola.h"
 #include "../IPC/MemoriaCompartida.h"
-#include <broker/Constantes.h>
+#include "Constantes.h"
 #include <iostream>
-#include <museo/MuseoSHM.h>
+#include "../include/museo/MuseoSHM.h"
 
 #define COLA_MAESTRA ".colamaestra.mq"
 #define SEMAFORO_SH_MEM ".semaforo_shmem"

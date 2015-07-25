@@ -3,7 +3,7 @@
 
 #include "../IPC/Cola.h"
 #include "../sockets/cClientSocket.h"
-#include <broker/Constantes.h>
+#include "Constantes.h"
 #include <error.h>
 #include <errno.h>
 #include <unistd.h>
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 	cClientSocket socket(sizeof(MensajeGenerico));
         MensajeGenerico mensaje;
         socket.tcp_open_activo("localhost", BROKER_READERS_PORT);
-	mensaje.id=1;
+	mensaje.id=atoi(argv[1]);
 	socket.tcp_send((char*)&mensaje);
 	socket.tcp_recv((char*)&mensaje);
 	

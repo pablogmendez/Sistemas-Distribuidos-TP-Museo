@@ -1,8 +1,8 @@
 #ifndef MENSAJE_GENERICO_H
 #define MENSAJE_GENERICO_H
 
-#include <museo/MuseoMSG.h>
-#include <museo/MuseoSHM.h>
+#include "../include/museo/MuseoMSG.h"
+#include "../include/museo/MuseoSHM.h"
 
 typedef struct {
 	long     mtype;

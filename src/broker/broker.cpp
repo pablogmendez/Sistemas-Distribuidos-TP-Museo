@@ -1,5 +1,6 @@
 #include "../IPC/Semaforo.h"
 #include "MensajeGenerico.h"
+#include "Constantes.h"
 
 #include <error.h>
 #include <errno.h>
@@ -7,6 +8,8 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <fcntl.h>
+
 
 #include <iostream>
 #include <sstream>
@@ -17,6 +20,7 @@
 #define EJECUTABLE_SALIDA "./server_salida"
 #define EJECUTABLE_GET_SHMEM "./shmem_get"
 #define EJECUTABLE_RET_SHMEM "./shmem_return"
+#define EJECUTABLE_BROADCAST "./broadcast"
 
 #define SEMAFORO_SH_MEM ".semaforo_shmem"
 
@@ -24,13 +28,21 @@ int lanzarServerEntrada();
 int lanzarServerSalida();
 int lanzarGetShMem();
 int lanzarReturnShMem();
+int lanzarBroadcast();
 
 int main(int argc, char* argv[]){
 
 	Semaforo* sem = new Semaforo(SEMAFORO_SH_MEM,0,0);
+	
+	//Crear archivo de procesos
+	int fd = open(BROKER_PIDS_FILE,O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+
 	// Lanzar procesos de SH MEM
 	lanzarGetShMem();
 	lanzarReturnShMem();
+
+	//lanzar broadcasts
+	lanzarBroadcast();
 
 	//Lanzar server entrada
 	lanzarServerEntrada();
@@ -97,4 +109,16 @@ int lanzarReturnShMem(){
                 exit(3);
         }
 
+}
+
+int lanzarBroadcast(){
+	int pidSalida;
+	if((pidSalida = fork()) <0){
+		perror("Error en el fork");
+		exit(1);
+	}else if(pidSalida==0){
+		execlp(EJECUTABLE_BROADCAST, "Broadcast puertas", (char*)0);
+		perror("Error al lanzar el programa Broadcast puertas");
+		exit(3);
+	}
 }
