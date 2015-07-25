@@ -30,7 +30,8 @@ typedef struct ids_response ids_response;
 
 enum ids_rango {
 	R_PUERTA = 0,
-	R_PERSONA = 1,
+	R_IMUSEO = 1,
+	R_PERSONA = 2,
 };
 typedef enum ids_rango ids_rango;
 

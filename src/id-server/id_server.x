@@ -12,6 +12,7 @@ union ids_response switch (ids_response_type type) {
 
 enum ids_rango {
 	R_PUERTA  ,
+	R_IMUSEO  ,
 	R_PERSONA
 };
 
