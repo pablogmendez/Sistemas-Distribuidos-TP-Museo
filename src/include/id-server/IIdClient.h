@@ -12,6 +12,7 @@ class IIdClient
 		enum Rangos
 		{
 			R_PUERTA  ,
+			R_IMUSEO  ,
 			R_PERSONA
 		};
 

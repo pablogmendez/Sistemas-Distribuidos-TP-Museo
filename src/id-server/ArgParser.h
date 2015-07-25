@@ -9,6 +9,7 @@ class ArgParser : private NonCopyable
 {
 	private:
 		long _offsetPuertas;
+		long _offsetIMuseo;
 		long _offsetPersonas;
 
 		ArgParser();
@@ -23,6 +24,7 @@ class ArgParser : private NonCopyable
 		void parse (int argc, char **argv);
 
 		long offsetPuertas () const { return _offsetPuertas; }
+		long offsetIMuseo () const { return _offsetIMuseo; }
 		long offsetPersonas () const { return _offsetPersonas; }
 };
 

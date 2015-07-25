@@ -14,11 +14,16 @@ void inicializar_servicio (int argc, char **argv)
 	args.parse (argc, argv);
 
 	long puertas = args.offsetPuertas ();
+	long imuseos = args.offsetIMuseo ();
 	long personas = args.offsetPersonas ();
 
 	rangos[R_PUERTA].first = puertas;
 	rangos[R_PUERTA].next = puertas;
-	rangos[R_PUERTA].max = personas;
+	rangos[R_PUERTA].max = imuseos;
+
+	rangos[R_IMUSEO].first = imuseos;
+	rangos[R_IMUSEO].next = imuseos;
+	rangos[R_IMUSEO].max = personas;
 
 	rangos[R_PERSONA].first = personas;
 	rangos[R_PERSONA].next = personas;
@@ -34,6 +39,10 @@ void inicializar_servicio (int argc, char **argv)
 		rangos[R_PUERTA].first,
 		rangos[R_PUERTA].max,
 		rangos[R_PUERTA].max - rangos[R_PUERTA].first);
+	printf ("\tR_IMUSEO : %ld:%ld (%ld)\n",
+		rangos[R_IMUSEO].first,
+		rangos[R_IMUSEO].max,
+		rangos[R_IMUSEO].max - rangos[R_IMUSEO].first);
 	printf ("\tR_PERSONA: %ld:%ld (%ld)\n",
 		rangos[R_PERSONA].first,
 		rangos[R_PERSONA].max,
