@@ -100,7 +100,7 @@ int main (int argc, char** argv)
 
 			ipcman.ponerOperacion (msg);
 		} catch (std::exception& e) {
-			LOG_IPCL("Error: %s.", e.what ());
+			LOG_IPCL("Error (%d): %s.", errno, e.what ());
 			// TODO: log, eintr, etc
 		}
 	}
