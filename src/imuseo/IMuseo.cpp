@@ -20,18 +20,18 @@ static const char* DFLT_IMUSEO_BROKER   = "broker";
 static const char* DFLT_IMUSEO_IDSERVER = "id-server";
 /////////////////////////////////
 
-void IMUSEO::lanzarComponente ()
+void IMuseo::lanzarComponente ()
 {
 	LOG("IMUSEO: Lanzando componente");
 	std::ostringstream oss;
 	oss << getpid();
            child_pid = fork();
            if(child_pid == 0) {
-	        execlp(DFLT_IPUERTA_COMP, "comp_puerta", oss.str().c_str(), NULL);
+	        execlp(DFLT_IMUSEO_COMP, "comp_puerta", oss.str().c_str(), NULL);
 		exit(2);              
            }
            else if(child_pid == -1) {
-               std::cout << "Error: Could not fork" << std::endl;
+              LOG("Error: Could not fork");
            }
 	LOG("IMUSEO: Componente lanzado");
 }
@@ -44,7 +44,7 @@ void IMuseo::terminarComponente ()
 	}
 }
 
-IMuseo::IMuseo(): mqComp(DFLT_MUSEO_MQ, 'B')
+IMuseo::IMuseo(): mqComp(DFLT_IMUSEO_MQ, 'B')
 {
 	LOG("IMUSEO: Iniciando interfaz puerta ...");
 	lanzarComponente ();
@@ -61,10 +61,10 @@ bool IMuseo::entrarPersona() {
 
 	msg.mtype = child_pid;	
 	msg.op = 1;
-
+	int e;
 	mqComp.escribir(msg);
 	mqComp.leer(getpid(), &msg);
-	if (err == -1) {
+	if (e == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
@@ -79,10 +79,10 @@ bool IMuseo::sacarPersona() {
 
 	msg.mtype = child_pid;	
 	msg.op = 2;
-
+	int e;
 	mqComp.escribir(msg);
 	mqComp.leer(getpid(), &msg);
-	if (err == -1) {
+	if (e == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
@@ -102,7 +102,8 @@ bool IMuseo::abrirMuseo(uint32_t capacidad) {
 
 	mqComp.escribir(msg);
 	mqComp.leer(getpid(), &msg);
-	if (err == -1) {
+	int e;
+	if (e == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
@@ -118,10 +119,10 @@ bool IMuseo::cerrarMuseo() {
 
 	msg.mtype = child_pid;	
 	msg.op = 4;
-
+	int e;
 	mqComp.escribir(msg);
 	mqComp.leer(getpid(), &msg);
-	if (err == -1) {
+	if (e == -1) {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
