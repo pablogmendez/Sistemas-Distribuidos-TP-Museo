@@ -16,12 +16,14 @@ enum ResultadoSalida
 {
 	SALIO         ,
 	SALIO_Y_LLENO
-}
+};
 
 class IMuseo {
 private:
 	Cola<IMuseoMsg> mqComp;
 	pid_t child_pid;
+	void lanzarComponente ();
+	void terminarComponente ();
 
 public:
 
@@ -29,13 +31,13 @@ IMuseo();
 
 ~IMuseo();
 
-bool entrarPersona();
+ResultadoEntrada entrarPersona();
 
-bool sacarPersona();
+ResultadoSalida sacarPersona();
 
-void abrirMuseo(uint32_t capacidad);
+bool abrirMuseo(uint32_t capacidad);
 
-void cerrarMuseo();
+bool cerrarMuseo();
 
 };
 
