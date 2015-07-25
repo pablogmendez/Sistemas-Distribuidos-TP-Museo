@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <signal.h>
 
 
 #include <iostream>
@@ -38,17 +39,24 @@ int main(int argc, char* argv[]){
 	int fd = open(BROKER_PIDS_FILE,O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
 	// Lanzar procesos de SH MEM
-	lanzarGetShMem();
-	lanzarReturnShMem();
+	long pid_shmem = lanzarGetShMem();
+	long pid_shmem2 = lanzarReturnShMem();
 
 	//lanzar broadcasts
-	lanzarBroadcast();
+	long pid_broadcast = lanzarBroadcast();
 
 	//Lanzar server entrada
-	lanzarServerEntrada();
+	long pid_entrada = lanzarServerEntrada();
 	//Lanzar proceso salida
-	lanzarServerSalida();
+	long pid_salida = lanzarServerSalida();
 	
+	int finish;
+	std::cin >> finish;
+	kill(pid_shmem,SIGINT);
+	kill(pid_shmem2,SIGINT);   
+	kill(pid_broadcast,SIGINT);   
+	kill(pid_entrada,SIGINT);   
+	kill(pid_salida,SIGINT);   
 	return 0;
 }
 
@@ -64,6 +72,7 @@ int lanzarServerEntrada(){
                 perror("Error al lanzar el programa Entrada Broker");
                 exit(3);
         }
+	return pidEntrada;
 }
 
 int lanzarServerSalida(){
@@ -78,7 +87,7 @@ int lanzarServerSalida(){
                 perror("Error al lanzar el programa Salida Broker");
                 exit(3);
         }
-
+	return pidSalida;
 }
 
 int lanzarGetShMem(){
@@ -93,7 +102,7 @@ int lanzarGetShMem(){
                 perror("Error al lanzar el programa Get SH MEM");
                 exit(3);
         }
-
+	return pidSalida;
 }
 
 int lanzarReturnShMem(){
@@ -108,7 +117,7 @@ int lanzarReturnShMem(){
                 perror("Error al lanzar el programa Return SH MEM");
                 exit(3);
         }
-
+	return pidSalida;
 }
 
 int lanzarBroadcast(){
@@ -121,4 +130,5 @@ int lanzarBroadcast(){
 		perror("Error al lanzar el programa Broadcast puertas");
 		exit(3);
 	}
+	return pidSalida;
 }

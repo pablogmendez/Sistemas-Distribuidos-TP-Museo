@@ -18,6 +18,7 @@ int main(int argc, char* argv[]){
         socket.tcp_open_activo("localhost", BROKER_READERS_PORT);
 	mensaje.id=atoi(argv[1]);
 	socket.tcp_send((char*)&mensaje);
+	while(1){
 	socket.tcp_recv((char*)&mensaje);
 	
 	std::cout <<"RECIBI: \n"
@@ -25,5 +26,6 @@ int main(int argc, char* argv[]){
 		<< "\tshmem.capacidad: " << mensaje.shmem.capacidad << '\n'
 		<< "\tshmem.personas : " << mensaje.shmem.personas
 		<< std::endl;
+	}
 }
 

@@ -17,6 +17,8 @@ struct MuseoMSG
 		NOTIF_ENTRADA_INVESTIGADOR         ,
 		NOTIF_SALIDA_PERSONA               ,
 		NOTIF_SALIDA_INVESTIGADOR          ,
+		// Mensaje de desconexion
+		NOTIF_DESCONEXION                  ,
 	};
 
 	OP op;

@@ -35,7 +35,7 @@ int main(int argc, char* argv[]){
 
 		Proceso p;
 		while(read(fd,&p,sizeof(p)) > 0){
-			if(!p.borrado){
+			if(!p.borrado && p.tipo == PUERTA){
 				long id = p.id;
 				msg.mtype = id;
 				colaMaestra->escribir(msg);
