@@ -101,8 +101,12 @@ int main (int argc, char** argv) try
 
 	LOG_PUERTA ("Iniciando ciclo principal...");
 
+	int capacidad = 2;
+	int personas = 0;
+
 	Operacion op = ipersona.leerProximaOperacion ();
 	while (op.tipo != NOTIFICAR_CIERRE_MUSEO) {
+		LOG_PUERTA ("capacidad: %d; personas: %d.", capacidad, personas);
 		switch (op.tipo) {
 			case SOLIC_ENTRAR_MUSEO_PERSONA:
 			{
@@ -111,13 +115,27 @@ int main (int argc, char** argv) try
 
 				// TODO: Usar interfaz IMuseo para contabilizar la
 				// entrada y verificar si hay lugar.
-				// Por ahora se deja entrar a cualquiera...
-
-				ipersona.notificarEntrada (op, ENTRO);
+				if (personas < capacidad) {
+					personas++;
+					ipersona.notificarEntrada (op, ENTRO);
+				} else {
+					LOG_PUERTA ("Museo lleno.");
+					set_lleno (op, true);
+					ipersona.notificarEntrada (op,
+						static_cast<ResultadoOperacionEntrada> (0));
+				}
 				break;
 			}
 			case SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 			{
+				if (personas >= capacidad) {
+					LOG_PUERTA ("Museo lleno");
+					set_lleno (op, true);
+					ipersona.notificarEntrada (op,
+						static_cast<ResultadoOperacionEntrada> (0), 0);
+					break;
+				}
+
 				long idOrigen = op.op.semi.idOrigen;
 				long pertenencias = op.op.semi.pertenencias;
 
@@ -132,6 +150,7 @@ int main (int argc, char** argv) try
 				if (locker == LockerRack::NO_HAY_LUGAR) {
 					ipersona.notificarEntrada (op, NO_HAY_LOCKER, 0);
 				} else {
+					personas++;
 					ipersona.notificarEntrada (op, ENTRO, locker);
 				}
 				break;
@@ -143,7 +162,14 @@ int main (int argc, char** argv) try
 
 				// TODO: Usar interfaz IMuseo para contabilizar la
 				// salida de la persona.
-
+				bool lleno = (personas == capacidad);
+				personas--;
+				if (personas < 0) {
+					LOG_PUERTA ("Se sacaron más personas "
+								"que las que entraron.");
+					personas = 0;
+				}
+				set_lleno (op, lleno);
 				ipersona.notificarSalida (op, SALIO);
 				break;
 			}
@@ -164,6 +190,14 @@ int main (int argc, char** argv) try
 				} else {
 					// TODO: Usar interfaz IMuseo para contabilizar la
 					// salida de la persona.
+					bool lleno = (personas == capacidad);
+					personas--;
+					if (personas < 0) {
+						LOG_PUERTA ("Se sacaron más personas "
+									"que las que entraron.");
+						personas = 0;
+					}
+					set_lleno (op, lleno);
 					Locker locker = rack.retirar (lockerId);
 					ipersona.notificarSalida (op, SALIO, locker.pertenencias);
 				}
