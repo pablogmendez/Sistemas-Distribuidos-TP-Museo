@@ -23,7 +23,7 @@ cout << "q		 	    Terminar aplicacion" << endl;
 int main (int argc, char** argv)
 {
 	char op;
-	long puerta, pertenencias, locker;
+	long puerta, pertenencias, locker, retval;
 
 	IPuerta ipuerta;
 		//mostrarOpciones();
@@ -32,14 +32,16 @@ int main (int argc, char** argv)
 		switch(op) {
 			case 'n': cout << "Ingresar numero de puerta:";
 				  cin >> puerta;
-				  ipuerta.entrar(puerta);
+				  retval = ipuerta.entrar(puerta);
+				  if(retval == 1) break;
 				  cout << "Ingresar puerta por donde salir:";
   				  cin >> puerta;
 				  ipuerta.salir(puerta);
 				  break;
 			case 'i': cout << "Ingresar numero de puerta y cantidad de pertenencias:";
     				  cin >> puerta >> pertenencias;
-				  ipuerta.entrar(puerta, pertenencias); 
+				  retval = ipuerta.entrar(puerta, pertenencias); 
+				  if(retval == 1) break;
 				  cout << "Ingresar puerta por donde salir y locker:";
   				  cin >> puerta >> locker;
 				  ipuerta.salir(puerta, locker);

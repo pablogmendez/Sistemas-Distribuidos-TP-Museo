@@ -67,7 +67,6 @@ int main (int argc, char** argv)
 			switch (msg.op) {
 				case NOTIF_ENTRADA_PERSONA:
 					msg.msg.nep.res = (ResultadoOperacionEntrada)brokerMsg.msg.param_a;
-						LOG("COMPONENTE_LECTOR: ENTRADA PERSONA");
 					break;
 				case NOTIF_ENTRADA_INVESTIGADOR:
 					msg.msg.nei.res = (ResultadoOperacionEntrada)brokerMsg.msg.param_a;
