@@ -233,7 +233,7 @@ void run_loop (
 			assert (msgInt.op == SOLIC_PROXIMA_OPERACION);
 
 			LOG_IPCMP("Se recibió solicitud desde la interfaz.\n"
-					  "Aguardando operación desde el broker...");
+					  "\tAguardando operación desde el broker...");
 
 			// Ahora se espera a que arribe una operación desde el broker
 			msgOp = ipcman.leerOperacionConPrioridad ();
@@ -325,7 +325,7 @@ void run_loop (
 					descParamA = strResultadoOperacionSalida (
 						msgInt.msg.nsi.res);
 					param_b = msgInt.msg.nsi.pertenencias;
-					enviarBroadcast = msgInt.msg.nsp.lleno;
+					enviarBroadcast = msgInt.msg.nsi.lleno;
 					break;
 				default:
 					assert (false);
