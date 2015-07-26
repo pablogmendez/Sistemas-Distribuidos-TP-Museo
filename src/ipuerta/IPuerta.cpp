@@ -227,12 +227,7 @@ long IPuerta::salir (long puerta, long numeroLocker)
 		if (msg.msg.nsi.res == SALIO) {
 			return msg.msg.nsi.pertenencias;
 		}
-
-		std::ostringstream oss;
-		oss << "IPuerta::salir[investigador]: ";
-		oss << "se recibio error: puerta incorrecta.";
-		error (1, 0, "%s", oss.str ().c_str ());
-		throw "not reached";
+		return -1;
 	}
 
 	std::ostringstream oss;

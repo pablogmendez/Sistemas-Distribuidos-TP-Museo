@@ -45,9 +45,18 @@ int main (int argc, char** argv)
 
 				  cout << "La puerta guardó las pertenencias en el locker: " << retval << endl;
 
-				  cout << "Ingresar puerta por donde salir y locker:";
-  				  cin >> puerta >> locker;
-				  ipuerta.salir(puerta, locker);
+				  long res;
+				  do {
+				    cout << "Ingresar puerta por donde salir y locker:";
+				    cin >> puerta >> locker;
+				    cout << "Saliendo por puerta " << puerta << " con locker " << locker << endl;
+				    res = ipuerta.salir(puerta, locker);
+				    if (res == -1) {
+				      cout << "Puerta o locker incorrecto. Intente de nuevo."
+				           << endl;
+				    }
+				   } while (res == -1);
+				  cout << "Salí. La puerta devolvió las pertenencias " << res << endl;
 				  break;
 			default:  cout << "Parametro invalido" << endl;
 		}
