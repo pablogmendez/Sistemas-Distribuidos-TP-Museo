@@ -56,7 +56,7 @@ IPuerta::~IPuerta ()
 	terminarComponente ();
 }
 
-void IPuerta::entrar (long puerta)
+long IPuerta::entrar (long puerta)
 {
 	int err;
 	struct IPuertaMsg msg;
@@ -87,8 +87,12 @@ void IPuerta::entrar (long puerta)
 	}
 
 	if (msg.op == NOTIF_ENTRADA_PERSONA) {
+		if(msg.msg.nep.res == 3) {	
+		LOG("Museo Cerrado");
+		return 1;			
+		}
 		// TODO: ver si no estaba cerrado el museo
-		return;
+		return 0;
 	}
 
 	std::ostringstream oss;
@@ -131,8 +135,12 @@ long IPuerta::entrar (long puerta, long pertenencias)
 	}
 
 	if (msg.op == NOTIF_ENTRADA_INVESTIGADOR) {
+		if(msg.msg.nep.res == 3) {	
+		LOG("Museo Cerrado");
+		return 1;			
+		}
 		// TODO: ver si no estaba cerrado el museo
-		return msg.msg.nei.numeroLocker;
+		return 0;
 	}
 
 	std::ostringstream oss;
@@ -142,7 +150,7 @@ long IPuerta::entrar (long puerta, long pertenencias)
 	throw "not reached";
 }
 
-void IPuerta::salir (long puerta)
+long IPuerta::salir (long puerta)
 {
 	int err;
 	struct IPuertaMsg msg = {};
@@ -174,7 +182,7 @@ void IPuerta::salir (long puerta)
 
 	if (msg.op == NOTIF_SALIDA_PERSONA) {
 	LOG("IPUERTA: SALIO LA PERSONA");
-		return;
+		return 0;
 	}
 
 	std::ostringstream oss;

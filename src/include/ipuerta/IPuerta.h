@@ -28,9 +28,9 @@ private:
 public:
 	IPuerta ();
 	~IPuerta ();
-	void entrar (long puerta);
+	long entrar (long puerta);
 	long entrar (long puerta, long pertenencias);
-	void salir (long puerta);
+	long salir (long puerta);
 	long salir (long puerta, long numeroLocker);
 };
 
