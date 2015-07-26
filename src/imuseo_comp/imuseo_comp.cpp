@@ -142,6 +142,7 @@ void run_loop (
 		LOG("COMPONENTE_MUSEO: Preparando respuesta para la interfaz");
 		msg.mtype = MTYPEdeMiPapa;
 		brokerMsg.mtype = 2;
+		brokerMsg.id = idMuseo;
 		
 		int echar = 0;
 		switch(msg.op) {
