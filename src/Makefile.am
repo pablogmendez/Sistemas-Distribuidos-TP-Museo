@@ -251,14 +251,12 @@ broker_broadcast_LDADD = \
         sockets/libsockets.la
 
 broker_broadcast_personas_SOURCES = \
-	broker/broadcast_personas.cpp
+	broker/broadcast_personas.cpp \
 	broker/MensajeGenerico.h
 
 broker_broadcast_personas_LDADD = \
         IPC/libIPC.la \
         sockets/libsockets.la
-
-
 
 ########## Puerta #############
 bin_PROGRAMS += puerta/puerta
