@@ -40,6 +40,7 @@ void IMuseo::terminarComponente ()
 {
 	LOG("IMUSEO: Terminando componente");
 	if (child_pid != -1) {
+		LOG("KILLING");
 		kill (child_pid, SIGINT);
 	}
 }

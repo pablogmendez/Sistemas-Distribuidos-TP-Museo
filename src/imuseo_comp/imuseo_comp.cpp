@@ -133,12 +133,10 @@ void run_loop (
 		LOG("COMPONENTE_MUSEO: brokerMsg.id ----> %ld", idMuseo);
 		LOG("COMPONENTE_MUSEO: brokerMsg.mtype ----> %ld", 1);
 		connDeEscritor.tcp_send (reinterpret_cast<char*> (&brokerMsg));
-		} catch (SystemErrorException& e) {
-			std::cerr << "Error (" << e.number ()
-					  << "): " << e.what () << std::endl;
-		}
+		
+
 		LOG("COMPONENTE_MUSEO: Esperando respuesta del BROKER");
-		int err = connDeLector.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
+		err = connDeLector.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
 		System::check (err);
 		LOG("COMPONENTE_MUSEO: Recibi respuesta del BROKER");
 		LOG("COMPONENTE_MUSEO: Preparando respuesta para la interfaz");
@@ -197,26 +195,31 @@ void run_loop (
 			LOG("COMPONENTE_MUSEO: Enviando respuesta al broker:\n"
 					"\tmtype       : %ld\n"
 					"\tid          : %ld\n"
-					"\tabierto     : %ld\n"
-					"\tcapacidad   : %ld\n"
-					"\tpersonas    : %ld",
+					"\tabierto     : %d\n"
+					"\tcapacidad   : %d\n"
+					"\tpersonas    : %d",
 					brokerMsg.mtype,
 					brokerMsg.id,
 					brokerMsg.shmem.abierto,
 					brokerMsg.shmem.capacidad,
 					brokerMsg.shmem.personas);
 // DESCOMENTAR
-		try {
+		
 			connDeEscritor.tcp_send (reinterpret_cast<char*> (&brokerMsg));
 			LOG("COMPONENTE_MUSEO: Respuesta enviada");
-		} catch (SystemErrorException& e) {
-			std::cerr << "Error (" << e.number ()
-					  << "): " << e.what () << std::endl;
-		}
 		LOG("COMPONENTE_MUSEO: Enviando respuesta a la interfaz");
 		LOG("COMPONENTE_MUSEO: mtype ----> %d", msg.mtype);
 		LOG("COMPONENTE_MUSEO: op    ----> %d", msg.op);
 		colaMsg.escribir(msg);
+		} catch (SystemErrorException& e) {
+			std::cerr << "Error (" << e.number ()
+					  << "): " << e.what () << std::endl;
+		}
 	}
+	
+	MensajeGenerico descMsg;
+	descMsg.id = idMuseo;
+	descMsg.msg.op = MuseoMSG::NOTIF_DESCONEXION;
+	connDeEscritor.tcp_send((char*) &descMsg);
 }
 
