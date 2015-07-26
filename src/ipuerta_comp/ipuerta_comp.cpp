@@ -1,5 +1,4 @@
 #include "ArgParser.h"
-#include "BrokerMsg.h"
 #include <Logger/Logger.h>
 #include <cassert>
 #include <id-server/IIdClient.h>
