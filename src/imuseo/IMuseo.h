@@ -12,6 +12,19 @@ enum Resultado
 	CERRADO    ,
 	LLENO
 };
+
+static inline const char* strResultado (Resultado r)
+{
+	#define RET_OP_STR(o) case o : return "Entrada::Resultado::"#o
+	switch (r) {
+		RET_OP_STR (ENTRO);
+		RET_OP_STR (CERRADO);
+		RET_OP_STR (LLENO);
+		default: return "desconocida";
+	}
+	#undef RET_OP_STR
+}
+
 }
 
 namespace Salida {
@@ -20,6 +33,17 @@ enum Resultado
 	SALIO         ,
 	SALIO_Y_LLENO
 };
+
+static inline const char* strResultado (Resultado r)
+{
+	#define RET_OP_STR(o) case o : return "Salida::Resultado::"#o
+	switch (r) {
+		RET_OP_STR (SALIO);
+		RET_OP_STR (SALIO_Y_LLENO);
+		default: return "desconocida";
+	}
+	#undef RET_OP_STR
+}
 }
 
 class IMuseo {

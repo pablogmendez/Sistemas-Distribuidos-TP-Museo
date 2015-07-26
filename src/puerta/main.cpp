@@ -117,6 +117,10 @@ int main (int argc, char** argv) try
 						op.op.semp.idOrigen);
 
 				Entrada::Resultado res = imuseo.entrarPersona ();
+
+				LOG_PUERTA ("Se recibio resultado del museo: %d (%s)",
+					res, Entrada::strResultado (res));
+
 				if (res == Entrada::ENTRO) {
 					ipersona.notificarEntrada (op, ENTRO);
 				} else if (res == Entrada::LLENO) {
@@ -139,16 +143,19 @@ int main (int argc, char** argv) try
 						    " con pertenencias %ld.", idOrigen,
 						    pertenencias);
 
-				// TODO: Usar interfaz IMuseo para contabilizar la
-				// entrada y verificar si hay lugar.
 				long locker = rack.guardar (idOrigen, pertenencias);
 
 				if (locker == LockerRack::NO_HAY_LUGAR) {
+					LOG_PUERTA ("No hay lockers...");
 					ipersona.notificarEntrada (op, NO_HAY_LOCKER, 0);
 					break;
 				}
 
 				Entrada::Resultado res = imuseo.entrarPersona ();
+
+				LOG_PUERTA ("Se recibio resultado del museo: %d (%s)",
+					res, Entrada::strResultado (res));
+
 				if (res == Entrada::ENTRO) {
 					ipersona.notificarEntrada (op, ENTRO, locker);
 				} else if (res == Entrada::CERRADO) {
@@ -168,6 +175,10 @@ int main (int argc, char** argv) try
 				LOG_PUERTA ("La persona %ld solicita salir del museo.",
 						op.op.ssmp.idOrigen);
 				Salida::Resultado res = imuseo.sacarPersona ();
+
+				LOG_PUERTA ("Se recibio resultado del museo: %d (%s)",
+					res, Salida::strResultado (res));
+
 				set_lleno (op, res == Salida::SALIO_Y_LLENO);
 				ipersona.notificarSalida (op, SALIO);
 				break;
@@ -188,6 +199,8 @@ int main (int argc, char** argv) try
 					ipersona.notificarSalida (op, PUERTA_INCORRECTA, 0);
 				} else {
 					Salida::Resultado res = imuseo.sacarPersona ();
+					LOG_PUERTA ("Se recibio resultado del museo: %d (%s)",
+						res, Salida::strResultado (res));
 					set_lleno (op, res == Salida::SALIO_Y_LLENO);
 					Locker locker = rack.retirar (lockerId);
 					ipersona.notificarSalida (op, SALIO, locker.pertenencias);
