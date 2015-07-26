@@ -270,7 +270,8 @@ puerta_puerta_SOURCES = \
 	puerta/main.cpp
 
 puerta_puerta_LDADD = \
-	ipersona/libipersona.la
+	ipersona/libipersona.la \
+	imuseo/libimuseo.la
 
 bin_PROGRAMS += finalizador-puertas/finalizador-puertas
 
