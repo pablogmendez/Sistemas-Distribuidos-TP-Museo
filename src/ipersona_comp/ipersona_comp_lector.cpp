@@ -114,6 +114,7 @@ int main (int argc, char** argv)
 					msg.msg.ossmi.numeroLocker = brokerMsg.msg.param_a;
 					break;
 				case MuseoMSG::NOTIFICAR_CIERRE_MUSEO:
+				case MuseoMSG::INDICAR_MUSEO_NO_LLENO:
 					break;
 				default:
 					LOG_IPCL("Se recibió operación inválida: %d.",
