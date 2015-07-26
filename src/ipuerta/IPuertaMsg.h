@@ -83,6 +83,8 @@ struct IPuertaMsg_NotificacionSalidaInvestigador
 	long pertenencias;
 };
 
+#define IPUERTAMSG_INITIALIZER {0, (IPuertaOp) 0, {0, 0}}
+
 struct IPuertaMsg
 {
 	long mtype;

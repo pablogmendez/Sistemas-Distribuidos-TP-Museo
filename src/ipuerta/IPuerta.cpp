@@ -153,7 +153,7 @@ long IPuerta::entrar (long puerta, long pertenencias)
 long IPuerta::salir (long puerta)
 {
 	int err;
-	struct IPuertaMsg msg = {};
+	struct IPuertaMsg msg = IPUERTAMSG_INITIALIZER;
 	long rtype = getpid ();
 
 	LOG("Proceso %d: Intentando salir del museo por la puerta %d", getpid(), puerta);
