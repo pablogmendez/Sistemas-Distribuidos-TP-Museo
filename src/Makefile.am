@@ -92,7 +92,7 @@ ipersona_libipersona_la_LIBADD = IPC/libIPC.la utils/libutils.la
 
 imuseo_libimuseo_la_SOURCES = \
 	include/icommon/resultado.h \
-	include/imuseo/IMuseo.h \
+	imuseo/IMuseo.h \
 	imuseo/IMuseo.cpp \
 	imuseo/IMuseoMsg.h
 imuseo_libimuseo_la_LIBADD = IPC/libIPC.la utils/libutils.la
@@ -146,7 +146,8 @@ EXTRA_DIST += \
 	broker/.shmem
 
 noinst_HEADERS += \
-	broker/Constantes.h
+	broker/Constantes.h \
+	broker/Proceso.h
 
 # Se agrega el binario
 bin_PROGRAMS += \
