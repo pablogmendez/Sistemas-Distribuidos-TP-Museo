@@ -63,10 +63,14 @@ Entrada::Resultado IMuseo::entrarPersona() {
 	msg.mtype = child_pid;	
 	msg.op = 1;
 	int e;
-	mqComp.escribir(msg);
-	mqComp.leer(getpid(), &msg);
+	e = mqComp.escribir(msg);
 	if (e == -1) {
-		error (1, errno, "IPuerta::entrar[persona]");
+		error (1, errno, "IMuseo::entrarPersona");
+		throw "not reached";
+	}
+	e = mqComp.leer(getpid(), &msg);
+	if (e == -1) {
+		error (1, errno, "IMuseo::entrarPersona");
 		throw "not reached";
 	}
 	if(msg.op == 5) {
@@ -86,10 +90,14 @@ Salida::Resultado IMuseo::sacarPersona() {
 	msg.mtype = child_pid;	
 	msg.op = 2;
 	int e;
-	mqComp.escribir(msg);
-	mqComp.leer(getpid(), &msg);
+	e = mqComp.escribir(msg);
 	if (e == -1) {
-		error (1, errno, "IPuerta::entrar[persona]");
+		error (1, errno, "IMuseo::sacarPersona");
+		throw "not reached";
+	}
+	e = mqComp.leer(getpid(), &msg);
+	if (e == -1) {
+		error (1, errno, "IMuseo::sacarPersona");
 		throw "not reached";
 	}
 	if(msg.op == 5) {
@@ -107,12 +115,15 @@ bool IMuseo::abrirMuseo(uint32_t capacidad) {
 	msg.mtype = child_pid;	
 	msg.op = 3;
 	msg.param_1 = capacidad;
-
-	mqComp.escribir(msg);
-	mqComp.leer(getpid(), &msg);
 	int e;
+	e = mqComp.escribir(msg);
 	if (e == -1) {
-		error (1, errno, "IPuerta::entrar[persona]");
+		error (1, errno, "IMuseo::abrirMuseo");
+		throw "not reached";
+	}
+	e = mqComp.leer(getpid(), &msg);
+	if (e == -1) {
+		error (1, errno, "IMuseo::abrirMuseo");
 		throw "not reached";
 	}
 	if(msg.op == 5)
@@ -128,10 +139,14 @@ bool IMuseo::cerrarMuseo() {
 	msg.mtype = child_pid;	
 	msg.op = 4;
 	int e;
-	mqComp.escribir(msg);
-	mqComp.leer(getpid(), &msg);
+	e = mqComp.escribir(msg);
 	if (e == -1) {
-		error (1, errno, "IPuerta::entrar[persona]");
+		error (1, errno, "IMuseo::cerrarMuseo");
+		throw "not reached";
+	}
+	e = mqComp.leer(getpid(), &msg);
+	if (e == -1) {
+		error (1, errno, "IMuseo::cerrarMuseo");
 		throw "not reached";
 	}
 	if(msg.op == 5)
