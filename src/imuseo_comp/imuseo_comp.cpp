@@ -142,6 +142,8 @@ void run_loop (
 		LOG("COMPONENTE_MUSEO: Preparando respuesta para la interfaz");
 		msg.mtype = MTYPEdeMiPapa;
 		brokerMsg.mtype = 2;
+		
+		int echar = 0;
 		switch(msg.op) {
                                 case 1: if(brokerMsg.shmem.abierto != 0) {
 						if(brokerMsg.shmem.personas < brokerMsg.shmem.capacidad) {
@@ -183,6 +185,7 @@ void run_loop (
 					    brokerMsg.shmem.personas = 0;
                                             brokerMsg.shmem.capacidad = 0;
                                             msg.op = 5;
+					    echar = 1;
                                         }
                                         else {
                                                 msg.op = 6;
@@ -206,10 +209,20 @@ void run_loop (
 // DESCOMENTAR
 		
 			connDeEscritor.tcp_send (reinterpret_cast<char*> (&brokerMsg));
+			
 			LOG("COMPONENTE_MUSEO: Respuesta enviada");
 		LOG("COMPONENTE_MUSEO: Enviando respuesta a la interfaz");
 		LOG("COMPONENTE_MUSEO: mtype ----> %d", msg.mtype);
 		LOG("COMPONENTE_MUSEO: op    ----> %d", msg.op);
+			if (echar){
+				LOG("COMPONENTE MUSEO: ECHO A LAS PERSONAS");
+				// ECHAR A LAS PERSONAS
+				MensajeGenerico echarMsg;
+				echarMsg.mtype = 4;
+				echarMsg.id = idMuseo;
+				echarMsg.msg.op = MuseoMSG::NOTIF_ECHAR_PERSONA;
+				connDeEscritor.tcp_send((char*) &echarMsg);
+			}
 		colaMsg.escribir(msg);
 		} catch (SystemErrorException& e) {
 			std::cerr << "Error (" << e.number ()

@@ -14,7 +14,9 @@ enum IPuertaOp
 	NOTIF_ENTRADA_PERSONA                 ,
 	NOTIF_ENTRADA_INVESTIGADOR            ,
 	NOTIF_SALIDA_PERSONA                  ,
-	NOTIF_SALIDA_INVESTIGADOR
+	NOTIF_SALIDA_INVESTIGADOR             ,
+	NOTIF_DESCONEXION		      ,
+	NOTIF_ECHAR_PERSONA		      
 };
 
 static inline const char* strIPuertaOp (IPuertaOp op)

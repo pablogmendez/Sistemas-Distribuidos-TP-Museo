@@ -19,6 +19,7 @@ struct MuseoMSG
 		NOTIF_SALIDA_INVESTIGADOR          ,
 		// Mensaje de desconexion
 		NOTIF_DESCONEXION                  ,
+		NOTIF_ECHAR_PERSONA	           ,
 		// Mensajes hacia IPersona, desde otras puertas
 		INDICAR_MUSEO_NO_LLENO            = 500,
 	};

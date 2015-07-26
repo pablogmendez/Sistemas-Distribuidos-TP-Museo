@@ -38,6 +38,7 @@ int main (int argc, char** argv)
 
 	long rtype = atoi(argv[3]);	
 
+
 	LOG("COMPONENTE_LECTOR: Inicializando conexión con broker...");
 // DESCOMENTAR
 	cClientSocket brokerConn (sizeof brokerMsg);
@@ -78,6 +79,13 @@ int main (int argc, char** argv)
 				case NOTIF_SALIDA_INVESTIGADOR:
 					msg.msg.nsi.res = (ResultadoOperacionSalida)brokerMsg.msg.param_a;
 					msg.msg.nsi.pertenencias = brokerMsg.msg.param_b;
+					break;
+				case NOTIF_ECHAR_PERSONA:
+					LOG("COMPONENTE LECTOR: RECIBI NOTIFICACION DE MUSEO CERRADO");
+					LOG("PERSONA ECHADA");
+					kill(getppid(),SIGINT);
+					kill(rtype,SIGINT);
+					exit(0);
 					break;
 				default:
 					continue;
