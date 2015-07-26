@@ -38,14 +38,15 @@ int main (int argc, char** argv)
   				  cin >> puerta;
 				  ipuerta.salir(puerta);
 				  break;
-			case 'i': cout << "Ingresar numero de puerta y cantidad de pertenencias:";
+			case 'i': {
+				  cout << "Ingresar numero de puerta y cantidad de pertenencias:";
     				  cin >> puerta >> pertenencias;
 				  retval = ipuerta.entrar(puerta, pertenencias); 
 				  if(retval == -1) break;
 
 				  cout << "La puerta guardó las pertenencias en el locker: " << retval << endl;
 
-				  long res;
+				  long res, puertaEntrada = puerta, lockerUsado = retval;
 				  do {
 				    cout << "Ingresar puerta por donde salir y locker:";
 				    cin >> puerta >> locker;
@@ -54,10 +55,14 @@ int main (int argc, char** argv)
 				    if (res == -1) {
 				      cout << "Puerta o locker incorrecto. Intente de nuevo."
 				           << endl;
+				      cout << "Recuerde que entro por puerta " << puertaEntrada
+				           << " y que su locker es " << lockerUsado
+				           << '.' << endl;
 				    }
 				   } while (res == -1);
 				  cout << "Salí. La puerta devolvió las pertenencias " << res << endl;
 				  break;
+			}
 			default:  cout << "Parametro invalido" << endl;
 		}
 }
