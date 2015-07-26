@@ -41,7 +41,10 @@ int main (int argc, char** argv)
 			case 'i': cout << "Ingresar numero de puerta y cantidad de pertenencias:";
     				  cin >> puerta >> pertenencias;
 				  retval = ipuerta.entrar(puerta, pertenencias); 
-				  if(retval == 1) break;
+				  if(retval == -1) break;
+
+				  cout << "La puerta guardó las pertenencias en el locker: " << retval << endl;
+
 				  cout << "Ingresar puerta por donde salir y locker:";
   				  cin >> puerta >> locker;
 				  ipuerta.salir(puerta, locker);

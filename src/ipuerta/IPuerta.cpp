@@ -135,12 +135,11 @@ long IPuerta::entrar (long puerta, long pertenencias)
 	}
 
 	if (msg.op == NOTIF_ENTRADA_INVESTIGADOR) {
-		if(msg.msg.nep.res == 3) {	
-		LOG("Museo Cerrado");
-		return 1;			
+		if(msg.msg.nei.res == 3) {
+			LOG("Museo Cerrado");
+			return -1;
 		}
-		// TODO: ver si no estaba cerrado el museo
-		return 0;
+		return msg.msg.nei.numeroLocker;
 	}
 
 	std::ostringstream oss;
