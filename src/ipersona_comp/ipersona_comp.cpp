@@ -249,12 +249,13 @@ void run_loop (
 					dstId = msgOp.msg.osemp.idOrigen;
 					break;
 				default:
-					assert (false);
+					assert (!"operación incorrecta");
 			}
 
-			LOG_IPCMP("Se recibió operación: %d.\n"
+			LOG_IPCMP("Se recibió operación: %d (%s).\n"
 					  "Enviando operación a interfaz...",
-					  msgOp.op);
+					  msgOp.op,
+					  strIPersonaOp (msgOp.op));
 
 			// Se devuelve la operación a la interfaz
 			msgOp.mtype = msgInt.msg.spo.rtype;
@@ -265,53 +266,99 @@ void run_loop (
 			err = ipcman.interfaz->leer (myMTYPE, &msgInt);
 			System::check (err);
 
-			LOG_IPCMP("Se obtuvo respuesta de interfaz: %d.",
-					msgInt.op);
+			LOG_IPCMP("Se obtuvo respuesta de interfaz: %d (%s).",
+					msgInt.op,
+					strIPersonaOp (msgInt.op));
 
-			// TODO: validar el mensaje recibido...
+			// Flags que afecta a las comunicaciones que debe
+			// realizar el componente según el resultado de la
+			// operación.
+			// * Si es una entrada, hay que verificar si el museo
+			// estaba lleno; ya que no se le debe contestar a la
+			// persona aún. En cambio, se devuelve la operación a
+			// IPCManager para que nos la vuelva a dar en el próximo
+			// llamado a leerOperacionConPrioridad que retorne una
+			// entrada.
+			bool noDebeResponder = false;
+			// * Si es una salida, hay que verificar si el museo
+			// estaba lleno cuando el visitante salio de él; ya que
+			// en ese caso se debe enviar a todos los componentes
+			// IPersona una notificación para que vuelvan a intentar
+			// las entradas.
+			bool enviarBroadcast = false;
+
 			long param_a;
 			long param_b;
+
+			// TODO: validar el mensaje recibido...
 			switch (msgInt.op) {
 				case NOTIF_ENTRADA_PERSONA:
 					param_a = msgInt.msg.nep.res;
 					param_b = 0;
+					noDebeResponder = msgInt.msg.nep.lleno;
 					break;
 				case NOTIF_ENTRADA_INVESTIGADOR:
 					param_a = msgInt.msg.nei.res;
 					param_b = msgInt.msg.nei.numeroLocker;
+					noDebeResponder = msgInt.msg.nei.lleno;
 					break;
 				case NOTIF_SALIDA_PERSONA:
 					param_a = msgInt.msg.nsp.res;
 					param_b = 0;
+					enviarBroadcast = msgInt.msg.nsp.lleno;
 					break;
 				case NOTIF_SALIDA_INVESTIGADOR:
 					param_a = msgInt.msg.nsi.res;
 					param_b = msgInt.msg.nsi.pertenencias;
+					enviarBroadcast = msgInt.msg.nsp.lleno;
 					break;
 				default:
 					assert (false);
 			}
 
-			MensajeGenerico msgBroker;
-			msgBroker.mtype = dstId;
-			msgBroker.id = idPuerta;
-			msgBroker.msg.op = static_cast<MuseoMSG::OP> (msgInt.op);
-			msgBroker.msg.param_a = param_a;
-			msgBroker.msg.param_b = param_b;
+			if (noDebeResponder) {
+				ipcman.devolverOperacion (msgOp);
+			} else {
+				MensajeGenerico msgBroker;
+				msgBroker.id = idPuerta;
+				msgBroker.mtype = dstId;
+				msgBroker.msg.op = static_cast<MuseoMSG::OP> (msgInt.op);
+				msgBroker.msg.param_a = param_a;
+				msgBroker.msg.param_b = param_b;
 
-			LOG_IPCMP("Enviando respuesta al broker:\n"
-					"\tdstId  : %ld\n"
-					"\tsrcId  : %ld\n"
-					"\top     : %d\n"
-					"\tparam_a: %ld\n"
-					"\tparam_b: %ld",
-					msgBroker.mtype,
-					msgBroker.id,
-					msgBroker.msg.op,
-					msgBroker.msg.param_a,
-					msgBroker.msg.param_b);
+				LOG_IPCMP("Enviando respuesta al broker:\n"
+						"\tdstId  : %ld\n"
+						"\tsrcId  : %ld\n"
+						"\top     : %d (%s)\n"
+						"\tparam_a: %ld\n"
+						"\tparam_b: %ld",
+						msgBroker.mtype,
+						msgBroker.id,
+						msgBroker.msg.op,
+						strMuseoMSGOP (msgBroker.msg.op),
+						msgBroker.msg.param_a,
+						msgBroker.msg.param_b);
 
-			sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
+				sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
+			}
+
+			if (enviarBroadcast) {
+				MensajeGenerico msgBroker;
+				msgBroker.id = idPuerta;
+				msgBroker.mtype = BROKER_BROADCAST_ID;
+				msgBroker.msg.op = MuseoMSG::INDICAR_MUSEO_NO_LLENO;
+
+				LOG_IPCMP("Enviando broadcast con destino puertas al broker:\n"
+						"\tdstId  : %ld\n"
+						"\tsrcId  : %ld\n"
+						"\top     : %d (%s)",
+						msgBroker.mtype,
+						msgBroker.id,
+						msgBroker.msg.op,
+						strMuseoMSGOP (msgBroker.msg.op));
+
+				sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
+			}
 		} catch (SystemErrorException& e) {
 			LOG_IPCMP ("Error (%d): %s", e.number (), e.what ());
 

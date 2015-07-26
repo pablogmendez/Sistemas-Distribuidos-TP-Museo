@@ -71,7 +71,30 @@ int main (int argc, char** argv)
 	while (intHandler.getGracefulQuit () == 0) {
 		try {
 			int err = brokerConn.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
+			if (err == 0) { /* EOF: conexión cerrada... */
+				LOG_IPCL ("Conexión cerrada por el host remoto. Saliendo...");
+				break;
+			}
 			System::check (err);
+
+			LOG_IPCL ("Se recibió paquete desde el broker:\n"
+					  "\tdstId        : %ld\n"
+					  "\tsrcId        : %ld\n"
+					  "\tmsg.op       : %d (%s)\n"
+					  "\tmsg.param_a  : %ld\n"
+					  "\tmsg.param_b  : %ld\n"
+					  "\tshm.abierto  : %d\n"
+					  "\tshm.capacidad: %d\n"
+					  "\tshm.personas : %d",
+					  brokerMsg.mtype,
+					  brokerMsg.id,
+					  brokerMsg.msg.op,
+					  strMuseoMSGOP (brokerMsg.msg.op),
+					  brokerMsg.msg.param_a,
+					  brokerMsg.msg.param_b,
+					  brokerMsg.shmem.abierto,
+					  brokerMsg.shmem.capacidad,
+					  brokerMsg.shmem.personas);
 
 			IPersonaMsg msg;
 			msg.op = static_cast<IPersonaOp> (brokerMsg.msg.op);
@@ -100,7 +123,7 @@ int main (int argc, char** argv)
 
 			ipcman.ponerOperacion (msg);
 		} catch (std::exception& e) {
-			LOG_IPCL("Error: %s.", e.what ());
+			LOG_IPCL("Error (%d): %s.", errno, e.what ());
 			// TODO: log, eintr, etc
 		}
 	}

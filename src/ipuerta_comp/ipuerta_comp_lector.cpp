@@ -54,6 +54,11 @@ int main (int argc, char** argv)
 	while (/*intHandler.getGracefulQuit () == 0*/true) {
 		try {
 			int err = brokerConn.tcp_recv (reinterpret_cast<char*> (&brokerMsg));
+			if (err == 0) { /* EOF: conexión cerrada... */
+				LOG ("COMPONENTE_LECTOR: Conexión cerrada por el host remoto."
+					" Saliendo...");
+				break;
+			}
 			System::check (err);
 	LOG("COMPONENTE_LECTOR: RECIBI MENSAJE");
 			IPuertaMsg msg;

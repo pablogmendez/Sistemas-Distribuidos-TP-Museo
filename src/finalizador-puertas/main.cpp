@@ -56,7 +56,9 @@ void mqrm (const std::string& path, char letra)
 	try {
 		System::mqrm (path, letra);
 	} catch (SystemErrorException& e) {
-		std::cerr << "mqrm (" << path << ", " << letra << ")\n  "
+		char hex[5] = "";
+		sprintf (hex, "0x%X", letra);
+		std::cerr << "mqrm (" << path << ", " << hex << ")\n  "
 			<< e.what () << std::endl;
 	}
 }
