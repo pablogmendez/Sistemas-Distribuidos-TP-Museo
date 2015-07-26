@@ -1,4 +1,5 @@
 #include "ArgParser.h"
+#include <imuseo/IMuseo.h>
 #include <IPC/SIGINT_Handler.h>
 #include <IPC/SignalHandler.h>
 #include <ipersona/IPersona.h>
@@ -93,8 +94,11 @@ int main (int argc, char** argv) try
 	LOG_PUERTA ("Creando %d lockers...", NUM_LOCKERS);
 	LockerRack rack (NUM_LOCKERS);
 
-	LOG_PUERTA ("Creando interfaz...");
+	LOG_PUERTA ("Creando interfaz IPersona...");
 	IPersona ipersona (args.idLocal ());
+
+	LOG_PUERTA ("Creando interfaz IMuseo...");
+	IMuseo imuseo;
 
 	LOG_PUERTA ("Escribiendo id local en archivo de sesion.");
 	write_id_local (args.sesion (), args.idLocal ());
@@ -106,36 +110,28 @@ int main (int argc, char** argv) try
 
 	Operacion op = ipersona.leerProximaOperacion ();
 	while (op.tipo != NOTIFICAR_CIERRE_MUSEO) {
-		LOG_PUERTA ("capacidad: %d; personas: %d.", capacidad, personas);
 		switch (op.tipo) {
 			case SOLIC_ENTRAR_MUSEO_PERSONA:
 			{
 				LOG_PUERTA ("Persona %ld solicita entrar al museo.",
 						op.op.semp.idOrigen);
 
-				// TODO: Usar interfaz IMuseo para contabilizar la
-				// entrada y verificar si hay lugar.
-				if (personas < capacidad) {
-					personas++;
+				Entrada::Resultado res = imuseo.entrarPersona ();
+				if (res == Entrada::ENTRO) {
 					ipersona.notificarEntrada (op, ENTRO);
-				} else {
+				} else if (res == Entrada::LLENO) {
 					LOG_PUERTA ("Museo lleno.");
 					set_lleno (op, true);
 					ipersona.notificarEntrada (op,
 						static_cast<ResultadoOperacionEntrada> (0));
+				} else { /* res == Entrada::CERRADO */
+					LOG_PUERTA ("Museo cerrado.");
+					ipersona.notificarEntrada (op, CERRADO);
 				}
 				break;
 			}
 			case SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 			{
-				if (personas >= capacidad) {
-					LOG_PUERTA ("Museo lleno");
-					set_lleno (op, true);
-					ipersona.notificarEntrada (op,
-						static_cast<ResultadoOperacionEntrada> (0), 0);
-					break;
-				}
-
 				long idOrigen = op.op.semi.idOrigen;
 				long pertenencias = op.op.semi.pertenencias;
 
@@ -149,9 +145,21 @@ int main (int argc, char** argv) try
 
 				if (locker == LockerRack::NO_HAY_LUGAR) {
 					ipersona.notificarEntrada (op, NO_HAY_LOCKER, 0);
-				} else {
-					personas++;
+					break;
+				}
+
+				Entrada::Resultado res = imuseo.entrarPersona ();
+				if (res == Entrada::ENTRO) {
 					ipersona.notificarEntrada (op, ENTRO, locker);
+				} else if (res == Entrada::CERRADO) {
+					rack.retirar (locker);
+					ipersona.notificarEntrada (op, CERRADO, 0);
+				} else { /* res == Entrada::LLENO */
+					LOG_PUERTA ("Museo lleno");
+					rack.retirar (locker);
+					set_lleno (op, true);
+					ipersona.notificarEntrada (op,
+						static_cast<ResultadoOperacionEntrada> (0), 0);
 				}
 				break;
 			}
@@ -159,17 +167,8 @@ int main (int argc, char** argv) try
 			{
 				LOG_PUERTA ("La persona %ld solicita salir del museo.",
 						op.op.ssmp.idOrigen);
-
-				// TODO: Usar interfaz IMuseo para contabilizar la
-				// salida de la persona.
-				bool lleno = (personas == capacidad);
-				personas--;
-				if (personas < 0) {
-					LOG_PUERTA ("Se sacaron más personas "
-								"que las que entraron.");
-					personas = 0;
-				}
-				set_lleno (op, lleno);
+				Salida::Resultado res = imuseo.sacarPersona ();
+				set_lleno (op, res == Salida::SALIO_Y_LLENO);
 				ipersona.notificarSalida (op, SALIO);
 				break;
 			}
@@ -188,16 +187,8 @@ int main (int argc, char** argv) try
 							    " Dueño actual: %ld.", duenio);
 					ipersona.notificarSalida (op, PUERTA_INCORRECTA, 0);
 				} else {
-					// TODO: Usar interfaz IMuseo para contabilizar la
-					// salida de la persona.
-					bool lleno = (personas == capacidad);
-					personas--;
-					if (personas < 0) {
-						LOG_PUERTA ("Se sacaron más personas "
-									"que las que entraron.");
-						personas = 0;
-					}
-					set_lleno (op, lleno);
+					Salida::Resultado res = imuseo.sacarPersona ();
+					set_lleno (op, res == Salida::SALIO_Y_LLENO);
 					Locker locker = rack.retirar (lockerId);
 					ipersona.notificarSalida (op, SALIO, locker.pertenencias);
 				}

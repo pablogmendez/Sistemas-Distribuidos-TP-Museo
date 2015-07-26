@@ -56,7 +56,7 @@ IMuseo::~IMuseo(){
 	mqComp.destruir();
 }
 
-bool IMuseo::entrarPersona() {
+Entrada::Resultado IMuseo::entrarPersona() {
 	IMuseoMsg msg;
 
 	msg.mtype = child_pid;	
@@ -68,13 +68,18 @@ bool IMuseo::entrarPersona() {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
-	if(msg.op == 5)
-		return true;
-	else 
-		return false;
+	if(msg.op == 5) {
+		return Entrada::ENTRO;
+	}
+	else if (msg.op == 6) {
+		return Entrada::CERRADO;
+	}
+	else if (msg.op == 7) {
+		return Entrada::LLENO;
+	}
 }
 
-bool IMuseo::sacarPersona() {
+Salida::Resultado IMuseo::sacarPersona() {
 	IMuseoMsg msg;
 
 	msg.mtype = child_pid;	
@@ -86,10 +91,12 @@ bool IMuseo::sacarPersona() {
 		error (1, errno, "IPuerta::entrar[persona]");
 		throw "not reached";
 	}
-	if(msg.op == 5)
-		return true;
-	else 
-		return false;
+	if(msg.op == 5) {
+		return Salida::SALIO;
+	}
+	else if(msg.op == 8) {
+		return Salida::SALIO_Y_LLENO;
+	}
 
 }
 

@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <utils/EnvParam.h>
 #include <utils/System.h>
-#include <ipuerta/IPuertaMsg.h>
+//#include <ipuerta/IPuertaMsg.h>
 #include <museo/MuseoMSG.h>
 
 static const char* DFLT_IMUSEO_BROKER   = "broker";
@@ -140,19 +140,28 @@ void run_loop (
 		msg.mtype = MTYPEdeMiPapa;
 		brokerMsg.mtype = 2;
 		switch(msg.op) {
-                                case 1: if(brokerMsg.shmem.personas < brokerMsg.shmem.capacidad) {
-						brokerMsg.shmem.personas++;
-						msg.op = 5;
-					}
-					else {
+                                case 1: if(brokerMsg.shmem.abierto != 0) {
+						if(brokerMsg.shmem.personas < brokerMsg.shmem.capacidad) {
+							brokerMsg.shmem.personas++;
+							msg.op = 5;
+						}
+						else {
+							msg.op = 7;
+						}
+					} else {
 						msg.op = 6;
 					}
                                         break;
                                 case 2: if(brokerMsg.shmem.personas > 0) {
-                                                brokerMsg.shmem.personas--;
-                                                msg.op = 5;
-                                        }
-                                        else {
+						if(brokerMsg.shmem.personas == brokerMsg.shmem.capacidad) {
+                                                	msg.op = 8;	
+	                                                brokerMsg.shmem.personas--;					
+						}
+						else {
+	                                                msg.op = 5;
+						        brokerMsg.shmem.personas--;					
+						}
+                                        } else {
                                                 msg.op = 6;
                                         }
                                         break;

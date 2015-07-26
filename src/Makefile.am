@@ -17,7 +17,8 @@ noinst_LTLIBRARIES = \
 	utils/libutils.la \
 	Logger/libLogger.la \
 	ipuerta/libipuerta.la \
-	ipersona/libipersona.la
+	ipersona/libipersona.la \
+	imuseo/libimuseo.la 
 
 IPC_libIPC_la_SOURCES = \
 	IPC/Cola.h \
@@ -88,6 +89,13 @@ ipersona_libipersona_la_SOURCES = \
 	ipersona/IPersona.cpp \
 	ipersona/IPersonaMsg.h
 ipersona_libipersona_la_LIBADD = IPC/libIPC.la utils/libutils.la
+
+imuseo_libimuseo_la_SOURCES = \
+	include/icommon/resultado.h \
+	include/imuseo/IMuseo.h \
+	imuseo/IMuseo.cpp \
+	imuseo/IMuseoMsg.h
+imuseo_libimuseo_la_LIBADD = IPC/libIPC.la utils/libutils.la
 
 ############ Generacion de fuentes con rpcgen #############
 # A MANO !!!! con script gen_rpc.sh
@@ -243,14 +251,12 @@ broker_broadcast_LDADD = \
         sockets/libsockets.la
 
 broker_broadcast_personas_SOURCES = \
-	broker/broadcast_personas.cpp
+	broker/broadcast_personas.cpp \
 	broker/MensajeGenerico.h
 
 broker_broadcast_personas_LDADD = \
         IPC/libIPC.la \
         sockets/libsockets.la
-
-
 
 ########## Puerta #############
 bin_PROGRAMS += puerta/puerta
@@ -264,7 +270,8 @@ puerta_puerta_SOURCES = \
 	puerta/main.cpp
 
 puerta_puerta_LDADD = \
-	ipersona/libipersona.la
+	ipersona/libipersona.la \
+	imuseo/libimuseo.la
 
 bin_PROGRAMS += finalizador-puertas/finalizador-puertas
 
@@ -374,3 +381,37 @@ persona_personaDestructor_SOURCES = \
 persona_personaDestructor_LDADD = \
 	ipuerta/libipuerta.la
 ###############################
+
+##### Componente IMuseo #####
+bin_PROGRAMS += \
+	imuseo_comp/imuseo_comp
+
+imuseo_comp_imuseo_comp_SOURCES = \
+	imuseo_comp/imuseo_comp.cpp
+
+imuseo_comp_imuseo_comp_LDADD = \
+	id-server/libidclient.la \
+	IPC/libIPC.la \
+	imuseo/libimuseo.la \
+	sockets/libsockets.la \
+	Logger/libLogger.la
+###############################
+
+########## ADMINISTRADOR #############
+bin_PROGRAMS += administrador/administrador
+administrador_administrador_SOURCES = \
+	administrador/administrador.cpp
+
+administrador_administrador_LDADD = \
+	imuseo/libimuseo.la
+#####################################
+########## Destructor administrador #############
+bin_PROGRAMS += administrador/administradorDestructor
+administrador_administradorDestructor_SOURCES = \
+	administrador/administrador_destructor.cpp
+
+administrador_administradorDestructor_LDADD = \
+	imuseo/libimuseo.la
+###############################
+
+
