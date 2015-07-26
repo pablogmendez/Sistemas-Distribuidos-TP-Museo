@@ -296,26 +296,34 @@ void run_loop (
 
 			long param_a;
 			long param_b;
-
+			const char* descParamA = "desconocido";
 			// TODO: validar el mensaje recibido...
 			switch (msgInt.op) {
 				case NOTIF_ENTRADA_PERSONA:
 					param_a = msgInt.msg.nep.res;
+					descParamA = strResultadoOperacionEntrada (
+						msgInt.msg.nep.res);
 					param_b = 0;
 					noDebeResponder = msgInt.msg.nep.lleno;
 					break;
 				case NOTIF_ENTRADA_INVESTIGADOR:
 					param_a = msgInt.msg.nei.res;
+					descParamA = strResultadoOperacionEntrada (
+						msgInt.msg.nei.res);
 					param_b = msgInt.msg.nei.numeroLocker;
 					noDebeResponder = msgInt.msg.nei.lleno;
 					break;
 				case NOTIF_SALIDA_PERSONA:
 					param_a = msgInt.msg.nsp.res;
+					descParamA = strResultadoOperacionSalida (
+						msgInt.msg.nsp.res);
 					param_b = 0;
 					enviarBroadcast = msgInt.msg.nsp.lleno;
 					break;
 				case NOTIF_SALIDA_INVESTIGADOR:
 					param_a = msgInt.msg.nsi.res;
+					descParamA = strResultadoOperacionSalida (
+						msgInt.msg.nsi.res);
 					param_b = msgInt.msg.nsi.pertenencias;
 					enviarBroadcast = msgInt.msg.nsp.lleno;
 					break;
@@ -337,13 +345,14 @@ void run_loop (
 						"\tdstId  : %ld\n"
 						"\tsrcId  : %ld\n"
 						"\top     : %d (%s)\n"
-						"\tparam_a: %ld\n"
+						"\tparam_a: %ld (%s)\n"
 						"\tparam_b: %ld",
 						msgBroker.mtype,
 						msgBroker.id,
 						msgBroker.msg.op,
 						strMuseoMSGOP (msgBroker.msg.op),
 						msgBroker.msg.param_a,
+						descParamA,
 						msgBroker.msg.param_b);
 
 				sockBroker.tcp_send (reinterpret_cast<char*> (&msgBroker));
