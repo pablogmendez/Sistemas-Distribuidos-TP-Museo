@@ -108,8 +108,8 @@ int main (int argc, char** argv) try
 	int capacidad = 2;
 	int personas = 0;
 
-	Operacion op = ipersona.leerProximaOperacion ();
-	while (op.tipo != NOTIFICAR_CIERRE_MUSEO) {
+	while (true) {
+		Operacion op = ipersona.leerProximaOperacion ();
 		switch (op.tipo) {
 			case SOLIC_ENTRAR_MUSEO_PERSONA:
 			{
@@ -207,16 +207,19 @@ int main (int argc, char** argv) try
 				}
 				break;
 			}
+			case NOTIFICAR_CIERRE_MUSEO:
+			{
+				LOG_PUERTA ("El administrador inició el cierre del museo...");
+				// Acá se reinicializan los lockers para que no queden en
+				// uso...
+				rack.clear ();
+				break;
+			}
 			default:
 				LOG_PUERTA ("Recibí operación erronea: tipo=%d.", op.tipo);
 				return 1;
 		}
-
-		op = ipersona.leerProximaOperacion ();
 	}
-
-	LOG_PUERTA ("El administrador inició el cierre del museo...");
-	// FIXME: echar a la gente y esperar que salgan...
 	return 0;
 } catch (SystemErrorException& e) {
 	LOG_PUERTA ("Error (%d): %s", e.number (), e.what ());

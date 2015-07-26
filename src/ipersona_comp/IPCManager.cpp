@@ -166,12 +166,12 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 	switch (msg.op) {
 		case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 		case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
-		case OP_NOTIFICAR_CIERRE_MUSEO:
 			debeDespertar = false;
 			break;
 		case OP_SOLIC_SALIR_MUSEO_PERSONA:
 		case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 		case OP_INDICAR_MUSEO_NO_LLENO:
+		case OP_NOTIFICAR_CIERRE_MUSEO:
 			debeDespertar = true;
 			break;
 		default:
@@ -189,10 +189,10 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 		switch (msg.op) {
 			case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 			case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
-			case OP_NOTIFICAR_CIERRE_MUSEO:
 				cont.entradas++;
 				break;
 			case OP_SOLIC_SALIR_MUSEO_PERSONA:
+			case OP_NOTIFICAR_CIERRE_MUSEO:
 				cont.salidasEstandar++;
 				break;
 			case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
@@ -229,10 +229,10 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 	switch (msg.op) {
 		case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 		case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
-		case OP_NOTIFICAR_CIERRE_MUSEO:
 			err = ingresos->escribir (msg);
 			break;
 		case OP_SOLIC_SALIR_MUSEO_PERSONA:
+		case OP_NOTIFICAR_CIERRE_MUSEO:
 			err = egresoSimple->escribir (msg);
 			break;
 		case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
@@ -249,5 +249,43 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 			throw std::logic_error (
 				"[" __FILE__ ":" STR(__LINE__) "] not reached");
 	}
+	System::check (err);
+}
+
+void IPCManager::vaciarColasPorCierre ()
+{
+	int err;
+	IPersonaMsg msg;
+
+	err = lock->p ();
+	System::check (err);
+
+	ContadorMsg cont = pendientes->leer ();
+	while (cont.entradas > 0) {
+		if (devueltas.size () > 0) {
+			devueltas.pop_back ();
+		} else {
+			ingresos->leer (MTYPE, &msg);
+		}
+		cont.entradas--;
+	}
+	while (cont.salidasEstandar > 0) {
+		egresoSimple->leer (MTYPE, &msg);
+		cont.salidasEstandar--;
+	}
+	while (cont.salidasEspeciales > 0) {
+		egresoPreferencial->leer (MTYPE, &msg);
+		cont.salidasEspeciales--;
+	}
+
+	assert (cont.esperando == 0);
+	assert (cont.salidasEspeciales == 0);
+	assert (cont.salidasEstandar == 0);
+	assert (cont.entradas == 0);
+
+	cont.museoLleno = false;
+	pendientes->escribir (cont);
+
+	err = lock->v ();
 	System::check (err);
 }

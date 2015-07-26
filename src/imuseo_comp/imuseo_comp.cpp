@@ -223,6 +223,12 @@ void run_loop (
 				echarMsg.id = idMuseo;
 				echarMsg.msg.op = MuseoMSG::NOTIF_ECHAR_PERSONA;
 				connDeEscritor.tcp_send((char*) &echarMsg);
+				LOG ("COMPONENTE MUSEO: NOTIFICO EL CIERRE A LAS PUERTAS");
+				MensajeGenerico bcstPuertas;
+				bcstPuertas.mtype = BROKER_BROADCAST_ID;
+				bcstPuertas.id = idMuseo;
+				bcstPuertas.msg.op = MuseoMSG::NOTIFICAR_CIERRE_MUSEO;
+				connDeEscritor.tcp_send ((char*) &bcstPuertas);
 			}
 		colaMsg.escribir(msg);
 		} catch (SystemErrorException& e) {

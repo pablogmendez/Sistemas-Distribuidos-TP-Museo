@@ -5,18 +5,14 @@
 #include <sstream>
 #include <stdexcept>
 
-LockerRack::LockerRack (int tamanio)
+LockerRack::LockerRack (int tamanio) : tamanio (tamanio)
 {
 	if (tamanio <= 0) {
 		throw std::logic_error (
-				"LockerRack: tamanio debe ser mayor a 0.");
+			"LockerRack: tamanio debe ser mayor a 0.");
 	}
 
-	std::size_t n = static_cast<std::size_t>(tamanio);
-	rack.reserve (n);
-	for (std::size_t i = 0; i < n; i++) {
-		libres.push_back (i);
-	}
+	clear ();
 }
 
 long LockerRack::guardar (long duenio, long pertenencias)
@@ -76,4 +72,16 @@ Locker LockerRack::retirar (long lockerIdx)
 	std::swap (tmp, rack[lockerIdx]);
 	libres.push_front (lockerIdx);
 	return tmp;
+}
+
+void LockerRack::clear ()
+{
+	std::size_t n = static_cast<std::size_t> (tamanio);
+
+	libres.clear ();
+	rack.clear ();
+	rack.reserve (n);
+	for (std::size_t i = 0; i < n; i++) {
+		libres.push_back (i);
+	}
 }

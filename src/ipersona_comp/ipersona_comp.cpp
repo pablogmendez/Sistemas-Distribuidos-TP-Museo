@@ -253,7 +253,8 @@ void run_loop (
 					dstId = msgOp.msg.ossmp.idOrigen;
 					break;
 				case OP_NOTIFICAR_CIERRE_MUSEO:
-					dstId = msgOp.msg.osemp.idOrigen;
+					dstId = 0xdeadbeef;
+					/* Esta operación no tiene respuesta. */
 					break;
 				default:
 					assert (!"operación incorrecta");
@@ -268,6 +269,11 @@ void run_loop (
 			msgOp.mtype = msgInt.msg.spo.rtype;
 			err = ipcman.interfaz->escribir (msgOp);
 			System::check (err);
+
+			if (msgOp.op == OP_NOTIFICAR_CIERRE_MUSEO) {
+				ipcman.vaciarColasPorCierre ();
+				continue;
+			}
 
 			// Luego se aguarda su respuesta
 			err = ipcman.interfaz->leer (myMTYPE, &msgInt);

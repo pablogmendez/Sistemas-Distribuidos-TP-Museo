@@ -9,6 +9,7 @@
 class LockerRack
 {
 private:
+	int tamanio;
 	std::list<long> libres;
 	std::vector<Locker> rack;
 public:
@@ -20,6 +21,7 @@ public:
 	long guardar (long duenio, long pertenencias);
 	long duenio (long locker);
 	Locker retirar (long locker);
+	void clear ();
 };
 
 #endif /* LOCKERRACK_H_ */

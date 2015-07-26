@@ -39,6 +39,7 @@ public:
 	//- API para la parte "escritora" del componente
 	IPersonaMsg leerOperacionConPrioridad ();
 	void devolverOperacion (IPersonaMsg msg);
+	void vaciarColasPorCierre ();
 	//- API para la parte "lectora" del componente
 	void ponerOperacion (IPersonaMsg msg);
 };
