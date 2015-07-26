@@ -194,16 +194,17 @@ int main (int argc, char** argv)
 
 		LOG_IPCMP("Conectado. Iniciando loop principal...");
 		run_loop (idPuerta, ipcman, connDeEscritor, intHandler);
+		
+		// MANDO MENSAJE DE DESCONEXION
+		MensajeGenerico descMsg;
+		descMsg.id = idPuerta;
+		descMsg.msg.op = MuseoMSG::NOTIF_DESCONEXION;
+		connDeEscritor.tcp_send((char*) &descMsg);
+
 	} catch (std::exception& e) {
 		LOG_IPCMP ("Error: %s", e.what ());
 		err = 1;
 	}
-
-	// MANDO MENSAJE DE DESCONEXION
-	MensajeGenerico descMsg;
-	descMsg.id = idPuerta;
-	descMsg.msg.op = MuseoMSG::NOTIF_DESCONEXION;
-	connDeEscritor.tcp_send((char*) &descMsg);
 
 	if (lector != -1) {
 		kill (lector, SIGINT);
