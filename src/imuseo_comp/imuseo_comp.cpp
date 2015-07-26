@@ -60,9 +60,9 @@ int main (int argc, char** argv)
 		LOG("COMPONENTE_MUSEO: Conectando a la cola de comunicaciones de la interfaz ...");
 		Cola<IMuseoMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
 // DESCOMENTAR
-////		IIdClient idClient (DFLT_IPUERTA_IDSERVER);
-//		IdGrabber idg (idClient, IIdClient::R_PUERTA);
-		long idMuseo = 101;//idg.get ();
+		IIdClient idClient (DFLT_IMUSEO_IDSERVER);
+		IdGrabber idg (idClient, IIdClient::R_IMUSEO);
+		long idMuseo = idg.get ();
 
 		LOG("COMPONENTE_MUSEO: Se obtuvo el identificador %ld", idMuseo);
 		

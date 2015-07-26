@@ -1,4 +1,7 @@
 #include "../IPC/Semaforo.h"
+#include "../IPC/Cola.h"
+#include "../IPC/MemoriaCompartida.h"
+#include "../include/museo/MuseoSHM.h"
 #include "MensajeGenerico.h"
 #include "Constantes.h"
 
@@ -25,6 +28,8 @@
 #define EJECUTABLE_BROADCAST_PERS "./broadcast_personas"
 
 #define SEMAFORO_SH_MEM ".semaforo_shmem"
+#define COLA_MAESTRA ".semaforo_shmem"
+#define SH_MEM ".shmem"
 
 int lanzarServerEntrada();
 int lanzarServerSalida();
@@ -36,7 +41,8 @@ int lanzarBroadcastPersonas();
 int main(int argc, char* argv[]){
 
 	Semaforo* sem = new Semaforo(SEMAFORO_SH_MEM,0,0);
-	
+	Cola<MensajeGenerico>* cola = new Cola<MensajeGenerico>(COLA_MAESTRA,0);	
+
 	//Crear archivo de procesos
 	int fd = open(BROKER_PIDS_FILE,O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 
@@ -60,7 +66,10 @@ int main(int argc, char* argv[]){
 	kill(pid_broadcast,SIGINT);   
 	kill(pid_broadcast_personas,SIGINT);
 	kill(pid_entrada,SIGINT);   
-	kill(pid_salida,SIGINT);   
+	kill(pid_salida,SIGINT);  
+	
+	sem->eliminar(); 
+	cola->destruir();
 	return 0;
 }
 
