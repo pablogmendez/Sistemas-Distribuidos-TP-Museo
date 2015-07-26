@@ -201,9 +201,9 @@ void run_loop (
 					brokerMsg.msg.param_b = 0;
 					break;
 				case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
-					brokerMsg.mtype = msgOp.msg.ssmp.idPuerta;
+					brokerMsg.mtype = msgOp.msg.ssmi.idPuerta;
 					brokerMsg.msg.op = static_cast<MuseoMSG::OP> (MuseoMSG::SOLIC_SALIR_MUSEO_INVESTIGADOR);
-					brokerMsg.msg.param_a = 0;
+					brokerMsg.msg.param_a = msgOp.msg.ssmi.numeroLocker;
 					brokerMsg.msg.param_b = 0;
 					break;
 				case OP_NOTIFICAR_CIERRE_MUSEO:
