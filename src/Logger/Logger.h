@@ -34,12 +34,12 @@ inline ssize_t locked_write (int fd, char* buf, size_t size)
 
 #define LOG(...) { \
 	size_t evento_len; \
-	ssize_t err; \
+	ssize_t evento_err; \
 	char evento[1024]; \
 	sprintf(evento, __VA_ARGS__); \
 	evento_len = strlen(evento); \
 	evento[evento_len] = '\n'; \
-	err = locked_write(fileno(stdout), evento, evento_len + 1); \
+	evento_err = locked_write(fileno(stdout), evento, evento_len + 1); \
 }
 
 class Logger {
