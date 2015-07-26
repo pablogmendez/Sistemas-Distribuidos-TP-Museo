@@ -151,8 +151,9 @@ bin_PROGRAMS += \
 	broker/shmem_return \
 	broker/prueba_envio \
 	broker/prueba_recep \
-	broker/prueba_get_shmem
-
+	broker/prueba_get_shmem \
+	broker/broadcast
+	
 # Acá se listan los fuentes y encabezados con los que
 # se compila el programa
 broker_broker_SOURCES = \
@@ -231,6 +232,15 @@ broker_prueba_get_shmem_SOURCES = \
 
 broker_prueba_get_shmem_LDADD = \
 	sockets/libsockets.la
+
+broker_broadcast_SOURCES = \
+	broker/broadcast.cpp
+	broker/MensajeGenerico.h
+
+broker_broadcast_LDADD = \
+        IPC/libIPC.la \
+        sockets/libsockets.la
+
 
 ########## Puerta #############
 bin_PROGRAMS += puerta/puerta

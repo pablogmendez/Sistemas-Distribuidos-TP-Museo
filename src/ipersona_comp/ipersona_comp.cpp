@@ -199,6 +199,12 @@ int main (int argc, char** argv)
 		err = 1;
 	}
 
+	// MANDO MENSAJE DE DESCONEXION
+	MensajeGenerico descMsg;
+	descMsg.id = idPuerta;
+	descMsg.msg.op = MuseoMSG::NOTIF_DESCONEXION;
+	connDeEscritor.tcp_send((char*) &descMsg);
+
 	if (lector != -1) {
 		kill (lector, SIGINT);
 	}

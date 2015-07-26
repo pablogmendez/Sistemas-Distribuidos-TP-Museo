@@ -92,9 +92,9 @@ int main (int argc, char** argv)
 		LOG("COMPONENTE_ESCRITOR: Conectando a la cola de comunicaciones de la interfaz ...");
 		Cola<IPuertaMsg> colaMsg(ARCHIVO_COLA, LETRA_COLA);
 // DESCOMENTAR
-////		IIdClient idClient (DFLT_IPUERTA_IDSERVER);
-//		IdGrabber idg (idClient, IIdClient::R_PUERTA);
-		long idPersona = 101;//idg.get ();
+		IIdClient idClient (DFLT_IPUERTA_IDSERVER);
+		IdGrabber idg (idClient, IIdClient::R_PERSONA);
+		long idPersona = idg.get ();
 
 		LOG("COMPONENTE_ESCRITOR: Se obtuvo el identificador %ld", idPersona);
 
@@ -145,7 +145,12 @@ int main (int argc, char** argv)
 		LOG("COMPONENTE_ESCRITOR: Conectado. Iniciando loop principal...");
 		run_loop (idPersona, colaMsg, connDeEscritor, intHandler);
 
-
+	//MANDO MENSAJE DE DESCONEXION
+	MensajeGenerico descMsg;
+	descMsg.id = idPersona;
+	descMsg.msg.op = MuseoMSG::NOTIF_DESCONEXION;
+	connDeEscritor.tcp_send((char*) &descMsg);
+	
 	if (lector != -1) {
 		kill (lector, SIGINT);
 	}
