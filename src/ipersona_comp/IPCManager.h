@@ -8,6 +8,7 @@
 #include <ipersona/IPersonaMsg.h>
 #include <string>
 #include <utils/NonCopyable.h>
+#include <vector>
 
 class IPCManager : private NonCopyable
 {
@@ -21,6 +22,7 @@ public:
 	MemoriaCompartida<ContadorMsg>* pendientes;
 	Semaforo*                       lock;
 	Semaforo*                       hay;
+	std::vector<IPersonaMsg>        devueltas;
 
 	IPCManager (
 			/* id local de la puerta; para soportar varias puertas
@@ -34,7 +36,10 @@ public:
 	void inicializar ();
 	void destruir ();
 
+	//- API para la parte "escritora" del componente
 	IPersonaMsg leerOperacionConPrioridad ();
+	void devolverOperacion (IPersonaMsg msg);
+	//- API para la parte "lectora" del componente
 	void ponerOperacion (IPersonaMsg msg);
 };
 

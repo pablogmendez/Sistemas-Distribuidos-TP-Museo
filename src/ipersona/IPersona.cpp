@@ -6,6 +6,7 @@
 #include <error.h>
 #include <IPC/Cola.h>
 #include <libgen.h>
+#include <Logger/Logger.h>
 #include <signal.h>
 #include <sstream>
 #include <stdlib.h>
@@ -16,6 +17,9 @@
 #include <utils/EnvParam.h>
 #include <utils/System.h>
 #include <vector>
+
+#define LOG_IP(fmt, ...) \
+	LOG("IPUERTA [%d]: " fmt, getpid (),##__VA_ARGS__)
 
 // TODO: mover a .h de constantes
 static const char* DFLT_IPERSONA_COMP     = "ipersona_comp";
@@ -55,6 +59,9 @@ public:
 
 		void enviar (const IPersonaMsg& msg, const char* prg)
 		{
+			LOG_IP ("Enviando mensaje a componente:\n"
+					"\tOP: %d (%s).", msg.op,
+					strIPersonaOp (msg.op));
 			int err = mqComp.escribir (msg);
 			System::check (err, prg);
 		}
@@ -127,6 +134,10 @@ Operacion IPersona::leerProximaOperacion ()
 	err = pImpl->mqComp.leer(rtype, &msg);
 	System::check (err, "IPersona::leerProximaOperacion");
 
+	LOG_IP ("Se recibió la operación desde el componente:\n"
+			"\tOP: %d (%s)", msg.op,
+			strIPersonaOp (msg.op));
+
 	struct Operacion op = {};
 	switch (msg.op) {
 	case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
@@ -162,6 +173,7 @@ void IPersona::notificarEntrada (Operacion op, ResultadoOperacionEntrada res)
 	struct IPersonaMsg msg = {};
 	msg.op = NOTIF_ENTRADA_PERSONA;
 	msg.msg.nep.res = res;
+	msg.msg.nep.lleno = op.op.semp.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarEntrada[persona]");
 }
@@ -173,6 +185,7 @@ void IPersona::notificarEntrada (Operacion op,
 	msg.op = NOTIF_ENTRADA_INVESTIGADOR;
 	msg.msg.nei.res = res;
 	msg.msg.nei.numeroLocker = numeroLocker;
+	msg.msg.nei.lleno = op.op.semi.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarEntrada[investigador]");
 }
@@ -182,6 +195,7 @@ void IPersona::notificarSalida (Operacion op, ResultadoOperacionSalida res)
 	struct IPersonaMsg msg = {};
 	msg.op = NOTIF_SALIDA_PERSONA;
 	msg.msg.nsp.res = res;
+	msg.msg.nsp.lleno = op.op.ssmp.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarSalida[persona]");
 }
@@ -193,6 +207,7 @@ void IPersona::notificarSalida (Operacion op,
 	msg.op = NOTIF_SALIDA_INVESTIGADOR;
 	msg.msg.nsi.res = res;
 	msg.msg.nsi.pertenencias = pertenencias;
+	msg.msg.nsi.lleno = op.op.ssmi.lleno;
 	msg.mtype = pImpl->pidComp;
 	pImpl->enviar (msg, "IPersona::notificarSalida[investigador]");
 }

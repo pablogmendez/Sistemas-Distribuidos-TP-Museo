@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "IPCManager.h"
 #include "ipc-keys.h"
 #include <sstream>
@@ -48,6 +49,7 @@ void IPCManager::inicializar ()
 	dato.esperando = 0;
 	dato.salidasEspeciales = 0;
 	dato.salidasEstandar = 0;
+	dato.museoLleno = false;
 	pendientes->escribir (dato);
 
 	lock->inicializar (1);
@@ -60,6 +62,33 @@ void IPCManager::destruir ()
 	hay->eliminar ();
 }
 
+// TODO: renombrar; no solo devuelve la operación, también
+// marca el museo como lleno.
+void IPCManager::devolverOperacion (IPersonaMsg msg)
+{
+	if (devueltas.size () > 0) {
+		assert (!"Se intento devolver más de una operación...");
+	}
+
+	// Solo esta permitido devolver entradas
+	assert (msg.op == OP_SOLIC_ENTRAR_MUSEO_PERSONA
+			|| msg.op == OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR);
+
+	int err;
+	devueltas.push_back (msg);
+
+	err = lock->p ();
+	System::check (err);
+
+	ContadorMsg cont = pendientes->leer ();
+	cont.entradas++;
+	cont.museoLleno = true;
+	pendientes->escribir (cont);
+
+	err = lock->v ();
+	System::check (err);
+}
+
 IPersonaMsg IPCManager::leerOperacionConPrioridad ()
 {
 	int err;
@@ -68,10 +97,13 @@ IPersonaMsg IPCManager::leerOperacionConPrioridad ()
 	err = lock->p ();
 	System::check (err);
 
+	// Aquí se debe esperar sobre el semáforo 'hay'
+	// cuando no hay mensajes o si hay entradas mientras
+	// el museo este cerrado.
 	ContadorMsg cont = pendientes->leer ();
-	while (cont.entradas == 0
-			&& cont.salidasEspeciales == 0
-			&& cont.salidasEstandar == 0) {
+	while (    cont.salidasEspeciales == 0
+			&& cont.salidasEstandar == 0
+			&& (cont.entradas == 0 || cont.museoLleno)) {
 		cont.esperando++;
 		pendientes->escribir (cont);
 
@@ -93,8 +125,22 @@ IPersonaMsg IPCManager::leerOperacionConPrioridad ()
 		cont.salidasEstandar--;
 		err = egresoSimple->leer (MTYPE, &msg);
 	} else /* if (cont.entradas > 0) */ {
+		assert (!cont.museoLleno
+				&& ("si nos despertaron por entradas el museo no"
+					" debería estar lleno."));
+
 		cont.entradas--;
-		err = ingresos->leer (MTYPE, &msg);
+		// El componente "escritor" puede devolver una operación
+		// para ser leeida en proximas invocaciones de este método.
+		// Para ello se verifica la existencia de algun elemento en
+		// el vector 'devueltas' antes de ver en la cola.
+		if (devueltas.size () > 0) {
+			msg = devueltas.back ();
+			devueltas.pop_back ();
+			err = 0;
+		} else {
+			err = ingresos->leer (MTYPE, &msg);
+		}
 	}
 
 	// Se guarda errno para evitar que el uso del semáforo lo pise.
@@ -110,6 +156,10 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 {
 	int err;
 	ContadorMsg cont;
+	// Solo debe despertar al consumidor, cuando haya
+	// una entrada si el museo no está lleno.
+	// Para las salidas siempre despierta.
+	bool debeDespertar;
 
 	// Se deben recibir solo operaciones válidas desde el
 	// proceso lector.
@@ -117,8 +167,12 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 		case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 		case OP_SOLIC_ENTRAR_MUSEO_INVESTIGADOR:
 		case OP_NOTIFICAR_CIERRE_MUSEO:
+			debeDespertar = false;
+			break;
 		case OP_SOLIC_SALIR_MUSEO_PERSONA:
 		case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
+		case OP_INDICAR_MUSEO_NO_LLENO:
+			debeDespertar = true;
 			break;
 		default:
 			std::ostringstream oss;
@@ -144,6 +198,9 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 			case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 				cont.salidasEspeciales++;
 				break;
+			case OP_INDICAR_MUSEO_NO_LLENO:
+				cont.museoLleno = false;
+				break;
 			default:
 				lock->v ();
 				#define STR(x) #x
@@ -151,11 +208,14 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 					"[" __FILE__ ":" STR(__LINE__) "] not reached");
 		}
 
-		// FIXME: verificar errores al despertar
-		// al consumidor.
-		while (cont.esperando > 0) {
-			hay->v ();
-			cont.esperando--;
+		debeDespertar = debeDespertar || (!cont.museoLleno);
+		if (debeDespertar) {
+			// FIXME: verificar errores al despertar
+			// al consumidor.
+			while (cont.esperando > 0) {
+				hay->v ();
+				cont.esperando--;
+			}
 		}
 
 		pendientes->escribir (cont);
@@ -177,6 +237,12 @@ void IPCManager::ponerOperacion (IPersonaMsg msg)
 			break;
 		case OP_SOLIC_SALIR_MUSEO_INVESTIGADOR:
 			err = egresoPreferencial->escribir (msg);
+			break;
+		case OP_INDICAR_MUSEO_NO_LLENO:
+			// Esta operación solo cambia el flag museoLleno
+			// y despierta a los consumidores.
+			// No coloca mensajes en ninguna cola.
+			err = 0;
 			break;
 		default:
 			#define STR(x) #x

@@ -25,12 +25,15 @@ int cSocket::tcp_recv(register char* buffer)
     if(this->sockfd == -1) return -1;
     while(total < this->size) { 
        int leidos = read(this->sockfd, &buffer[total], this->size - total);
-       if(leidos == -1) {
+       if(leidos == -1 /*ERROR*/) {
            return -1;
+       }
+	   if (leidos == 0 /*EOF*/) {
+           return 0;
        }
        total+=leidos;
     }
-    return 0;
+    return 1;
 }
 
 int cSocket::tcp_send(register char* buffer)

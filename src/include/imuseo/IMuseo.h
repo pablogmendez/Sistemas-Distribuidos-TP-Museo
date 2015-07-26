@@ -3,25 +3,17 @@
 
 #include <stdint.h>
 #include <IPC/Cola.h>
-#include "IMuseoMsg.h"
-
-enum ResultadoEntrada
-{
-	ENTRO      ,
-	CERRADO    ,
-	LLENO
-};
-
-enum ResultadoSalida
-{
-	SALIO         ,
-	SALIO_Y_LLENO
-}
+#include <imuseo/IMuseoMsg.h>
 
 class IMuseo {
 private:
 	Cola<IMuseoMsg> mqComp;
 	pid_t child_pid;
+
+void lanzarComponente (); 
+
+void terminarComponente ();
+
 
 public:
 
@@ -33,9 +25,9 @@ bool entrarPersona();
 
 bool sacarPersona();
 
-void abrirMuseo(uint32_t capacidad);
+bool abrirMuseo(uint32_t capacidad);
 
-void cerrarMuseo();
+bool cerrarMuseo();
 
 };
 
