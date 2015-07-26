@@ -82,8 +82,8 @@ int main (int argc, char** argv)
 				case NOTIF_ECHAR_PERSONA:
 					LOG("COMPONENTE LECTOR: RECIBI NOTIFICACION DE MUSEO CERRADO");
 					LOG("PERSONA ECHADA");
-					kill(getppid(),SIGINT);
 					kill(rtype,SIGINT);
+					kill(getppid (),SIGINT);
 					exit(0);
 					break;
 				default:
