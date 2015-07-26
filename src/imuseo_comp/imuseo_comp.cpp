@@ -73,6 +73,11 @@ int main (int argc, char** argv)
 				BROKER_READERS_PORT);
 		System::check(fdLector);
 
+		//Mando el Id al broker para que pueda redireccionar los mensajes
+		MensajeGenerico msg;
+		msg.id = idMuseo;
+		connDeLector.tcp_send((char*) &msg);
+
 		LOG("COMPONENTE_MUSEO: Conectando a puerto para escritores del broker.");
 		cClientSocket connDeEscritor (sizeof (MensajeGenerico));
 		int err_sock = connDeEscritor.tcp_open_activo (
