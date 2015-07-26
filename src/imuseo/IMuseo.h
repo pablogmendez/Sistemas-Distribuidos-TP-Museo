@@ -5,6 +5,19 @@
 #include <IPC/Cola.h>
 #include "IMuseoMsg.h"
 
+enum ResultadoEntrada
+{
+	ENTRO      ,
+	CERRADO    ,
+	LLENO
+};
+
+enum ResultadoSalida
+{
+	SALIO         ,
+	SALIO_Y_LLENO
+}
+
 class IMuseo {
 private:
 	Cola<IMuseoMsg> mqComp;
