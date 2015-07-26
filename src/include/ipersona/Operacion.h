@@ -55,6 +55,8 @@ struct Operacion_NotificarCierreMuseo
 
 };
 
+#define OPERACION_INITIALIZER {(Tipo) 0, {0, 0}}
+
 struct Operacion
 {
 	enum Tipo tipo;

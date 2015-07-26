@@ -101,6 +101,8 @@ struct IPersonaMsg_NotifSalidaInvestigador
 	bool lleno;
 };
 
+#define IPERSONAMSG_INITIALIZER {0, (IPersonaOp) 0, {0}}
+
 struct IPersonaMsg
 {
 	long mtype;

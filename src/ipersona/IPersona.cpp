@@ -121,7 +121,7 @@ IPersona::~IPersona ()
 Operacion IPersona::leerProximaOperacion ()
 {
 	int err;
-	struct IPersonaMsg msg = {};
+	struct IPersonaMsg msg = IPERSONAMSG_INITIALIZER;
 	long rtype = getpid ();
 
 	msg.msg.spo.rtype = rtype;
@@ -138,7 +138,7 @@ Operacion IPersona::leerProximaOperacion ()
 			"\tOP: %d (%s)", msg.op,
 			strIPersonaOp (msg.op));
 
-	struct Operacion op = {};
+	struct Operacion op = OPERACION_INITIALIZER;
 	switch (msg.op) {
 	case OP_SOLIC_ENTRAR_MUSEO_PERSONA:
 		op.tipo = SOLIC_ENTRAR_MUSEO_PERSONA;
@@ -170,7 +170,7 @@ Operacion IPersona::leerProximaOperacion ()
 
 void IPersona::notificarEntrada (Operacion op, ResultadoOperacionEntrada res)
 {
-	struct IPersonaMsg msg = {};
+	struct IPersonaMsg msg = IPERSONAMSG_INITIALIZER;
 	msg.op = NOTIF_ENTRADA_PERSONA;
 	msg.msg.nep.res = res;
 	msg.msg.nep.lleno = op.op.semp.lleno;
@@ -181,7 +181,7 @@ void IPersona::notificarEntrada (Operacion op, ResultadoOperacionEntrada res)
 void IPersona::notificarEntrada (Operacion op,
 		ResultadoOperacionEntrada res, long numeroLocker)
 {
-	struct IPersonaMsg msg = {};
+	struct IPersonaMsg msg = IPERSONAMSG_INITIALIZER;
 	msg.op = NOTIF_ENTRADA_INVESTIGADOR;
 	msg.msg.nei.res = res;
 	msg.msg.nei.numeroLocker = numeroLocker;
@@ -192,7 +192,7 @@ void IPersona::notificarEntrada (Operacion op,
 
 void IPersona::notificarSalida (Operacion op, ResultadoOperacionSalida res)
 {
-	struct IPersonaMsg msg = {};
+	struct IPersonaMsg msg = IPERSONAMSG_INITIALIZER;
 	msg.op = NOTIF_SALIDA_PERSONA;
 	msg.msg.nsp.res = res;
 	msg.msg.nsp.lleno = op.op.ssmp.lleno;
@@ -203,7 +203,7 @@ void IPersona::notificarSalida (Operacion op, ResultadoOperacionSalida res)
 void IPersona::notificarSalida (Operacion op,
 		ResultadoOperacionSalida res, long pertenencias)
 {
-	struct IPersonaMsg msg = {};
+	struct IPersonaMsg msg = IPERSONAMSG_INITIALIZER;
 	msg.op = NOTIF_SALIDA_INVESTIGADOR;
 	msg.msg.nsi.res = res;
 	msg.msg.nsi.pertenencias = pertenencias;
