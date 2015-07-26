@@ -42,6 +42,8 @@ int main(int argc,char* argv[]){
 	p.id = id;
 	if(id < 200){
 		p.tipo = PUERTA;
+	}else if(id <300){
+		p.tipo = MUSEO;
 	}else{
 		p.tipo = PERSONA;
 	}
