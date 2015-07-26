@@ -53,7 +53,7 @@ IMuseo::IMuseo(): mqComp(DFLT_IMUSEO_MQ, 'B')
 IMuseo::~IMuseo(){
 	LOG("IMUSEO: Terminando interfaz puerta ...");
 	terminarComponente ();
-	mqComp.destruir();
+//	mqComp.destruir(); // mata a la puerta también
 }
 
 Entrada::Resultado IMuseo::entrarPersona() {
