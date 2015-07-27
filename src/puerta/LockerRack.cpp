@@ -80,7 +80,8 @@ void LockerRack::clear ()
 
 	libres.clear ();
 	rack.clear ();
-	rack.reserve (n);
+	rack.resize (n);
+
 	for (std::size_t i = 0; i < n; i++) {
 		libres.push_back (i);
 	}
