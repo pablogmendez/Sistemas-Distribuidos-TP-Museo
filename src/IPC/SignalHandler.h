@@ -20,7 +20,7 @@ class SignalHandler {
 		static void destruir ();
 		EventHandler* registrarHandler ( int signum,EventHandler* eh );
 		int removerHandler ( int signum );
-
+		EventHandler* ignorar (int signum, int flags);
 };
 
 #endif /* SIGNALHANDLER_H_ */

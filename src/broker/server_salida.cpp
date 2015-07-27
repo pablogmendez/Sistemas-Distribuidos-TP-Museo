@@ -2,6 +2,7 @@
 #include "Constantes.h"
 #include <error.h>
 #include <errno.h>
+#include <IPC/SignalHandler.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -15,7 +16,9 @@
 int lanzarSalida(int);
 
 int main(int argc, char* argv[]){
-	
+	SignalHandler* sigs = SignalHandler::getInstance ();
+	sigs->ignorar (SIGCHLD, SA_NOCLDWAIT);
+
 	cServerSocket serverSocket;
 	int cliSocket;
 	serverSocket.tcp_open_pasivo(BROKER_READERS_PORT, 5);
@@ -25,6 +28,7 @@ int main(int argc, char* argv[]){
 		close(cliSocket);
 	}
 	serverSocket.tcp_close();
+	SignalHandler::destruir ();
 	return 0;
 }
 

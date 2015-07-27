@@ -46,3 +46,17 @@ int SignalHandler :: removerHandler ( int signum ) {
 	SignalHandler :: signal_handlers [ signum ] = NULL;
 	return 0;
 }
+
+EventHandler* SignalHandler::ignorar (int signum, int flags)
+{
+	EventHandler* old_eh = SignalHandler::signal_handlers[signum];
+	SignalHandler::signal_handlers[signum] = NULL;
+
+	struct sigaction sa;
+	sa.sa_handler = SIG_IGN;
+	sigemptyset (&sa.sa_mask);
+	sigaddset (&sa.sa_mask, signum);
+	sa.sa_flags = flags;
+	sigaction (signum, &sa, 0);
+	return old_eh;
+}
