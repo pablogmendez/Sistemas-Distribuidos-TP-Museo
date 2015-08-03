@@ -24,34 +24,36 @@ int main (int argc, char** argv)
 {
 	char op;
 	long puerta, pertenencias, locker, retval;
-
+srand(time(NULL));
+rand();
+rand();
+rand();
+rand();
 	IPuerta ipuerta;
 		//mostrarOpciones();
-		cout << "Ingresar Tipo Persona  a entrar Normal(n)/Investigador(i) ";
-		cin >> op;
+		op = *argv[1];
 		switch(op) {
-			case 'n': cout << "Ingresar numero de puerta:";
-				  cin >> puerta;
+			case 'n': //cout << "Ingresar numero de puerta:";
+				  //cin >> puerta;
+				  puerta = rand()%2 +100 ;
 				  retval = ipuerta.entrar(puerta);
 				  if(retval == 1) break;
-				  cout << "Ingresar puerta por donde salir:";
-  				  cin >> puerta;
-				  ipuerta.salir(puerta);
+				  sleep(rand()%20 + 1);
+				  ipuerta.salir(rand()%2 +100);
 				  break;
 			case 'i': {
-				  cout << "Ingresar numero de puerta y cantidad de pertenencias:";
-    				  cin >> puerta >> pertenencias;
-				  retval = ipuerta.entrar(puerta, pertenencias); 
+				  //cout << "Ingresar numero de puerta y cantidad de pertenencias:";
+    				  //cin >> puerta >> pertenencias;
+				puerta = rand()%2 +100 ;
+				  retval = ipuerta.entrar(puerta, rand()%2 +100); 
 				  if(retval == -1) break;
 
 				  cout << "La puerta guardó las pertenencias en el locker: " << retval << endl;
-
+				  sleep(rand()%5 + 1);
 				  long res, puertaEntrada = puerta, lockerUsado = retval;
 				  do {
-				    cout << "Ingresar puerta por donde salir y locker:";
-				    cin >> puerta >> locker;
 				    cout << "Saliendo por puerta " << puerta << " con locker " << locker << endl;
-				    res = ipuerta.salir(puerta, locker);
+				    res = ipuerta.salir(puerta, retval);
 				    if (res == -1) {
 				      cout << "Puerta o locker incorrecto. Intente de nuevo."
 				           << endl;
