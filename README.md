@@ -20,7 +20,7 @@ Ejecución:
 > sudo ./id-server 100 200 300
 
 ###Broker
-1. Dirigirse con una terminal al directorio "Sitemas-Distribuidos-TP-Museo/src/id-server"
+1. Dirigirse con una terminal al directorio "Sitemas-Distribuidos-TP-Museo/src/broker"
 2. Iniciar el broker ejecutando
 > ./broker
 
